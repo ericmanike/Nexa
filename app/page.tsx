@@ -113,22 +113,22 @@ export default function Home() {
               Affordable Data Bundle
             </span>
           </h1>
-          <p className="text-[11px] sm:text-base font-semibold text-slate-500 max-w-2xl mx-auto leading-relaxed mb-8">
-   Buy Affordable Data Bundle on MTN and AirtelTigo (AT) • Recipient number shouldn't owe Airtime • Doesn't work for Turbonet SIM
+          <p className="text-[11px] sm:text-base font-semibold text-slate-500 max-w-2xl mx-auto leading-relaxed mb-4">
+   Buy Affordable Data Bundle on MTN and AirtelTigo (AT) • Doesn't work for Turbonet SIM
           </p>
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-           
+          {/* <div className="flex flex-col sm:flex-row justify-center items-center">
+            
             <Link
               href="/auth/signUp"
               className="w-full sm:w-auto rounded-2xl bg-white border border-slate-200 text-slate-700 hover:text-slate-900 font-bold px-8 py-4 shadow-sm hover:shadow-md transition-all duration-200 text-center hover:-translate-y-0.5"
             >
               Start Your Own Data Business
             </Link>
-          </div>
+          </div> */}
         </section>
 
         {/* 3. SHOWCASE SECTION (Replicated from user's screenshot) */}
-        <section className="w-full border-y border-slate-200 bg-white py-14 bg-grid-pattern relative overflow-hidden">
+        <section className="w-full border-y border-slate-200 bg-white py-7  relative overflow-hidden">
           {/* Subtle bottom fade gradient */}
           <div className="absolute inset-0 bg-gradient-to-t from-white/30 via-transparent to-white/30 pointer-events-none" />
 
