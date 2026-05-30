@@ -73,16 +73,16 @@ export default function WithdrawalModal({ isOpen, onClose, maxAmount, onSuccess 
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white w-full max-w-md rounded-[1rem  ]  overflow-hidden animate-in zoom-in duration-300">
-                <div className="bg-black text-white p-6 flex items-center justify-between">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white w-full max-w-md rounded-2xl overflow-hidden animate-in zoom-in duration-300">
+                <div className="bg-[#feb400] text-slate-900 p-6 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-white/10 rounded-xl">
-                            <Wallet size={20} className="text-white" />
+                        <div className="p-2 bg-slate-900/10 rounded-xl">
+                            <Wallet size={20} className="text-slate-900" />
                         </div>
                         <h2 className="text-xl font-bold">Withdraw Profit</h2>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+                    <button onClick={onClose} className="p-2 hover:bg-slate-900/10 rounded-full transition-colors cursor-pointer">
                         <X size={20} />
                     </button>
                 </div>
@@ -153,7 +153,7 @@ export default function WithdrawalModal({ isOpen, onClose, maxAmount, onSuccess 
                         <button
                             type="submit" 
                             disabled={loading || !amount || !phoneNumber || !momoName}
-                            className="w-full py-2 bg-green-600 hover:bg-green-700 text-white rounded-1xl font-black text-lg transition-all  hover:shadow-green-500/20 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                            className="w-full py-3 bg-[#feb400] hover:bg-[#e6a200] text-slate-900 rounded-2xl font-black text-base transition-all active:scale-[0.99] disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer shadow-sm"
                         >
 
                             {loading ? <Loader2 className="animate-spin" /> : <Wallet size={20} />}

@@ -36,22 +36,22 @@ export default function RechargeModal({ isOpen, setAmount, amount, setIsOpen, ha
       />
 
       {/* Modal */}
-      <div className="relative bg-white w-full max-w-[22rem] sm:max-w-sm rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 fade-in duration-200">
+      <div className="relative bg-white w-full max-w-[calc(100vw-32px)] sm:max-w-sm rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 fade-in duration-200">
         
         {/* Header */}
-        <div className="bg-slate-50 border-b border-slate-100 p-4 flex justify-between items-center">
+        <div className="bg-[#feb400] text-slate-900 p-4 flex justify-between items-center">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-700">
+            <div className="w-8 h-8 rounded-full bg-slate-900/10 flex items-center justify-center text-slate-900">
               <Wallet size={16} />
             </div>
             <div>
               <h2 className="text-base font-bold text-slate-900 leading-tight">Top Up Wallet</h2>
-              <p className="text-[11px] text-slate-500 font-medium leading-tight">Add funds to your account</p>
+              <p className="text-[11px] text-slate-800 font-semibold leading-tight">Add funds to your account</p>
             </div>
           </div>
           <button 
             onClick={() => setIsOpen(false)} 
-            className="w-7 h-7 rounded-full bg-slate-200/50 flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-800 transition-colors"
+            className="w-7 h-7 rounded-full bg-slate-900/10 flex items-center justify-center text-slate-900 hover:bg-slate-900/20 transition-colors cursor-pointer"
           >
             <X size={16} />
           </button>
@@ -120,7 +120,7 @@ export default function RechargeModal({ isOpen, setAmount, amount, setIsOpen, ha
                         </div>
                         <div className="pt-2 mt-1.5 border-t border-slate-200 flex justify-between">
                             <span className="font-semibold text-slate-900 text-[13px]">Total to pay</span>
-                            <span className="font-bold text-blue-600 text-[15px]">{formatCurrency(amount + (amount * 0.02))}</span>
+                            <span className="font-black text-slate-900 text-[15px]">{formatCurrency(amount + (amount * 0.02))}</span>
                         </div>
                     </div>
                 ) : amount && amount < 10 ? (
@@ -130,7 +130,7 @@ export default function RechargeModal({ isOpen, setAmount, amount, setIsOpen, ha
                 ) : null}
 
                 <button
-                    className="w-full py-2.5 rounded-xl bg-slate-900 text-white text-[13px] font-bold hover:bg-slate-800 transition-all flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-3 rounded-xl bg-[#feb400] text-slate-900 text-[13px] font-black hover:bg-[#e6a200] transition-all flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-sm"
                     onClick={handleTopUp}
                     disabled={!amount || amount < 10}
                 >
@@ -181,7 +181,7 @@ export default function RechargeModal({ isOpen, setAmount, amount, setIsOpen, ha
                 </p>
 
                 <button
-                    className="w-full py-2.5 rounded-xl bg-slate-100 text-slate-700 text-[13px] font-bold hover:bg-slate-200 transition-all active:scale-[0.98]"
+                    className="w-full py-3 rounded-xl bg-[#feb400] text-slate-900 text-[13px] font-black hover:bg-[#e6a200] transition-all active:scale-[0.98] cursor-pointer shadow-sm"
                     onClick={() => setIsOpen(false)}
                 >
                     I have sent the money

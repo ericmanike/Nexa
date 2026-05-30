@@ -124,9 +124,9 @@ function topUpwallet() {
                 onClick={() => {
                     setIsOpen(true) }}
                
-                className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-600 hover:bg-slate-700 text-white rounded-lg font-semibold text-sm transition-all shadow-md hover:shadow-lg w-full sm:w-auto "
+                className="flex items-center justify-center gap-2 px-4 py-3 bg-[#feb400] hover:bg-[#e6a200] text-slate-900 rounded-lg font-bold text-sm transition-all shadow-md hover:shadow-lg w-full sm:w-auto active:scale-[0.99] cursor-pointer"
             >
-                <span className="font-bold text-base leading-none">GH₵</span>
+                <span className="font-black text-base leading-none">GH₵</span>
                 Top up your wallet
             </button>
         </>
