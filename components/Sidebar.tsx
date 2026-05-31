@@ -7,6 +7,7 @@ import { signOut } from "next-auth/react";
 import {
   Home,
   Wifi,
+  RadioTower,
   ShoppingCart,
   Star,
   Wallet,
@@ -57,7 +58,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarPr
         <div className="h-[76px] px-6 bg-[#fb923c] flex items-center justify-between shadow-sm shrink-0">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-slate-900/10 flex items-center justify-center shadow-md">
-              <Wifi className="h-6 w-6 text-slate-900" />
+              <RadioTower className="h-6 w-6 text-slate-900" />
             </div>
             
             <span className="text-xl font-bold tracking-tight text-slate-900 select-none">

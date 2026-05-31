@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { RadioTower } from "lucide-react";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -11,13 +12,14 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
       
       {/* 1. Header (Logo & Subtitle) */}
       <div className="mb-6 flex flex-col items-center text-center">
-        <Link href="/" className="inline-flex items-center gap-2 group mb-1.5">
-          
-      
-          <span className="text-[27px] font-extrabold  flex items-baseline">
-            <span className="text-[#1e3a8a] m-2">Nexa</span>
-            <span className="text-[#fb923c] ">Bundles</span> 
-            <span className="text-slate-500 text-xs font-semibold ml-0.5 align-super">GH</span>
+        <Link href="/" className="inline-flex items-center gap-2.5 group mb-1.5">
+          <div className="h-9 w-9 rounded-xl bg-[#1e3a8a] flex items-center justify-center shadow-md shadow-[#1e3a8a]/20 group-hover:scale-105 transition-transform">
+            <RadioTower className="h-5.5 w-5.5 text-white" />
+          </div>
+          <span className="text-[27px] font-extrabold flex items-baseline leading-none">
+            <span className="text-[#1e3a8a]">Nexa</span>
+            <span className="text-[#fb923c] ml-1">Bundles</span> 
+            <span className="text-slate-500 text-xs font-semibold ml-1 align-super">GH</span>
           </span>
         </Link>
        

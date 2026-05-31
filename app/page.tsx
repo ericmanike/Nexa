@@ -2,25 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-
-// Custom SVG Wifi Icon matching the exact style of the reference image
-const WifiIcon = ({ className = "h-5 w-5" }: { className?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="3"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <path d="M12 20h.01" />
-    <path d="M8.5 16.5a5 5 0 0 1 7 0" />
-    <path d="M5 13a10 10 0 0 1 14 0" />
-    <path d="M1.5 9.5a15 15 0 0 1 21 0" />
-  </svg>
-);
+import { RadioTower } from "lucide-react";
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = React.useState(false);
@@ -29,8 +11,8 @@ export default function Home() {
       {/* 1. Global Brand Header with Glassmorphism */}
       <header className="sticky top-0 z-50 flex h-16 w-full items-center justify-between border-b border-slate-100 bg-white/85 backdrop-blur-md px-4 shadow-sm sm:px-6 md:px-10 lg:px-16">
         <Link href="/" className="inline-flex items-center gap-2 group">
-          <div className="h-7 w-7 rounded-lg bg-[#1e3a8a] flex items-center justify-center shadow-md shadow-red-500/20 group-hover:scale-105 transition-transform">
-            <span className="text-white text-xs font-black">N</span>
+          <div className="h-8 w-8 rounded-lg bg-[#1e3a8a] flex items-center justify-center shadow-md shadow-red-500/20 group-hover:scale-105 transition-transform">
+            <RadioTower className="h-5 w-5 text-white" />
           </div>
           <span className="text-[17px] font-black tracking-widest flex items-baseline gap-1 group-hover:opacity-90 transition-opacity">
             <span className="text-[#1e3a8a]">Nexa</span>
@@ -164,9 +146,9 @@ export default function Home() {
               <div className="relative bg-[#0066b3] rounded-[28px] pt-6 pb-7 px-3 flex flex-col items-center justify-between shadow-[0_20px_45px_rgba(0,102,179,0.18)] hover:-translate-y-2.5 transition-all duration-300 group cursor-pointer h-[250px]">
                
               
-                {/* Circular Wifi Badge */}
+                {/* Circular RadioTower Badge */}
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#005596] shadow-inner mt-2">
-                  <WifiIcon className="h-7 w-7 text-white/90" />
+                  <RadioTower className="h-6 w-6 text-white/90" />
                 </div>
 
                 {/* Details */}
@@ -192,9 +174,9 @@ export default function Home() {
             
              
 
-                {/* Circular Wifi Badge */}
+                {/* Circular RadioTower Badge */}
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e6b800] shadow-inner mt-2">
-                  <WifiIcon className="h-7 w-7 text-slate-900" />
+                  <RadioTower className="h-6 w-6 text-slate-900" />
                 </div>
 
                 {/* Details */}
@@ -219,9 +201,9 @@ export default function Home() {
               <div className="relative bg-[#df0000] rounded-[28px] pt-6 pb-7 px-6 flex flex-col items-center justify-between shadow-[0_20px_45px_rgba(223,0,0,0.18)] hover:-translate-y-2.5 transition-all duration-300 group cursor-pointer h-[250px]">
                
 
-                {/* Circular Wifi Badge */}
-                <div className="flex h-8 w-10 items-center justify-center rounded-full bg-[#be0000] shadow-inner mt-2">
-                  <WifiIcon className="h-7 w-7 text-white/90" />
+                {/* Circular RadioTower Badge */}
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#be0000] shadow-inner mt-2">
+                  <RadioTower className="h-6 w-6 text-white/90" />
                 </div>
 
                 {/* Details */}
@@ -244,9 +226,9 @@ export default function Home() {
             </div>
 
             {/* Agent Call to Action Banner (With requested text-gradient styling) */}
-            <div className="bg-[#111827] rounded-[24px] p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-[0_12px_35px_rgba(17,24,39,0.15)] hover:scale-[1.005] transition-all duration-300 border border-slate-800">
+            <div className="bg-[#1e3a8a] rounded-[24px] p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-[0_12px_35px_rgba(17,24,39,0.15)] hover:scale-[1.005] transition-all duration-300 border border-slate-800">
               <div className="text-center md:text-left">
-                <h3 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 tracking-tight mb-1.5">
+                <h3 className="text-2xl font-black text-white  tracking-tight mb-1.5">
                   Ready to earn extra cash?
                 </h3>
                 <p className="text-[14px] font-semibold text-slate-400">
