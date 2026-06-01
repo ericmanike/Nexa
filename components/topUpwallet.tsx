@@ -124,7 +124,7 @@ function topUpwallet() {
                 onClick={() => {
                     setIsOpen(true) }}
                
-                className="flex items-center justify-center gap-2 px-4 py-3 bg-[#feb400] hover:bg-[#e6a200] text-slate-900 rounded-lg font-bold text-sm transition-all shadow-md hover:shadow-lg w-full sm:w-auto active:scale-[0.99] cursor-pointer"
+                className="flex items-center justify-center gap-2 px-4 py-3 bg-[#fb923c] hover:bg-[#fb923q] text-slate-900 rounded-lg font-bold text-sm transition-all shadow-md hover:shadow-lg w-full sm:w-auto active:scale-[0.99] cursor-pointer"
             >
                 <span className="font-black text-base leading-none">GH₵</span>
                 Top up your wallet

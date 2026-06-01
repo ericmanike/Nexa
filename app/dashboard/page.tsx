@@ -6,12 +6,7 @@ import { useDashboard } from "./DashboardContext";
 import {
   Wallet,
   ShoppingCart,
-  TrendingUp,
-  Sparkles,
   ChevronRight,
-  Wifi,
-  ArrowDownLeft,
-  ArrowUpRight,
   AlertCircle
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
@@ -37,18 +32,16 @@ export default function DashboardOverviewPage() {
       )}
 
       {/* Welcome Card */}
-      <div className="relative bg-[#feb400] rounded-[28px] p-6 sm:p-8 text-slate-900 overflow-hidden shadow-xl">
+      <div className="relative bg-[#1e3a8a] rounded-[28px] p-6 sm:p-8 text-white overflow-hidden shadow-xl">
         <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-white/20 blur-3xl pointer-events-none" />
         <div className="absolute left-1/3 bottom-0 h-28 w-28 rounded-full bg-white/10 blur-2xl pointer-events-none" />
 
         <div className="max-w-xl relative z-10 space-y-2">
-          <div className="inline-flex items-center gap-2 bg-slate-900/10 px-3 py-1 rounded-full text-xs font-bold text-slate-900">
-            <Sparkles size={14} /> Ready to buy data bundles?
-          </div>
+       
           <h2 className="text-xl sm:text-3xl font-black tracking-tight leading-tight capitalize">
             Hello, {user.name}!
           </h2>
-          <p className="text-xs sm:text-sm text-slate-800 font-semibold leading-relaxed">
+          <p className="text-xs sm:text-sm text-gray-200 font-semibold leading-relaxed">
             Welcome to your Nexa Bundles GH Dakazina dashboard. Easily purchase non-expiry data bundles, manage orders, share referrals, or withdraw profits.
           </p>
         </div>
@@ -57,13 +50,13 @@ export default function DashboardOverviewPage() {
       {/* Statistics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Wallet Balance Widget */}
-        <div className="bg-white border border-slate-100 rounded-[24px] p-4 sm:p-6 shadow-sm flex flex-col justify-between gap-4">
+        <div className="bg-white  rounded-[10px] p-4 sm:p-6 shadow-lg flex flex-col justify-between gap-4">
           <div className="flex justify-between items-start">
             <div>
               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
                 Wallet Balance
               </p>
-              <h3 className="text-3xl font-black text-slate-900 tracking-tight mt-1">
+              <h3 className="text-2xl font-black text-slate-900 tracking-tight mt-1">
                 {formatCurrency(user.walletBalance)}
               </h3>
             </div>
@@ -78,11 +71,11 @@ export default function DashboardOverviewPage() {
         </div>
 
         {/* Orders Overview */}
-        <div className="bg-white border border-slate-100 rounded-[24px] p-4 sm:p-6 shadow-sm flex flex-col justify-between gap-4">
+        <div className="bg-white rounded-[10px] p-4 sm:p-6 shadow-lg flex flex-col justify-between gap-4">
           <div className="flex justify-between items-start">
             <div>
               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                Total Orders / Active
+                Total Orders
               </p>
               <h3 className="text-3xl font-black text-slate-900 tracking-tight mt-1">
                 {stats.totalOrders}{" "}
@@ -97,7 +90,7 @@ export default function DashboardOverviewPage() {
           </div>
           <Link
             href="/dashboard/orders"
-            className="w-full py-2.5 bg-[#feb400] hover:bg-[#e6a200] rounded-xl text-slate-900 font-bold text-xs uppercase tracking-wider transition-all text-center flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.99]"
+            className="w-full py-2.5 bg-[#fb923c] hover:bg-[#fb923a] rounded-xl text-slate-900 font-bold text-xs uppercase tracking-wider transition-all text-center flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.99]"
           >
             View All Orders <ChevronRight size={14} />
           </Link>
@@ -105,7 +98,7 @@ export default function DashboardOverviewPage() {
       </div>
 
       {/* Recent Purchase Orders */}
-      <div className="bg-white border border-slate-100 rounded-[24px] p-4 sm:p-6 shadow-sm space-y-4">
+      <div className="bg-white  rounded-[10px] p-4 sm:p-6 shadow-lg space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="font-black text-slate-900 text-[15px] sm:text-[17px] tracking-tight">
             Recent Purchase Orders

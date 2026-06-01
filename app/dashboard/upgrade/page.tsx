@@ -26,7 +26,7 @@ export default function UpgradePage() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-300">
-      <div className="bg-white border border-slate-100 rounded-[28px] p-6 shadow-sm space-y-6">
+      <div className="bg-white rounded-[10px] p-6 shadow-sm space-y-6">
         <div className="text-center max-w-lg mx-auto space-y-2">
           <div className="inline-flex h-12 w-12 rounded-full bg-blue-50 text-blue-600 items-center justify-center shadow-sm">
             <ArrowUpCircle size={28} />

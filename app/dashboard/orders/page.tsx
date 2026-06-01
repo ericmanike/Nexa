@@ -21,7 +21,7 @@ export default function OrdersPage() {
   );
 
   return (
-    <div className="bg-white border border-slate-100 rounded-[28px] p-4 sm:p-6 shadow-sm animate-in fade-in duration-300">
+    <div className="bg-white rounded-[10px] p-4 sm:p-6 shadow-sm animate-in fade-in duration-300">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <h3 className="font-black text-slate-900 text-lg tracking-tight">

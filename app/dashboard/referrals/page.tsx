@@ -20,7 +20,7 @@ export default function ReferralsPage() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-300">
-      <div className="bg-white border border-slate-100 rounded-[28px] p-6 shadow-sm space-y-6">
+      <div className="bg-white rounded-[10px] p-6 shadow-sm space-y-6">
         <div>
           <h3 className="font-black text-slate-900 text-lg tracking-tight flex items-center gap-2">
             Referral & Earn Rewards Program <Gift size={18} className="text-rose-500 animate-bounce" />

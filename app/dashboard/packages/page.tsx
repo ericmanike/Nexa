@@ -120,7 +120,7 @@ export default function PackagesPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-300">
-      <div className="bg-white border border-slate-100 rounded-[28px] p-4 sm:p-6 shadow-sm">
+      <div className="bg-white rounded-[10px] p-4 sm:p-6 shadow-sm">
         <h3 className="font-black text-slate-900 text-lg tracking-tight mb-2">
           Buy Affordable Internet Bundles
         </h3>

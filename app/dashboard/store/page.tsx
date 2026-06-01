@@ -50,7 +50,7 @@ export default function StorePage() {
   if (user.role !== "agent") {
     return (
       <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-300">
-        <div className="bg-white border border-slate-100 rounded-[28px] p-6 shadow-sm text-center space-y-4">
+        <div className="bg-white rounded-[10px] p-6 shadow-sm text-center space-y-4">
           <div className="inline-flex h-12 w-12 rounded-full bg-amber-50 text-amber-500 items-center justify-center">
             <Store size={24} />
           </div>
@@ -73,7 +73,7 @@ export default function StorePage() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-300">
-      <div className="bg-white border border-slate-100 rounded-[28px] p-6 shadow-sm space-y-6">
+      <div className="bg-white rounded-[10px] p-6 shadow-sm space-y-6">
         <div>
           <h3 className="font-black text-slate-900 text-lg tracking-tight">
             My Reseller Storefront Settings

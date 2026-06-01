@@ -15,7 +15,7 @@ export default function WalletPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-300">
-      <div className="bg-white border border-slate-100 rounded-[28px] p-6 shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
+      <div className="bg-white rounded-[10px] p-6 shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
         <div className="space-y-2 text-center md:text-left">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
             Available Wallet Balance
@@ -34,7 +34,7 @@ export default function WalletPage() {
       </div>
 
       {/* Wallet top-up details information banner */}
-      <div className="bg-blue-50 border border-blue-100 rounded-3xl p-6 flex flex-col sm:flex-row gap-4 items-start text-blue-900">
+      <div className="bg-blue-50 border border-blue-100 rounded-[10px] p-6 flex flex-col sm:flex-row gap-4 items-start text-blue-900">
         <AlertCircle size={24} className="shrink-0 text-blue-500 mt-1" />
         <div className="space-y-2">
           <h5 className="font-black text-sm">Need Help with Top-Ups?</h5>

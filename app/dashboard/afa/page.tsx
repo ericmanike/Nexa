@@ -2,123 +2,320 @@
 
 import React, { useState } from "react";
 import { useDashboard } from "../DashboardContext";
-import { Search, Star } from "lucide-react";
+import {
+  Smartphone,
+  User,
+  CreditCard,
+  MapPin,
+  AlertCircle,
+  Info,
+  CheckCircle2,
+  Loader2,
+  UserPlus
+} from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import Link from "next/link";
 
 export default function AFAOrdersPage() {
-  const { data } = useDashboard();
-  const [search, setSearch] = useState("");
+  const { data, setData } = useDashboard();
+
+  // Form states
+  const [fullName, setFullName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [ghanaCard, setGhanaCard] = useState("");
+  const [location, setLocation] = useState("");
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   if (!data) return null;
 
-  // Filter orders where network is AirtelTigo
-  const orders = data.orders || [];
-  const afaOrders = orders.filter((o) => o.network === "AirtelTigo");
+  const user = data.user || { name: "User", email: "guest@dakazina.com", role: "user", walletBalance: 0 };
+  const AFA_REGISTRATION_PRICE = 5.0; // Defined price for registration (GHS 5.00)
+  const isBalanceInsufficient = user.walletBalance < AFA_REGISTRATION_PRICE;
 
-  const filteredOrders = afaOrders.filter(
-    (ord) =>
-      ord.phoneNumber.includes(search) ||
-      ord.bundleName.toLowerCase().includes(search.toLowerCase()) ||
-      ord.transaction_id.toLowerCase().includes(search.toLowerCase())
-  );
+  // Real-time Validation rules
+  const isPhoneValid = /^\d{10}$/.test(phoneNumber);
+  // Validates Ghana card format GHA-XXXXXXXXX-X (15 characters)
+  const isGhanaCardValid = /^GHA-\d{9}-\d$/i.test(ghanaCard);
+  const isNameValid = fullName.trim().length > 0;
+  const isLocationValid = location.trim().length >= 3;
+  const isFormValid = isNameValid && isPhoneValid && isGhanaCardValid && isLocationValid && !isBalanceInsufficient;
+
+  // Auto-format Ghana Card input as user types
+  const handleGhanaCardChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value.toUpperCase();
+    
+    // Auto insert hyphens for GHA-XXXXXXXXX-X
+    // Remove all characters except letters, numbers and hyphens
+    val = val.replace(/[^A-Z0-9-]/g, "");
+    
+    // Auto insert hyphen after "GHA"
+    if (val.length > 3 && val[3] !== "-") {
+      val = val.slice(0, 3) + "-" + val.slice(3);
+    }
+    // Auto insert hyphen before the last character if length reaches 14/15
+    if (val.length > 13 && val[13] !== "-") {
+      val = val.slice(0, 13) + "-" + val.slice(13);
+    }
+    
+    // Enforce max length of 15
+    if (val.length <= 15) {
+      setGhanaCard(val);
+    }
+  };
+
+  const handleRegisterAFA = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitError(null);
+    setSubmitSuccess(null);
+
+    if (!isFormValid) {
+      setSubmitError("Please fill in all fields correctly and ensure your balance is sufficient.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // 2 seconds visual submission loader
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      setSubmitSuccess(
+        `AFA Registration successful for ${fullName} (${phoneNumber}). Wallet debited ${formatCurrency(
+          AFA_REGISTRATION_PRICE
+        )}.`
+      );
+
+      // Deduct balance and insert new AFA order/transaction into the DashboardContext
+      if (setData) {
+        const newOrderId = `order-afa-${Date.now()}`;
+        const newTxId = `TX-AT-AFA-${Math.floor(100000 + Math.random() * 900000)}`;
+
+        setData({
+          ...data,
+          user: {
+            ...data.user,
+            walletBalance: data.user.walletBalance - AFA_REGISTRATION_PRICE
+          },
+          stats: {
+            ...data.stats,
+            totalOrders: data.stats.totalOrders + 1,
+            totalSpent: data.stats.totalSpent + AFA_REGISTRATION_PRICE
+          },
+          orders: [
+            {
+              _id: newOrderId,
+              bundleName: "AFA Registration Package",
+              network: "AirtelTigo",
+              price: AFA_REGISTRATION_PRICE,
+              phoneNumber: phoneNumber,
+              status: "delivered",
+              transaction_id: newTxId,
+              createdAt: new Date().toISOString()
+            },
+            ...data.orders
+          ],
+          transactions: [
+            {
+              _id: `tx-afa-${Date.now()}`,
+              transactionType: "debit",
+              type: "purchase",
+              amount: AFA_REGISTRATION_PRICE,
+              reference: newTxId,
+              description: `AFA calltime registration for ${fullName} (${phoneNumber})`,
+              status: "success",
+              createdAt: new Date().toISOString()
+            },
+            ...data.transactions
+          ]
+        });
+      }
+
+      // Reset form
+      setFullName("");
+      setPhoneNumber("");
+      setGhanaCard("");
+      setLocation("");
+    } catch (err: any) {
+      setSubmitError(err.message || "Failed to process AFA Registration.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
-    <div className="bg-white border border-slate-100 rounded-[28px] p-6 shadow-sm animate-in fade-in duration-300">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <div>
-          <h3 className="font-black text-slate-900 text-lg tracking-tight flex items-center gap-2">
-            AFA Specialized Reseller Orders <Star size={18} className="text-amber-500 fill-amber-500 animate-pulse" />
+    <div className="max-w-xl mx-auto space-y-6 animate-in fade-in duration-300">
+      
+      {/* Centered Registration Card (matching image) */}
+      <div className="bg-white rounded-[10px] overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+        
+        {/* Card Premium Violet/Indigo Header (matching image) */}
+        <div className="bg-[#fb923c] py-6 px-6 sm:px-8 text-center text-white flex flex-col items-center justify-center gap-1.5 shadow-inner">
+          <div className="bg-white/10 p-2 rounded-2xl flex items-center justify-center shrink-0">
+            <Smartphone className="h-6 w-6 text-white shrink-0" />
+          </div>
+          <h3 className="font-black text-white text-lg tracking-wider uppercase flex items-center gap-1.5 mt-1 select-none">
+            AFA Registration
           </h3>
-          <p className="text-xs font-semibold text-slate-500 leading-relaxed mt-0.5 select-none">
-            Tracking specialized AirtelTigo appreciation and reseller bundles.
+          <p className="text-[11px] font-semibold text-indigo-100/90 leading-relaxed max-w-sm">
+            Register for AFA Calltime Package - Stay connected with affordable rates
           </p>
         </div>
 
-        {/* Simple search bar */}
-        <div className="relative flex items-center w-full sm:w-auto">
-          <Search size={16} className="absolute left-3 text-slate-400" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search phone, bundle, ref..."
-            className="bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-1.5 text-xs outline-none focus:border-blue-500 focus:bg-white w-full sm:w-48"
-          />
-        </div>
-      </div>
-
-      {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[600px] border-collapse text-left text-xs">
-          <thead>
-            <tr className="border-b border-slate-100 select-none text-[11px] font-bold text-slate-400 uppercase tracking-widest bg-slate-50/50">
-              <th className="py-3 px-4 rounded-l-xl">Network</th>
-              <th className="py-3 px-4">Customer No.</th>
-              <th className="py-3 px-4">Bundle Description</th>
-              <th className="py-3 px-4">Transaction ID</th>
-              <th className="py-3 px-4">Price</th>
-              <th className="py-3 px-4">Date</th>
-              <th className="py-3 px-4 rounded-r-xl">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredOrders.length === 0 ? (
-              <tr>
-                <td colSpan={7} className="py-12 text-center text-slate-400 font-semibold">
-                  No specialized AFA orders exist matching search details.
-                </td>
-              </tr>
-            ) : (
-              filteredOrders.map((ord) => (
-                <tr
-                  key={ord._id}
-                  className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors font-medium text-slate-700"
-                >
-                  <td className="py-3.5 px-4 font-bold text-slate-900 flex items-center gap-2">
-                    <span className="h-6 w-6 rounded-md flex items-center justify-center text-[10px] font-black text-white shrink-0 bg-[#0066b3]">
-                      A
-                    </span>
-                    {ord.network}
-                  </td>
-                  <td className="py-3.5 px-4 font-mono font-bold text-slate-900">
-                    {ord.phoneNumber}
-                  </td>
-                  <td className="py-3.5 px-4 flex items-center gap-1">
-                    {ord.bundleName}
-                    <Star size={12} className="text-amber-500 fill-amber-500" />
-                  </td>
-                  <td className="py-3.5 px-4 font-mono text-[10px] text-slate-400">
-                    {ord.transaction_id}
-                  </td>
-                  <td className="py-3.5 px-4 font-black text-slate-950">
-                    {formatCurrency(ord.price)}
-                  </td>
-                  <td className="py-3.5 px-4 text-slate-400 select-none">
-                    {new Date(ord.createdAt).toLocaleDateString("en-GH", {
-                      month: "short",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit"
-                    })}
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <span
-                      className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                        ord.status === "delivered"
-                          ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
-                          : ord.status === "processing" || ord.status === "pending"
-                          ? "bg-amber-50 text-amber-600 border border-amber-100"
-                          : "bg-red-50 text-red-600 border border-red-100"
-                      }`}
-                    >
-                      {ord.status}
-                    </span>
-                  </td>
-                </tr>
-              ))
+        {/* Card Body */}
+        <div className="p-6 sm:p-8 space-y-6">
+          
+          <form onSubmit={handleRegisterAFA} className="space-y-5">
+            
+            {submitSuccess && (
+              <div className="p-4 bg-emerald-50 text-emerald-800 text-xs font-bold rounded-2xl border border-emerald-100 flex gap-2.5 items-start">
+                <CheckCircle2 size={16} className="text-emerald-500 shrink-0 mt-0.5" />
+                <span>{submitSuccess}</span>
+              </div>
             )}
-          </tbody>
-        </table>
+            {submitError && (
+              <div className="p-4 bg-red-50 text-red-800 text-xs font-bold rounded-2xl border border-red-100 flex gap-2.5 items-start">
+                <AlertCircle size={16} className="text-red-500 shrink-0 mt-0.5" />
+                <span>{submitError}</span>
+              </div>
+            )}
+
+            {/* 1. Full Name */}
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-black text-slate-500 uppercase tracking-wider pl-0.5 select-none">
+                Full Name <span className="text-red-500">*</span>
+              </label>
+              <div className="relative flex items-center">
+                <User size={16} className="absolute left-4 text-slate-400 shrink-0" />
+                <input
+                  type="text"
+                  required
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Enter Full Name"
+                  className="block w-full rounded-xl border border-slate-200 bg-slate-50/60 py-3 pl-11 pr-4 text-xs font-bold text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-100"
+                />
+              </div>
+              <p className="text-[10px] text-slate-400 font-semibold pl-1 select-none">
+                Name as it appears on Ghana Card
+              </p>
+            </div>
+
+            {/* 2. Phone Number */}
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-black text-slate-500 uppercase tracking-wider pl-0.5 select-none">
+                Phone Number <span className="text-red-500">*</span>
+              </label>
+              <div className="relative flex items-center">
+                <Smartphone size={16} className="absolute left-4 text-slate-400 shrink-0" />
+                <input
+                  type="tel"
+                  required
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                  placeholder="0241234567"
+                  className="block w-full rounded-xl border border-slate-200 bg-slate-50/60 py-3 pl-11 pr-4 text-xs font-bold text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-100"
+                />
+              </div>
+              <p className="text-[10px] text-slate-400 font-semibold pl-1 select-none">
+                Enter 10-digit Ghana number
+              </p>
+            </div>
+
+            {/* 3. Ghana Card Number */}
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-black text-slate-500 uppercase tracking-wider pl-0.5 select-none">
+                Ghana Card Number <span className="text-red-500">*</span>
+              </label>
+              <div className="relative flex items-center">
+                <CreditCard size={16} className="absolute left-4 text-slate-400 shrink-0" />
+                <input
+                  type="text"
+                  required
+                  value={ghanaCard}
+                  onChange={handleGhanaCardChange}
+                  placeholder="GHA-123456789-1"
+                  className="block w-full rounded-xl border border-slate-200 bg-slate-50/60 py-3 pl-11 pr-4 text-xs font-bold text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-100"
+                />
+              </div>
+              <p className="text-[10px] text-slate-400 font-semibold pl-1 select-none">
+                Format: GHA-XXXXXXXXX-X (15 characters)
+              </p>
+            </div>
+
+            {/* 4. Location/Address */}
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-black text-slate-500 uppercase tracking-wider pl-0.5 select-none">
+                Location/Address <span className="text-red-500">*</span>
+              </label>
+              <div className="relative flex items-start">
+                <MapPin size={16} className="absolute left-4 top-3.5 text-slate-400 shrink-0" />
+                <textarea
+                  required
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="Enter your detailed location or address"
+                  rows={3}
+                  className="block w-full rounded-xl border border-slate-200 bg-slate-50/60 py-3.5 pl-11 pr-4 text-xs font-bold text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-100 resize-none"
+                />
+              </div>
+              <p className="text-[10px] text-slate-400 font-semibold pl-1 select-none">
+                Provide your current residential address (minimum 3 characters)
+              </p>
+            </div>
+
+            {/* Dynamic Balance & Warning Panels Stack (matching image format) */}
+            <div className="space-y-2 pt-2">
+              
+              {/* Available Balance Box */}
+              <div className={`p-3.5 rounded-xl border flex gap-3.5 items-center justify-start text-[11px] font-black uppercase tracking-wider select-none ${
+                isBalanceInsufficient 
+                  ? "bg-red-50 text-red-700 border-red-100" 
+                  : "bg-emerald-50 text-emerald-800 border-emerald-100"
+              }`}>
+                <Info size={16} className={isBalanceInsufficient ? "text-red-500" : "text-emerald-500"} />
+                <span>Available balance: {formatCurrency(user.walletBalance)}</span>
+              </div>
+
+              {/* Insufficient Wallet Warning Box */}
+              {isBalanceInsufficient && (
+                <div className="p-3.5 bg-red-50 text-red-800 text-[11.5px] font-bold rounded-xl border border-red-100 flex gap-2.5 items-center">
+                  <AlertCircle size={16} className="text-red-500 shrink-0" />
+                  <span>
+                    Insufficient balance. Please{" "}
+                    <Link href="/dashboard/wallet" className="underline text-red-950 hover:opacity-90 font-extrabold">
+                      top up your wallet
+                    </Link>
+                    .
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Submit Action Button */}
+            <button
+              type="submit"
+              disabled={isSubmitting || !isFormValid}
+              className={`w-full py-3.5 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2.5 transition-all duration-200 select-none shadow-sm cursor-pointer ${
+                isFormValid 
+                  ? "bg-indigo-600 hover:bg-indigo-700 text-white active:scale-[0.99] hover:shadow-md" 
+                  : "bg-slate-200 text-slate-400 cursor-not-allowed"
+              }`}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="animate-spin h-4 w-4 text-white" /> Registering Package...
+                </>
+              ) : (
+                <>
+                  <UserPlus size={15} /> Continue
+                </>
+              )}
+            </button>
+
+          </form>
+        </div>
       </div>
     </div>
   );
