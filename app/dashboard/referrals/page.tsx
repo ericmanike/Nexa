@@ -60,7 +60,7 @@ export default function ReferralsPage() {
             />
             <button
               onClick={handleCopy}
-              className="px-4 py-2 bg-[#feb400] hover:bg-[#e6a200] text-slate-900 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 active:scale-[0.99] cursor-pointer shadow-sm"
+              className="px-4 py-2 bg-[#fb923c] hover:bg-[#f77c28] text-slate-900 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 active:scale-[0.99] cursor-pointer shadow-sm"
             >
               {copiedText ? (
                 <>

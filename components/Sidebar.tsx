@@ -43,7 +43,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarPr
     { id: "referrals", label: "My Referrals", href: "/dashboard/referrals", icon: Gift, color: "bg-rose-100 text-rose-600" },
     { id: "upgrade", label: "Role Upgrade", href: "/dashboard/upgrade", icon: ArrowUpCircle, color: "bg-violet-100 text-violet-600" },
     { id: "store", label: "My Store", href: "/dashboard/store", icon: Store, color: "bg-teal-100 text-teal-600" },
-    { id: "withdraw", label: "Withdraw Rewards", href: "/dashboard/withdraw", icon: Coins, color: "bg-zinc-100 text-zinc-700" },
+   
     { id: "profile", label: "Profile", href: "/dashboard/profile", icon: UserIcon, color: "bg-gray-100 text-gray-700" }
   ];
 
@@ -112,12 +112,17 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarPr
 
         {/* Footer Log out (Fixed at bottom) */}
         <div className="p-4 border-t border-slate-100 shrink-0">
-          <button
-            onClick={() => signOut({ callbackUrl: "/" })}
+          
+          <Link href={'/auth/signIn'}>
+            <button
+            onClick={() =>
+              
+               signOut({ callbackUrl: "/" })}
             className="w-full py-2.5 rounded-xl border border-slate-200 hover:bg-red-50 hover:text-red-600 hover:border-red-100 text-slate-600 text-xs font-bold uppercase tracking-wider transition-all"
           >
             Log Out
           </button>
+          </Link>
         </div>
       </aside>
 

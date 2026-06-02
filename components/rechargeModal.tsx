@@ -130,7 +130,7 @@ export default function RechargeModal({ isOpen, setAmount, amount, setIsOpen, ha
                 ) : null}
 
                 <button
-                    className="w-full py-3 rounded-xl bg-[#feb400] text-slate-900 text-[13px] font-black hover:bg-[#e6a200] transition-all flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-sm"
+                    className="w-full py-3 rounded-xl bg-[#1e3a8a] text-white text-[13px] font-black hover:bg-[#0b173a] transition-all flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-sm"
                     onClick={handleTopUp}
                     disabled={!amount || amount < 10}
                 >
@@ -181,7 +181,7 @@ export default function RechargeModal({ isOpen, setAmount, amount, setIsOpen, ha
                 </p>
 
                 <button
-                    className="w-full py-3 rounded-xl bg-[#feb400] text-slate-900 text-[13px] font-black hover:bg-[#e6a200] transition-all active:scale-[0.98] cursor-pointer shadow-sm"
+                    className="w-full py-3 rounded-xl bg-[#1e3a8a] text-white text-[13px] font-black hover:bg-[#0b173a] transition-all active:scale-[0.98] cursor-pointer shadow-sm"
                     onClick={() => setIsOpen(false)}
                 >
                     I have sent the money

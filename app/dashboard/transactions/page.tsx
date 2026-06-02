@@ -17,11 +17,9 @@ export default function TransactionsPage() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h3 className="font-black text-slate-900 text-lg tracking-tight">
-            Wallet Transactions Ledger
+            Transactions History
           </h3>
-          <p className="text-xs font-semibold text-slate-500 leading-relaxed mt-0.5 select-none">
-            Comprehensive chronological log of debit purchases and credit deposits.
-          </p>
+        
         </div>
       </div>
 

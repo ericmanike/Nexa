@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useDashboard } from "../DashboardContext";
-import { Store, Loader2 } from "lucide-react";
+import { Store, Loader2, Eye } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
 
@@ -74,13 +74,26 @@ export default function StorePage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-300">
       <div className="bg-white rounded-[10px] p-6 shadow-sm space-y-6">
-        <div>
-          <h3 className="font-black text-slate-900 text-lg tracking-tight">
-            My Reseller Storefront Settings
-          </h3>
-          <p className="text-xs font-semibold text-slate-500 leading-relaxed mt-0.5 select-none">
-            Manage your customized internet bundles sales store website and share your slug.
-          </p>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h3 className="font-black text-slate-900 text-lg tracking-tight">
+              My Reseller Storefront Settings
+            </h3>
+            <p className="text-xs font-semibold text-slate-500 leading-relaxed mt-0.5 select-none">
+              Manage your customized internet bundles sales store website and share your slug.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              alert("Storefront preview link will be connected here later!");
+            }}
+            className="flex items-center gap-1.5 px-4.5 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-800 rounded-xl text-xs font-bold transition-all shadow-sm active:scale-[0.99] shrink-0 border border-slate-200/50 select-none cursor-pointer"
+          >
+            <Eye size={15} /> Preview Store
+          </button>
         </div>
 
         {/* Store Stats */}

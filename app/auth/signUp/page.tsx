@@ -193,6 +193,8 @@ export default function SignUpPage() {
             </svg>
           ) : (
             <>
+            {/* mock sign up button that redirects to dashboard */}
+            <Link href={'/dashboard'} className="flex gap-3">
               Create Account
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -204,6 +206,7 @@ export default function SignUpPage() {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
               </svg>
+              </Link>
             </>
           )}
         </button>
