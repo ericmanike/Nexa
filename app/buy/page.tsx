@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { ChevronLeft, AlertTriangle, Search, ChevronDown, User } from "lucide-react";
 
 interface Bundle {
   id: string;
@@ -87,16 +88,7 @@ export default function BuyPage() {
       {/* 1. Global Brand Header */}
       <header className="sticky top-0 z-50 flex h-14 w-full items-center justify-between bg-white px-4 border-b border-slate-100 shadow-sm sm:px-6 md:px-10 lg:px-16">
         <Link href="/" className="inline-flex items-center gap-1.5 group">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2.5}
-            stroke="currentColor"
-            className="h-4.5 w-4.5 text-slate-600 group-hover:-translate-x-0.5 transition-transform"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-          </svg>
+          <ChevronLeft className="h-4.5 w-4.5 text-slate-600 group-hover:-translate-x-0.5 transition-transform" strokeWidth={2.5} />
           <span className="text-[17px] font-black tracking-widest flex items-baseline gap-1 group-hover:opacity-90 transition-opacity">
             <span className="text-[#1e3a8a]">Nexa</span>
             <span className="text-[#fb923c]">Bundles</span> 
@@ -138,20 +130,7 @@ export default function BuyPage() {
           
           {/* Orange Banner: Duplicate Warning */}
           <div className="flex gap-3.5 rounded-2xl border border-amber-200 bg-[#fffbeb] p-4 text-[13px] leading-relaxed text-amber-900 shadow-sm">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.8}
-              stroke="currentColor"
-              className="h-5 w-5 text-amber-600 shrink-0 mt-0.5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
-              />
-            </svg>
+            <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" strokeWidth={1.8} />
             <div className="space-y-0.5">
               <span className="font-bold block text-amber-900">
                 Important: No duplicate orders
@@ -170,20 +149,7 @@ export default function BuyPage() {
             >
               <div className="flex gap-3.5">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-white">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke="currentColor"
-                    className="h-5.5 w-5.5"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.637 10.636z"
-                    />
-                  </svg>
+                  <Search className="h-5.5 w-5.5" strokeWidth={2} />
                 </div>
                 <div className="space-y-0.5">
                   <span className="text-[14px] font-bold block">
@@ -194,18 +160,12 @@ export default function BuyPage() {
                   </span>
                 </div>
               </div>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2.5}
-                stroke="currentColor"
+              <ChevronDown
                 className={`h-4.5 w-4.5 text-indigo-200 transition-transform duration-250 ${
                   showTracker ? "rotate-180" : ""
                 }`}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-              </svg>
+                strokeWidth={2.5}
+              />
             </button>
 
             {/* Expanded tracking console */}
@@ -316,16 +276,7 @@ export default function BuyPage() {
                       : "A&T"}
                   </span>
                 </div>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2.5}
-                  stroke="currentColor"
-                  className="h-3.5 w-3.5 opacity-40 group-hover:opacity-75 transition-opacity"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                </svg>
+                <ChevronDown className="h-3.5 w-3.5 opacity-40 group-hover:opacity-75 transition-opacity" strokeWidth={2.5} />
               </div>
 
               {/* Card Body */}
@@ -358,20 +309,7 @@ export default function BuyPage() {
         {/* 8. Footer CTA Card */}
         <div className="rounded-[24px] border border-slate-100 bg-white p-7 text-center shadow-[0_8px_30px_rgba(0,0,0,0.03)] sm:p-9">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-amber-50 border border-amber-100 text-[#fbcb08]">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="h-6 w-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
-              />
-            </svg>
+            <User className="h-6 w-6" strokeWidth={2} />
           </div>
           
           <h4 className="text-[17px] font-bold text-slate-900 mb-1">

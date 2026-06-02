@@ -24,7 +24,16 @@ export default withAuth(
         if (pathname.startsWith("/dashboard") && !token) {
             return NextResponse.redirect(new URL("/auth/signIn", req.url));
         }
- 
+        if (pathname.startsWith("/auth/signIn") && token) {
+            return NextResponse.redirect(new URL("/dashboard", req.url));
+        }
+        if (pathname.startsWith("/auth/signUp") && token) {
+            return NextResponse.redirect(new URL("/dashboard", req.url));
+        }
+        if (pathname.startsWith("/auth/forgot-password") && token) {
+            return NextResponse.redirect(new URL("/dashboard", req.url));
+        }
+        
        
 
       
@@ -39,7 +48,7 @@ export default withAuth(
             authorized: ({ token }) => !!token,
         },
         pages: {
-            signIn: "/auth/login",
+            signIn: "/auth/signIn",
         },
     }
 );
@@ -47,8 +56,8 @@ export default withAuth(
 export const config = {
     matcher: [
         "/dashboard/:path*",
-        "/admin/:path*",
-        "/profile/:path*",
-        "/history/:path*"
+        // "/admin/:path*",
+        // "/profile/:path*",
+        // "/history/:path*"
     ],
 };

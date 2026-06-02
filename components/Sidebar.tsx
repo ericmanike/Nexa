@@ -113,7 +113,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarPr
         {/* Footer Log out (Fixed at bottom) */}
         <div className="p-4 border-t border-slate-100 shrink-0">
           
-          <Link href={'/auth/signIn'}>
+        
             <button
             onClick={() =>
               
@@ -122,7 +122,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarPr
           >
             Log Out
           </button>
-          </Link>
+         
         </div>
       </aside>
 

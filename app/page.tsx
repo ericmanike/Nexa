@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { RadioTower } from "lucide-react";
+import { RadioTower, Menu, X } from "lucide-react";
 import { signOut } from "next-auth/react";
 
 export default function Home() {
@@ -47,20 +47,11 @@ export default function Home() {
             className="text-slate-600 hover:text-slate-950 p-2 rounded-lg transition-colors cursor-pointer"
             aria-label="Toggle Menu"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2.5}
-              stroke="currentColor"
-              className="h-6 w-6"
-            >
-              {menuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-              )}
-            </svg>
+            {menuOpen ? (
+              <X className="h-6 w-6" strokeWidth={2.5} />
+            ) : (
+              <Menu className="h-6 w-6" strokeWidth={2.5} />
+            )}
           </button>
         </div>
 
