@@ -2,24 +2,74 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { toast,ToastContainer } from "react-toastify";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function SignUpPage() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!agreeTerms) return;
-    setIsLoading(true);
-    // Simulate sign up
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-  };
+
+
+  
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+       
+        setIsLoading(true);
+
+        try {
+            const res = await fetch("/api/auth/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  name,
+                  email,
+                  password,
+                  phone
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.message || "Something went wrong");
+            }
+   
+    if(!email || !password){
+        toast.error('something went wrong missing email and paddword')
+        return
+    }
+
+   const Loginres =  await signIn("credentials",{
+          email,
+          password,
+          redirect:false,
+             }
+             )
+            if (Loginres?.error) {
+              toast.error(Loginres.error);
+            } else {
+              toast.success("Account created successfully");
+                router.push("/dashboard");
+                router.refresh();
+            }
+
+         console.log(Loginres)
+
+        } catch (err: any) {
+            toast.error(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    }
 
   return (
     <div className="w-full rounded-[24px] border border-slate-100 bg-white p-7 shadow-[0_10px_35px_rgba(0,0,0,0.04)] sm:p-9 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -62,6 +112,35 @@ export default function SignUpPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Full Name"
+            className="block w-full rounded-xl border border-slate-200 bg-[#f4f5f7] py-3.5 pl-12 pr-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all duration-200 focus:border-slate-400 focus:bg-white focus:ring-1 focus:ring-slate-400"
+          />
+        </div>
+
+        {/* phone input */}
+        <div className="relative flex items-center">
+          <div className="pointer-events-none absolute left-4 text-slate-400">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.8}
+              stroke="currentColor"
+              className="h-5 w-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25H4.5A2.25 2.25 0 012.25 19.5V6.75m19.5 0A2.25 2.25 0 0019.5 4.5H4.5a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.62a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
+              /> 
+            </svg>
+          </div>
+          <input
+            type="text"
+            required
+            autoComplete="phone"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="Phone Number"
             className="block w-full rounded-xl border border-slate-200 bg-[#f4f5f7] py-3.5 pl-12 pr-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all duration-200 focus:border-slate-400 focus:bg-white focus:ring-1 focus:ring-slate-400"
           />
         </div>
@@ -168,7 +247,7 @@ export default function SignUpPage() {
         {/* Yellow Submit CTA (Vibrant Gold from Screenshot) */}
         <button
           type="submit"
-          disabled={isLoading || !agreeTerms}
+          disabled={isLoading || !name || !phone || !email || !password}
           className="relative flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#fbcb08] hover:bg-[#eab308] py-3.5 px-4 text-sm font-bold text-slate-900 shadow-sm transition-all duration-200 cursor-pointer select-none active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none"
         >
           {isLoading ? (
@@ -194,7 +273,7 @@ export default function SignUpPage() {
           ) : (
             <>
             {/* mock sign up button that redirects to dashboard */}
-            <Link href={'/dashboard'} className="flex gap-3">
+           
               Create Account
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -206,8 +285,8 @@ export default function SignUpPage() {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
               </svg>
-              </Link>
-            </>
+              
+              </>
           )}
         </button>
       </form>

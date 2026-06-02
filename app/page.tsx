@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { RadioTower } from "lucide-react";
+import { signOut } from "next-auth/react";
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = React.useState(false);

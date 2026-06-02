@@ -117,7 +117,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarPr
             <button
             onClick={() =>
               
-               signOut({ callbackUrl: "/" })}
+               signOut({ callbackUrl: "/auth/signIn" })}
             className="w-full py-2.5 rounded-xl border border-slate-200 hover:bg-red-50 hover:text-red-600 hover:border-red-100 text-slate-600 text-xs font-bold uppercase tracking-wider transition-all"
           >
             Log Out

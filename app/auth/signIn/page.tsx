@@ -2,6 +2,11 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { toast, ToastContainer } from "react-toastify";
+import { useRouter } from 'next/navigation';
+
+
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
@@ -10,18 +15,37 @@ export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    // Simulate sign in
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-  };
+  const router = useRouter();
 
+
+      const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+       
+        setIsLoading(true);
+
+        try {
+            const res = await signIn("credentials", {
+                email,
+                password,
+                redirect: false,
+            });
+
+            if (res?.error) {
+                toast.error(res.error);
+            } else {
+              toast.success("Login Successful");
+                router.push("/dashboard");
+                router.refresh();
+            }
+        } catch (err: any) {
+            toast.error("Too many attempts , try again later");
+        } finally {
+            setIsLoading(false);
+        }
+    };
   return (
     <div className="w-full rounded-[24px] border border-slate-100 bg-white p-7 shadow-[0_10px_35px_rgba(0,0,0,0.04)] sm:p-9 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      
+      <ToastContainer />
       {/* Title & Subtitle */}
       <div className="mb-6 space-y-1 text-left">
         <h1 className="text-[22px] font-bold tracking-tight text-[#0f172a]">
