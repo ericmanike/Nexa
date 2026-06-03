@@ -17,7 +17,8 @@ import {
   Store,
   Coins,
   User as UserIcon,
-  X
+  X,
+  Shield
 } from "lucide-react";
 
 // Custom logo wrapper using Lucide Wifi
@@ -27,6 +28,7 @@ interface SidebarProps {
   user: {
     name: string;
     email: string;
+    role?: string;
   };
 }
 
@@ -43,9 +45,25 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarPr
     { id: "referrals", label: "My Referrals", href: "/dashboard/referrals", icon: Gift, color: "bg-rose-100 text-rose-600" },
     { id: "upgrade", label: "Role Upgrade", href: "/dashboard/upgrade", icon: ArrowUpCircle, color: "bg-violet-100 text-violet-600" },
     { id: "store", label: "My Store", href: "/dashboard/store", icon: Store, color: "bg-teal-100 text-teal-600" },
-   
-    { id: "profile", label: "Profile", href: "/dashboard/profile", icon: UserIcon, color: "bg-gray-100 text-gray-700" }
   ];
+
+  if (user.role === "admin") {
+    sidebarItems.push({
+      id: "admin",
+      label: "Admin Panel",
+      href: "/dashboard/admin",
+      icon: Shield,
+      color: "bg-red-100 text-red-600"
+    });
+  }
+
+  sidebarItems.push({
+    id: "profile",
+    label: "Profile",
+    href: "/dashboard/profile",
+    icon: UserIcon,
+    color: "bg-gray-100 text-gray-700"
+  });
 
   return (
     <>

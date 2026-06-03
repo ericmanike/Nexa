@@ -50,7 +50,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       <Sidebar
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
-        user={{ name: user.name, email: user.email }}
+        user={{ name: user.name, email: user.email, role: user.role }}
       />
 
       {/* 2. Scrollable right panel wrapper */}
