@@ -8,6 +8,7 @@ import { Menu, ChevronRight, Loader2, Bell, ChevronDown, User as UserIcon, LogOu
 import { usePathname } from "next/navigation";
 import { formatCurrency } from "@/lib/utils";
 import { signOut } from "next-auth/react";
+import Loader from "./loading";
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { data, loading, error } = useDashboard();
@@ -37,10 +38,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 
   if (loading && !data) {
     return (
-      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-slate-50 gap-4">
-        <Loader2 className="h-10 w-10 text-blue-600 animate-spin" />
-        <p className="text-sm font-semibold text-slate-500">Loading your Dakazina session...</p>
-      </div>
+    <Loader />
     );
   }
 
@@ -96,7 +94,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                 </div>
                 <div className="hidden md:block text-left min-w-0 pr-1 select-none">
                   <h4 className="text-xs font-bold text-slate-900 truncate leading-tight capitalize max-w-[100px] flex items-center gap-1">
-                    {user.name || "User"}
+                    {user.name.slice(0, 8) + "..."|| "User"}
                     <ChevronDown size={15} className={`text-slate-400 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`} />
                   </h4>
                 </div>
@@ -111,8 +109,8 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                   />
                   <div className="absolute right-0 mt-2.5 w-56 bg-white border border-slate-100 rounded-2xl shadow-xl p-2 z-40 animate-in fade-in slide-in-from-top-3 duration-200">
                     <div className="px-3 py-2 border-b border-slate-50 text-left">
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Signed in as</p>
-                      <p className="text-xs font-bold text-slate-950 truncate mt-0.5 capitalize">{user.name}</p>
+
+                     
                       <p className="text-[10px] text-slate-400 truncate mt-0.5">{user.email}</p>
                     </div>
 
@@ -123,17 +121,10 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                         className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left text-slate-600 hover:text-slate-950 hover:bg-slate-50 transition-colors"
                       >
                         <UserIcon size={14} className="text-slate-400" />
-                        <span className="text-xs font-semibold">My Profile</span>
+                        <span className="text-xs font-semibold">Profile</span>
                       </Link>
 
-                      <Link
-                        href="/dashboard/store"
-                        onClick={() => setDropdownOpen(false)}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left text-slate-600 hover:text-slate-950 hover:bg-slate-50 transition-colors"
-                      >
-                        <Settings size={14} className="text-slate-400" />
-                        <span className="text-xs font-semibold">Store Settings</span>
-                      </Link>
+                     
                     </div>
 
                     <div className="border-t border-slate-50 pt-1 mt-1">
