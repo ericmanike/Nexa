@@ -62,12 +62,12 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
 
   const getMockData = (): DashboardData => ({
     user: {
-      id: "mock-user-123",
+      id: "loading...",
       name: session?.user?.name || "User",
-      email: session?.user?.email || "manikeeric@gmail.com",
+      email: session?.user?.email || "loading...",
       role: (session?.user as any)?.role || "agent",
-      walletBalance: 245.8,
-      phone: "0543442518",
+      walletBalance: 0,
+      phone: "loading...",
       createdAt: new Date().toISOString()
     },
     stats: {
