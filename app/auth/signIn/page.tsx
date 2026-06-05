@@ -139,10 +139,10 @@ export default function SignInPage() {
             <Loader2 className="h-5 w-5 animate-spin text-slate-900" />
           ) : (
             <>
-            <Link href={'/dashboard'} className="flex gap-3">
+
               Sign In
               <ArrowRight className="h-4 w-4" strokeWidth={2.5} />
-            </Link>
+         
             </>
           )}
         </button>

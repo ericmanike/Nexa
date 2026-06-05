@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 
 
 export default withAuth(
-    async function proxy(req) {
+    async function proxy(req: any) {
         // req.nextauth.token is automatically populated by withAuth
         const token = req.nextauth.token;
         const role = token?.role;
@@ -26,14 +26,6 @@ if (pathname.startsWith("/dashboard") && !token) {
     return NextResponse.redirect(new URL("/auth/signIn", req.url));
 }
 
-// 3. Protect Guest Routes: Redirect authenticated users away from auth pages
-const isAuthPage = pathname.startsWith("/auth/signIn") || 
-                   pathname.startsWith("/auth/signUp") || 
-                   pathname.startsWith("/auth/forgot-password");
-
-if (isAuthPage && token) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
-}
 
 
         return NextResponse.next();
@@ -50,10 +42,8 @@ if (isAuthPage && token) {
 
 export const config = {
     matcher: [
-        "/dashboard/:path*",
-          '/auth/signIn/:path*', 
-          '/auth/signUp/:path*',
-          '/auth/forgot-password/:path*', 
+        "/dashboard/:path*"
+          
        
     ],
 };
