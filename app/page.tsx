@@ -133,7 +133,7 @@ export default function Home() {
             </div>
 
             {/* Pricing Cards Grid  */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-10">
+            <div className="grid grid-cols-2 md:grid-cols-3 md:gap-5 gap-2  md:mb-10 mb-6">
               {/* Card 1: AirtelTigo */}
               <div className="relative bg-[#0066b3] rounded-[28px] pt-6 pb-7 px-3 flex flex-col items-center justify-between shadow-[0_20px_45px_rgba(0,102,179,0.18)] hover:-translate-y-2.5 transition-all duration-300 group cursor-pointer h-[250px]">
                
