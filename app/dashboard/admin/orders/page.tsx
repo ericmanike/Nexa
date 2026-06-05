@@ -294,10 +294,10 @@ export default function AdminOrdersPage() {
       {/* Quick Links */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { href: "/admin/orders", label: "Manage Orders", icon: ShoppingBag, color: "bg-purple-600 text-white border-purple-600 hover:bg-purple-700" },
-          { href: "/admin/users", label: "Manage Users", icon: Users, color: "bg-slate-50 text-slate-700 border-slate-100 hover:bg-slate-100" },
-          { href: "/admin/bundles", label: "Manage Bundles", icon: Shield, color: "bg-blue-50 text-blue-700 border-blue-100 hover:bg-blue-100" },
-          { href: "/admin/broadcast", label: "Broadcast", icon: Megaphone, color: "bg-amber-50 text-amber-700 border-amber-100 hover:bg-amber-100" },
+          { href: "/dashboard/admin/orders", label: "Manage Orders", icon: ShoppingBag, color: "bg-purple-600 text-white border-purple-600 hover:bg-purple-700" },
+          { href: "/dashboard/admin/users", label: "Manage Users", icon: Users, color: "bg-slate-50 text-slate-700 border-slate-100 hover:bg-slate-100" },
+          { href: "/dashboard/admin/bundles", label: "Manage Bundles", icon: Shield, color: "bg-blue-50 text-blue-700 border-blue-100 hover:bg-blue-100" },
+          { href: "/dashboard/admin/broadcast", label: "Broadcast", icon: Megaphone, color: "bg-amber-50 text-amber-700 border-amber-100 hover:bg-amber-100" },
         ].map((item) => (
           <Link
             key={item.href}
