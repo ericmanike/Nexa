@@ -42,7 +42,7 @@ export default function DashboardOverviewPage() {
             Hello, {user.name}!
           </h2>
           <p className="text-xs sm:text-sm text-gray-200 font-semibold leading-relaxed">
-            Welcome to your Nexa Bundles GH . Easily purchase  data bundles, manage orders, share referrals and earn  profits.
+            Welcome to  Nexa Bundles GH . Easily purchase  data bundles, manage orders, share referrals and earn  profits.
           </p>
         </div>
       </div>
