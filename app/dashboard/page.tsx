@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useDashboard } from "./DashboardContext";
+import { Sparkles } from 'lucide-react';
 import {
   Wallet,
   ShoppingCart,
@@ -11,9 +12,11 @@ import {
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import TopUpWallet from "@/components/topUpwallet";
+import { useRouter } from "next/navigation";
 
 export default function DashboardOverviewPage() {
   const { data, error } = useDashboard();
+  const router = useRouter();
 
   if (!data) return null;
 
@@ -36,19 +39,22 @@ export default function DashboardOverviewPage() {
         <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-white/20 blur-3xl pointer-events-none" />
         <div className="absolute left-1/3 bottom-0 h-28 w-28 rounded-full bg-white/10 blur-2xl pointer-events-none" />
 
-        <div className="max-w-xl relative z-10 space-y-2">
-       
-          <h2 className="text-xl sm:text-3xl font-black tracking-tight leading-tight capitalize">
-            Hello, {user.name}!
+        <div className=" w-full relative z-10 space-y-2 py-5">
+       <div className="flex flex-row justify-between flex-nowrap">
+          <h2 className="text-[10px] md:text-3xl font-black tracking-tight leading-tight capitalize">
+            Hello, {user.name}! <br/> <span className="text-xs sm:text-sm text-gray-200 font-semibold leading-relaxed "> It is {new Date().toLocaleTimeString()}</span>
           </h2>
-          <p className="text-xs sm:text-sm text-gray-200 font-semibold leading-relaxed">
-            Welcome to  Nexa Bundles GH . Easily purchase  data bundles, manage orders, share referrals and earn  profits.
+          <Sparkles className=" text-[#fcd34d]  shadow-[25px_30px_60px_#ffffff] " size={30}/>
+          </div> 
+          <p className="text-[9px] sm:text-sm text-gray-200 font-semibold leading-relaxed">
+        Purchase  data bundles  Easily, Manage orders, Share referrals and Earn  profits.
           </p>
-        </div>
+           <button onClick={()=> router.push('/dashboard/packages')} className="bg-[#ffffff] mt-3 w-full sm:w-auto rounded-2xl text-slate-700 cursor-pointer px-4 py-2 text-sm md:text-xl">Buy Data</button>
+        </div> 
       </div>
 
       {/* Statistics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-3 md:px-0">
         {/* Wallet Balance Widget */}
         <div className="bg-white  rounded-[10px] p-4 sm:p-6 shadow-lg flex flex-col justify-between gap-4">
           <div className="flex justify-between items-start">

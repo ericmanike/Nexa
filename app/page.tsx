@@ -90,15 +90,7 @@ export default function Home() {
           <p className="text-[11px] sm:text-base font-semibold text-slate-500 max-w-2xl mx-auto leading-relaxed mb-4">
    Buy Affordable Data Bundle on MTN and AirtelTigo (AT) • Doesn't work for Turbonet SIM
           </p>
-          {/* <div className="flex flex-col sm:flex-row justify-center items-center">
-            
-            <Link
-              href="/auth/signUp"
-              className="w-full sm:w-auto rounded-2xl bg-white border border-slate-200 text-slate-700 hover:text-slate-900 font-bold px-8 py-4 shadow-sm hover:shadow-md transition-all duration-200 text-center hover:-translate-y-0.5"
-            >
-              Start Your Own Data Business
-            </Link>
-          </div> */}
+     
         </section>
 
         {/* 3. SHOWCASE SECTION (Replicated from user's screenshot) */}

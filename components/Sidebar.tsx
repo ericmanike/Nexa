@@ -73,13 +73,13 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarPr
         }`}
       >
         {/* Brand Header Block (Fixed) */}
-        <div className="h-[76px] px-6 bg-[#fb923c] flex items-center justify-between shadow-sm shrink-0">
+        <div className="h-[76px] px-6 bg-[#1e3a8a] text-white  flex items-center justify-between shadow-sm shrink-0">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-slate-900/10 flex items-center justify-center shadow-md">
-              <RadioTower className="h-6 w-6 text-slate-900" />
+              <RadioTower className="h-6 w-6 text-[#fcd34d]" />
             </div>
             
-            <span className="text-xl font-bold tracking-tight text-slate-900 select-none">
+            <span className="text-xl font-bold tracking-tight  select-none">
               <Link href="/">
               Nexa BundlesGh
               </Link> 
