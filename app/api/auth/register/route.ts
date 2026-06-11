@@ -3,20 +3,30 @@ import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/mongoose";
 import User from "@/models/User";
 import { authOptions } from "@/lib/auth";
+import { verifyOTP } from "@/lib/bulkclick";
 
 export async function POST(req: Request) {
     try {
-        const { name, email, password, phone } = await req.json();
-
-        if (!name || !email || !password || !phone) {
+        const { name, email, password, phone, reqId, otp } = await req.json();
+      //  console.log("The details are : ", { name, email, password, phone, reqId , otp})
+        if (!name || !email || !password || !phone || !reqId || !otp) {
             return NextResponse.json(
                 { message: "Missing required fields" },
                 { status: 400 }
             );
         }
 
+
         await dbConnect();
 
+        const otpResult = await verifyOTP(phone, reqId,otp);
+        // console.log(otpResult)
+        if (!otpResult.data?.code) {
+            return NextResponse.json( 
+                { message: otpResult?.message || "Verify your OTP" },
+                { status: 400 }
+            );
+        }
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return NextResponse.json(
