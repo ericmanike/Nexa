@@ -29,6 +29,23 @@ export default function BuyPage() {
   const [trackingCode, setTrackingCode] = useState("");
   const [trackingResult, setTrackingResult] = useState<any[] | string | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [dbBundles, setDbBundles] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchBundles = async () => {
+      try {
+        const res = await fetch("/api/bundles");
+        if (res.ok) {
+          const data = await res.json();
+          // Filter to only active and regular user bundles
+          setDbBundles(data.filter((b: any) => b.isActive && b.audience === "user"));
+        }
+      } catch (err) {
+        console.error("Failed to fetch database bundles", err);
+      }
+    };
+    fetchBundles();
+  }, []);
 
   useEffect(() => {
     const loadPaystackScript = () => {
@@ -52,7 +69,7 @@ export default function BuyPage() {
     setPurchaseError(null);
     setPurchaseSuccess(null);
 
-    const mappedPrice = buyBundle ? parseFloat(buyBundle.price.replace("¢", "")) : 0;
+    const mappedPrice = buyBundle ? Number(buyBundle.price) : 0;
 
     if (!buyPhoneNumber || buyPhoneNumber.trim().length < 10) {
       setPurchaseError("Please enter a valid 10-digit phone number.");
@@ -84,7 +101,7 @@ export default function BuyPage() {
         airteltigo: "AirtelTigo",
       };
       const network = networkMap[activeCarrier] || "MTN";
-      const bundleName = buyBundle.size;
+      const bundleName = buyBundle.name;
       const guestEmail = `guest-${buyPhoneNumber}@datasite.com`;
 
       // Calculate total price with 2% tax rounded to 2 decimal places, then convert to GHS cents
@@ -144,41 +161,6 @@ export default function BuyPage() {
     }
   };
 
-  // Replicating the 13 MTN bundles from the screenshot
-  const mtnBundles: Bundle[] = [
-    { id: "m1", size: "1GB", price: "¢4.20", expiry: "No Expiry" },
-    { id: "m2", size: "2GB", price: "¢9.00", expiry: "No Expiry" },
-    { id: "m3", size: "3GB", price: "¢13.50", expiry: "No Expiry" },
-    { id: "m4", size: "4GB", price: "¢19.00", expiry: "No Expiry" },
-    { id: "m5", size: "5GB", price: "¢23.00", expiry: "No Expiry" },
-    { id: "m6", size: "6GB", price: "¢27.00", expiry: "No Expiry" },
-    { id: "m7", size: "8GB", price: "¢36.00", expiry: "No Expiry" },
-    { id: "m8", size: "10GB", price: "¢43.00", expiry: "No Expiry" },
-    { id: "m9", size: "15GB", price: "¢62.00", expiry: "No Expiry" },
-    { id: "m10", size: "20GB", price: "¢82.00", expiry: "No Expiry" },
-    { id: "m11", size: "25GB", price: "¢103.00", expiry: "No Expiry" },
-    { id: "m12", size: "30GB", price: "¢125.00", expiry: "No Expiry" },
-    { id: "m13", size: "50GB", price: "¢201.00", expiry: "No Expiry" },
-  ];
-
-  // Customized, matched Telecel bundles in Telecel Red style
-  const telecelBundles: Bundle[] = [
-    { id: "t1", size: "1.5GB", price: "¢6.00", expiry: "No Expiry" },
-    { id: "t2", size: "3GB", price: "¢11.00", expiry: "No Expiry" },
-    { id: "t3", size: "5GB", price: "¢18.50", expiry: "No Expiry" },
-    { id: "t4", size: "10GB", price: "¢35.00", expiry: "No Expiry" },
-    { id: "t5", size: "25GB", price: "¢85.00", expiry: "No Expiry" },
-  ];
-
-  // Customized, matched AirtelTigo bundles in AirtelTigo Purple style
-  const airtelTigoBundles: Bundle[] = [
-    { id: "a1", size: "1.2GB", price: "¢5.00", expiry: "No Expiry" },
-    { id: "a2", size: "3.5GB", price: "¢12.00", expiry: "No Expiry" },
-    { id: "a3", size: "8GB", price: "¢25.00", expiry: "No Expiry" },
-    { id: "a4", size: "15GB", price: "¢45.00", expiry: "No Expiry" },
-    { id: "a5", size: "35GB", price: "¢98.00", expiry: "No Expiry" },
-  ];
-
   const handleTrackSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     const phone = trackingCode.trim();
@@ -205,15 +187,13 @@ export default function BuyPage() {
   };
 
   const getActiveBundles = () => {
-    switch (activeCarrier) {
-      case "telecel":
-        return telecelBundles;
-      case "airteltigo":
-        return airtelTigoBundles;
-      case "mtn":
-      default:
-        return mtnBundles;
-    }
+    const carrierMap: Record<string, string> = {
+      mtn: "MTN",
+      telecel: "Telecel",
+      airteltigo: "AirtelTigo",
+    };
+    const targetNetwork = carrierMap[activeCarrier] || "MTN";
+    return dbBundles.filter((b) => b.network === targetNetwork);
   };
 
   return (
@@ -427,13 +407,13 @@ export default function BuyPage() {
               airteltigo: "AirtelTigo",
             };
             const network = networkMap[activeCarrier] || "MTN";
-            const priceVal = parseFloat(bundle.price.replace("¢", ""));
+            const priceVal = bundle.price;
 
             return (
               <BundleCard
-                key={bundle.id}
+                key={bundle._id}
                 network={network}
-                name={bundle.size}
+                name={bundle.name}
                 price={priceVal}
                 onBuy={() => handleBuyClick(bundle)}
                 onClick={() => handleBuyClick(bundle)}
@@ -479,10 +459,10 @@ export default function BuyPage() {
           setPurchaseError(null);
         }}
         bundle={buyBundle ? {
-          id: buyBundle.id,
-          name: buyBundle.size,
-          price: parseFloat(buyBundle.price.replace("¢", "")),
-          size: parseFloat(buyBundle.size.replace("GB", "")) || 0
+          id: buyBundle._id || buyBundle.id,
+          name: buyBundle.name,
+          price: buyBundle.price,
+          size: parseFloat(buyBundle.name.replace("GB", "")) || 0
         } : null}
         network={activeCarrier === "mtn" ? "MTN" : activeCarrier === "telecel" ? "Telecel" : "AirtelTigo"}
         phoneNumber={buyPhoneNumber}

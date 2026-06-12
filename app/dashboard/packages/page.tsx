@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDashboard } from "../DashboardContext";
 import { Wifi } from "lucide-react";
 import BundleCard from "@/components/BundleCard";
 import PurchaseBundleModal from "@/components/PurchaseBundleModal";
+import Loader from "../loading";
 
 export default function PackagesPage() {
   const { data, setData } = useDashboard();
@@ -17,28 +18,32 @@ export default function PackagesPage() {
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
-  const packagesList = {
-    MTN: [
-      { id: "mtn-1", name: "1GB Non-Expiry", price: 10, size: 1024 },
-      { id: "mtn-2", name: "2.5GB Non-Expiry", price: 22, size: 2560 },
-      { id: "mtn-3", name: "5GB Non-Expiry", price: 40, size: 5120 },
-      { id: "mtn-4", name: "10GB Non-Expiry", price: 75, size: 10240 },
-      { id: "mtn-5", name: "20GB Non-Expiry", price: 140, size: 20480 }
-    ],
-    AirtelTigo: [
-      { id: "at-1", name: "1.5GB Non-Expiry", price: 8, size: 1536 },
-      { id: "at-2", name: "3GB Non-Expiry", price: 15, size: 3072 },
-      { id: "at-3", name: "6GB Non-Expiry", price: 28, size: 6144 },
-      { id: "at-4", name: "12GB Non-Expiry", price: 50, size: 12288 },
-      { id: "at-5", name: "25GB Non-Expiry", price: 95, size: 25600 }
-    ],
-    Telecel: [
-      { id: "tc-1", name: "1GB Non-Expiry", price: 9, size: 1024 },
-      { id: "tc-2", name: "2.5GB Non-Expiry", price: 20, size: 2560 },
-      { id: "tc-3", name: "5.5GB Non-Expiry", price: 38, size: 5632 },
-      { id: "tc-4", name: "12GB Non-Expiry", price: 70, size: 12288 },
-      { id: "tc-5", name: "25GB Non-Expiry", price: 130, size: 25600 }
-    ]
+  const [dbBundles, setDbBundles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBundles = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch("/api/bundles");
+        if (res.ok) {
+          const fetched = await res.json();
+          // Filter to only active bundles matching the user's role (agent vs regular user)
+          const targetAudience = data?.user?.role === "agent" ? "agent" : "user";
+          setDbBundles(fetched.filter((b: any) => b.isActive && b.audience === targetAudience));
+        }
+      } catch (err) {
+        console.error("Failed to load bundles", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBundles();
+  }, [data?.user?.role]);
+
+  const getFilteredBundles = () => {
+    const targetNetwork = buyNetwork === "MTN" ? "MTN" : buyNetwork === "Telecel" ? "Telecel" : "AirtelTigo";
+    return dbBundles.filter((b) => b.network === targetNetwork);
   };
 
   const handleCardClick = (bun: any) => {
@@ -125,6 +130,25 @@ export default function PackagesPage() {
     }
   };
 
+  if (loading) {
+    return <Loader />;
+  }
+  if(dbBundles?.length === 0){
+    return (
+      <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-300">
+        <div className="bg-white rounded-[10px] p-4 sm:p-6 shadow-sm">
+          <h3 className="font-black text-slate-900 text-lg tracking-tight mb-2">
+            No Packages Available
+          </h3>
+          <p className="text-xs font-semibold text-slate-500 leading-relaxed mb-6 select-none">
+            Please check back later for available packages.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-300">
       <div className="bg-white rounded-[10px] p-4 sm:p-6 shadow-sm">
@@ -132,7 +156,7 @@ export default function PackagesPage() {
           Buy Affordable Internet Bundles
         </h3>
         <p className="text-xs font-semibold text-slate-500 leading-relaxed mb-6 select-none">
-          Select network provider, choose your favorite bundle to open the checkout window, enter details, and pay instantly from your wallet.
+          Select network provider, choose  bundle and pay instantly from your wallet.
         </p>
 
         <div className="space-y-6">
@@ -199,19 +223,21 @@ export default function PackagesPage() {
           {/* 2. Choose Bundle */}
           <div className="space-y-2">
         
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {packagesList[buyNetwork].map((bun) => (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4">
+              {  getFilteredBundles().map((bun) => (
                 <BundleCard
-                  key={bun.id}
+                  key={bun._id}
                   network={buyNetwork}
-                  name={bun.name.replace(" Non-Expiry", "")}
+                  name={bun.name}
                   price={bun.price}
-                  isSelected={buyBundle?.id === bun.id}
+                  isSelected={buyBundle?._id === bun._id}
                   onClick={() => handleCardClick(bun)}
                   onBuy={() => handleCardClick(bun)}
                 />
               ))}
+             
             </div>
+             {getFilteredBundles().length === 0 && <div className="m-auto w-full h-[50vh] flex flex-col justify-center text-center text-[15px] ">{buyNetwork} Is Currently Out Of Stock,<br/> <span className="text-2xl font-extrabold text-slate-500">Check Back Later!</span></div> }
           </div>
         </div>
       </div>
@@ -224,7 +250,12 @@ export default function PackagesPage() {
           setPurchaseSuccess(null);
           setPurchaseError(null);
         }}
-        bundle={buyBundle}
+        bundle={buyBundle ? {
+          id: buyBundle._id || buyBundle.id,
+          name: buyBundle.name,
+          price: buyBundle.price,
+          size: buyBundle.sizeValue || 0
+        } : null}
         network={buyNetwork}
         phoneNumber={buyPhoneNumber}
         setPhoneNumber={setBuyPhoneNumber}
