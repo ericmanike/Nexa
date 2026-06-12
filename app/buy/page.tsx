@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronLeft, AlertTriangle, Search, ChevronDown, User } from "lucide-react";
 import BundleCard from "@/components/BundleCard";
 import { toast, ToastContainer } from "react-toastify";
 import { useRouter } from "next/navigation";
+import NologinbuyModal from "@/components/NologinbuyModal";
 
 interface Bundle {
   id: string;
@@ -16,16 +17,132 @@ interface Bundle {
 
 export default function BuyPage() {
   const router = useRouter();
-  
-  const handleBuy = () => {
-    toast.info("Purchase will soon be made availble!");
-   
-  };
+
+  const [buyPhoneNumber, setBuyPhoneNumber] = useState("");
+  const [buyBundle, setBuyBundle] = useState<any | null>(null);
+  const [isPurchasing, setIsPurchasing] = useState(false);
+  const [purchaseSuccess, setPurchaseSuccess] = useState<string | null>(null);
+  const [purchaseError, setPurchaseError] = useState<string | null>(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [activeCarrier, setActiveCarrier] = useState<"mtn" | "telecel" | "airteltigo">("mtn");
   const [showTracker, setShowTracker] = useState(false);
   const [trackingCode, setTrackingCode] = useState("");
   const [trackingResult, setTrackingResult] = useState<any[] | string | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+
+  useEffect(() => {
+    const loadPaystackScript = () => {
+      if ((window as any).PaystackPop) return;
+      const script = document.createElement("script");
+      script.src = "https://js.paystack.co/v1/inline.js";
+      script.async = true;
+      document.body.appendChild(script);
+    };
+    loadPaystackScript();
+  }, []);
+
+  const handleBuyClick = (bundle: any) => {
+    setBuyBundle(bundle);
+    setPurchaseError(null);
+    setPurchaseSuccess(null);
+    setIsConfirmOpen(true);
+  };
+
+  const handleConfirmPurchase = async () => {
+    setPurchaseError(null);
+    setPurchaseSuccess(null);
+
+    const mappedPrice = buyBundle ? parseFloat(buyBundle.price.replace("¢", "")) : 0;
+
+    if (!buyPhoneNumber || buyPhoneNumber.trim().length < 10) {
+      setPurchaseError("Please enter a valid 10-digit phone number.");
+      return;
+    }
+    if (!buyBundle) {
+      setPurchaseError("Please select a data package bundle.");
+      return;
+    }
+
+    const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
+    if (!paystackKey) {
+      setPurchaseError("Paystack public key configuration is missing.");
+      return;
+    }
+
+    if (!(window as any).PaystackPop) {
+      setPurchaseError("Payment system is still loading, please try again in a moment.");
+      return;
+    }
+
+    setIsPurchasing(true);
+
+    try {
+      const reference = "BUY-" + Date.now().toString();
+      const networkMap: Record<string, string> = {
+        mtn: "MTN",
+        telecel: "Telecel",
+        airteltigo: "AirtelTigo",
+      };
+      const network = networkMap[activeCarrier] || "MTN";
+      const bundleName = buyBundle.size;
+      const guestEmail = `guest-${buyPhoneNumber}@datasite.com`;
+
+      // Calculate total price with 2% tax rounded to 2 decimal places, then convert to GHS cents
+      const tax = 0.02 * mappedPrice;
+      const total = Math.round((mappedPrice + tax) * 100) / 100;
+      const amountInCents = Math.round(total * 100);
+
+      const handler = (window as any).PaystackPop.setup({
+        key: paystackKey,
+        email: guestEmail,
+        currency: "GHS",
+        amount: amountInCents,
+        ref: reference,
+        onClose: () => {
+          setIsPurchasing(false);
+        },
+        callback: function (response: any) {
+          (async () => {
+            try {
+              const res = await fetch("/api/buyDataNoAccount", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  network,
+                  bundleName,
+                  price: mappedPrice,
+                  phoneNumber: buyPhoneNumber,
+                  reference,
+                }),
+              });
+
+              const data = await res.json();
+
+              if (res.ok) {
+                setPurchaseSuccess(
+                  `Successfully ordered ${bundleName} for ${buyPhoneNumber}. The bundle will deliver shortly.`
+                );
+                setBuyPhoneNumber("");
+              } else {
+                setPurchaseError(data.message || "Payment verification failed.");
+              }
+            } catch (err: any) {
+              setPurchaseError(err.message || "Failed to process data purchase.");
+            } finally {
+              setIsPurchasing(false);
+            }
+          })();
+        },
+      });
+
+      handler.openIframe();
+    } catch (err: any) {
+      setPurchaseError(err.message || "Failed to initialize payment.");
+      setIsPurchasing(false);
+    }
+  };
 
   // Replicating the 13 MTN bundles from the screenshot
   const mtnBundles: Bundle[] = [
@@ -318,8 +435,8 @@ export default function BuyPage() {
                 network={network}
                 name={bundle.size}
                 price={priceVal}
-                onBuy={handleBuy}
-                onClick={handleBuy}
+                onBuy={() => handleBuyClick(bundle)}
+                onClick={() => handleBuyClick(bundle)}
               />
             );
           })}
@@ -352,6 +469,29 @@ export default function BuyPage() {
         </div>
 
       </main>
+
+      <NologinbuyModal
+        isOpen={isConfirmOpen}
+        onClose={() => {
+          setIsConfirmOpen(false);
+          setBuyBundle(null);
+          setPurchaseSuccess(null);
+          setPurchaseError(null);
+        }}
+        bundle={buyBundle ? {
+          id: buyBundle.id,
+          name: buyBundle.size,
+          price: parseFloat(buyBundle.price.replace("¢", "")),
+          size: parseFloat(buyBundle.size.replace("GB", "")) || 0
+        } : null}
+        network={activeCarrier === "mtn" ? "MTN" : activeCarrier === "telecel" ? "Telecel" : "AirtelTigo"}
+        phoneNumber={buyPhoneNumber}
+        setPhoneNumber={setBuyPhoneNumber}
+        isPurchasing={isPurchasing}
+        onConfirm={handleConfirmPurchase}
+        error={purchaseError}
+        success={purchaseSuccess}
+      />
     </div>
   );
 }

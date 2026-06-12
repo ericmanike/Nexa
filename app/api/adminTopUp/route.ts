@@ -9,7 +9,7 @@ import Transaction from "@/models/Transaction";
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || !session.user || (session.user as any).role !== "admin") {
+    if (!session || !session.user || session.user.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

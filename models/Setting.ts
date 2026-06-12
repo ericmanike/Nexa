@@ -10,7 +10,7 @@ const SettingSchema = new Schema<ISetting>(
   {
     key: { type: String, required: true, unique: true, index: true },
     value: { type: Schema.Types.Mixed, required: true },
-    provider: { type: String, default: "dakazina" },
+    provider: { type: String, default: "toppily" },  
   },
   { timestamps: true }
 );

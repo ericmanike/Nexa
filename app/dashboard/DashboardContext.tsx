@@ -65,7 +65,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       id: "loading...",
       name: session?.user?.name || "User",
       email: session?.user?.email || "loading...",
-      role: (session?.user as any)?.role || "agent",
+      role: session?.user?.role || "agent",
       walletBalance: 0,
       phone: "loading...",
       createdAt: new Date().toISOString()

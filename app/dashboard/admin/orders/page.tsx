@@ -8,16 +8,18 @@ import {
 import { Card, CardContent } from "@/components/ui/Card";
 import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { toast } from "react-toastify";
  import Loader from "../../loading";
 
 export default function AdminOrdersPage() {
+  const pathname = usePathname();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [orderSearchQuery, setOrderSearchQuery] = useState("");
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [stats, setStats] = useState({ users: 0, orders: 0, sales: 0 });
-  const [dakaziStats, setDakaziStats] = useState({ AccountBalance: { "Wallet Balance": 0 }, spendlessBalance: null as any });
+  const [dakaziStats, setDakaziStats] = useState({ AccountBalance: { "Wallet Balance": 0 }, spendlessBalance: null as any, toppilyBalance: null as any });
   const [ordersClosed, setOrdersClosed] = useState(false);
   const [ordersClosedUpdating, setOrdersClosedUpdating] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState("dakazina");
@@ -236,9 +238,9 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <Card className="border-zinc-200 hover:border-green-400 transition-colors bg-white">
-          <CardContent className="p-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 ">
+        <Card className="border-zinc-200 hover:border-green-400 transition-colors bg-white flex flex-col h-full py-3">
+          <CardContent className="p-4 flex flex-col justify-between flex-1">
             <div className="flex items-center gap-2 mb-2">
               <div className="p-2 bg-green-100 text-green-600 rounded-lg">
                 <CreditCard size={16} />
@@ -248,16 +250,25 @@ export default function AdminOrdersPage() {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-medium text-zinc-500">Dakazina</span>
-                <span className="text-sm font-bold text-zinc-900">
+                <span className="text-xs font-bold text-zinc-900">
                   {formatCurrency(dakaziStats.AccountBalance["Wallet Balance"])}
                 </span>
               </div>
               <div className="border-t border-zinc-100" />
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-medium text-zinc-500">Spendless</span>
-                <span className="text-sm font-bold text-zinc-900">
+                <span className="text-xs font-bold text-zinc-900">
                   {dakaziStats.spendlessBalance?.data?.balance != null
-                    ? dakaziStats.spendlessBalance.data.balance
+                    ? formatCurrency(dakaziStats.spendlessBalance.data.balance)
+                    : "—"}
+                </span>
+              </div>
+              <div className="border-t border-zinc-100" />
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-medium text-zinc-500">Toppily</span>
+                <span className="text-xs font-bold text-zinc-900">
+                  {dakaziStats.toppilyBalance?.balance != null
+                    ? formatCurrency(dakaziStats.toppilyBalance.balance)
                     : "—"}
                 </span>
               </div>
@@ -265,75 +276,82 @@ export default function AdminOrdersPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-zinc-200 hover:border-green-400 transition-colors bg-white">
-          <CardContent className="p-4">
+        <Card className="border-zinc-200 hover:border-green-400 transition-colors bg-white flex flex-col h-full py-3">
+          <CardContent className="p-4 flex flex-col justify-between flex-1">
             <div className="flex items-center gap-2 mb-2">
               <div className="p-2 bg-emerald-100 text-emerald-600 rounded-lg">
                 <CreditCard size={16} />
               </div>
               <p className="text-zinc-500 text-xs font-medium">Total Sales</p>
             </div>
-            <h3 className="text-xl font-bold text-zinc-900">{formatCurrency(stats.sales)}</h3>
+            <h3 className="text-xl font-bold text-zinc-900 mt-auto pt-2">{formatCurrency(stats.sales)}</h3>
           </CardContent>
         </Card>
 
-        <Card className="border-zinc-200 hover:border-purple-400 transition-colors bg-white">
-          <CardContent className="p-4">
+        <Card className="border-zinc-200 hover:border-purple-400 transition-colors bg-white flex flex-col h-full py-3">
+          <CardContent className="p-4 flex flex-col justify-between flex-1">
             <div className="flex items-center gap-2 mb-2">
               <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
                 <ShoppingBag size={16} />
               </div>
               <p className="text-zinc-500 text-xs font-medium">Total Orders</p>
             </div>
-            <h3 className="text-xl font-bold text-zinc-900">{stats.orders}</h3>
+            <h3 className="text-xl font-bold text-zinc-900 mt-auto pt-2">{stats.orders}</h3>
           </CardContent>
         </Card>
 
-        <Card className="border-zinc-200 hover:border-slate-300 transition-colors bg-white">
-          <CardContent className="p-4">
+        <Card className="border-zinc-200 hover:border-slate-300 transition-colors bg-white flex flex-col h-full py-3">
+          <CardContent className="p-4 flex flex-col justify-between flex-1">
             <div className="flex items-center gap-2 mb-2">
               <div className="p-2 bg-slate-100 text-slate-600 rounded-lg">
                 <Users size={16} />
               </div>
               <p className="text-zinc-500 text-xs font-medium">Total Users</p>
             </div>
-            <h3 className="text-xl font-bold text-zinc-900">{stats.users}</h3>
+            <h3 className="text-xl font-bold text-zinc-900 mt-auto pt-2">{stats.users}</h3>
           </CardContent>
         </Card>
       </div>
 
-      {/* Quick Links */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      {/* Navigation Tabs */}
+      <div className="flex border-b border-zinc-200 gap-1 mb-6">
         {[
-          { href: "/dashboard/admin/orders", label: "Manage Orders", icon: ShoppingBag, color: "bg-purple-600 text-white border-purple-600 hover:bg-purple-700" },
-          { href: "/dashboard/admin/users", label: "Manage Users", icon: Users, color: "bg-slate-50 text-slate-700 border-slate-100 hover:bg-slate-100" },
-          { href: "/dashboard/admin/bundles", label: "Manage Bundles", icon: Shield, color: "bg-blue-50 text-blue-700 border-blue-100 hover:bg-blue-100" },
-          { href: "/dashboard/admin/broadcast", label: "Broadcast", icon: Megaphone, color: "bg-amber-50 text-amber-700 border-amber-100 hover:bg-amber-100" },
-        ].map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border text-sm font-medium transition-colors ${item.color}`}
-          >
-            <item.icon size={16} />
-            {item.label}
-          </Link>
-        ))}
+          { href: "/dashboard/admin/orders", label: "Manage Orders", icon: ShoppingBag },
+          { href: "/dashboard/admin/users", label: "Manage Users", icon: Users },
+          { href: "/dashboard/admin/bundles", label: "Manage Bundles", icon: Shield },
+        ].map((tab) => {
+          const isActive = pathname === tab.href;
+          const Icon = tab.icon;
+          return (
+            <Link
+              key={tab.href}
+              href={tab.href}
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-all -mb-px
+                ${isActive
+                  ? "border-purple-600 text-purple-600 font-bold"
+                  : "border-transparent text-zinc-500 hover:text-zinc-800 hover:border-zinc-300"}`}
+            >
+              <Icon size={16} />
+              {tab.label}
+            </Link>
+          );
+        })}
       </div>
 
       {/* API Providers */}
       <Card className="border-zinc-200 bg-white">
         <CardContent className="p-5">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-3 py-3">
             <h3 className="text-sm font-semibold text-zinc-900">API Provider</h3>
             {savingProvider && (
               <span className="text-xs text-zinc-400 animate-pulse">Saving...</span>
             )}
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
               { value: "dakazina", label: "Dakazina" },
               { value: "spendless", label: "Spendless" },
+              { value: "toppily", label: "Toppily" },
               { value: "datamart", label: "Datamart" }
             ].map((provider) => (
               <label

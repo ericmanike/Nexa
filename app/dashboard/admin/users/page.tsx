@@ -2,14 +2,18 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { Search, Users, UserPlus, Wallet, X, Trash2, Shield } from "lucide-react";
+import { Search, Users, UserPlus, Wallet, X, Trash2, Shield, ArrowLeft, ShoppingBag } from "lucide-react";
 import { Card } from "@/components/ui/Card";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { formatCurrency } from "@/lib/utils";
 import { toast } from "react-toastify";
+import Loader from "../../loading";
 
 export default function AdminUsersPage() {
+  const pathname = usePathname();
   const { data: session } = useSession();
-  const currentUserId = (session?.user as any)?.id;
+  const currentUserId = session?.user?.id;
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [userSearchQuery, setUserSearchQuery] = useState("");
@@ -55,7 +59,7 @@ export default function AdminUsersPage() {
   };
 
   const handleMakeAgent = (userId: string, userName: string) => handleUpdateRole(userId, userName, "agent");
-  const handleMakeModerator = (userId: string, userName: string) => handleUpdateRole(userId, userName, "moderator");
+  const handleMakeAdmin = (userId: string, userName: string) => handleUpdateRole(userId, userName, "admin");
   const handleMakeUser = (userId: string, userName: string) => handleUpdateRole(userId, userName, "user");
 
   const handleTopUpUser = async () => {
@@ -120,14 +124,37 @@ export default function AdminUsersPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-24">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-slate-600" />
-      </div>
+      <Loader />
     );
   }
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-3 duration-400">
+      {/* Navigation Tabs */}
+      <div className="flex border-b border-zinc-200 gap-1 mb-6">
+        {[
+          { href: "/dashboard/admin/orders", label: "Manage Orders", icon: ShoppingBag },
+          { href: "/dashboard/admin/users", label: "Manage Users", icon: Users },
+          { href: "/dashboard/admin/bundles", label: "Manage Bundles", icon: Shield },
+        ].map((tab) => {
+          const isActive = pathname === tab.href;
+          const Icon = tab.icon;
+          return (
+            <Link
+              key={tab.href}
+              href={tab.href}
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-all -mb-px
+                ${isActive
+                  ? "border-purple-600 text-purple-600 font-bold"
+                  : "border-transparent text-zinc-500 hover:text-zinc-800 hover:border-zinc-300"}`}
+            >
+              <Icon size={16} />
+              {tab.label}
+            </Link>
+          );
+        })}
+      </div>
+
       <div>
         <h2 className="text-lg font-bold text-zinc-900">Users</h2>
         <p className="text-sm text-zinc-500 mt-0.5">Manage registered users and roles</p>
@@ -210,15 +237,15 @@ export default function AdminUsersPage() {
                             <UserPlus size={16} />
                           </button>
                           <button
-                            onClick={() => handleMakeModerator(user._id, user.name)}
+                            onClick={() => handleMakeAdmin(user._id, user.name)}
                             className="p-2 text-blue-600 hover:text-white hover:bg-blue-600 border border-blue-600 rounded-lg transition-all"
-                            title="Promote to Moderator"
+                            title="Promote to Admin"
                           >
                             <Shield size={16} />
                           </button>
                         </>
                       )}
-                      {(user.role === "agent" || user.role === "moderator") && (
+                      {((user.role === "agent" || user.role === "admin") && user._id !== currentUserId) && (
                         <button
                           onClick={() => handleMakeUser(user._id, user.name)}
                           className="p-2 text-orange-600 hover:text-white hover:bg-orange-600 border border-orange-600 rounded-lg transition-all"
@@ -300,14 +327,14 @@ export default function AdminUsersPage() {
                       <UserPlus size={14} /> Make Agent
                     </button>
                     <button
-                      onClick={() => handleMakeModerator(user._id, user.name)}
+                      onClick={() => handleMakeAdmin(user._id, user.name)}
                       className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-white hover:bg-blue-600 border border-blue-600 rounded-lg transition-all"
                     >
-                      <Shield size={14} /> Make Mod
+                      <Shield size={14} /> Make Admin
                     </button>
                   </div>
                 )}
-                {(user.role === "agent" || user.role === "moderator") && (
+                {((user.role === "agent" || user.role === "admin") && user._id !== currentUserId) && (
                   <button
                     onClick={() => handleMakeUser(user._id, user.name)}
                     className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium text-orange-600 hover:text-white hover:bg-orange-600 border border-orange-600 rounded-lg transition-all"
