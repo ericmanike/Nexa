@@ -8,6 +8,8 @@ import {
 import { Card, CardContent } from "@/components/ui/Card";
 import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
+import { toast } from "react-toastify";
+ import Loader from "../../loading";
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -69,11 +71,12 @@ export default function AdminOrdersPage() {
       if (res.ok) {
         const data = await res.json();
         setOrdersClosed(Boolean(data?.ordersClosed));
+        toast.success(`Orders successfully ${nextValue ? "closed" : "opened"}!`);
       } else {
-        alert("Failed to update setting");
+        toast.error("Failed to update setting");
       }
     } catch {
-      alert("Error updating setting");
+      toast.error("Error updating setting");
     } finally {
       setOrdersClosedUpdating(false);
     }
@@ -88,11 +91,13 @@ export default function AdminOrdersPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ provider }),
       });
-      if (!res.ok) {
-        alert("Failed to update provider");
+      if (res.ok) {
+        toast.success(`API Provider set to ${provider}`);
+      } else {
+        toast.error("Failed to update provider");
       }
     } catch {
-      alert("Error updating provider");
+      toast.error("Error updating provider");
     } finally {
       setSavingProvider(false);
     }
@@ -109,12 +114,13 @@ export default function AdminOrdersPage() {
       if (res.ok) {
         const updatedOrder = await res.json();
         setOrders(orders.map((o) => (o._id === orderId ? updatedOrder : o)));
+        toast.success(`Order status updated to ${status}`);
       } else {
         const data = await res.json().catch(() => ({}));
-        alert("Error: " + (data.error || "Failed to update status"));
+        toast.error("Error: " + (data.error || "Failed to update status"));
       }
     } catch {
-      alert("Error updating status");
+      toast.error("Error updating status");
     } finally {
       setProcessingId(null);
     }
@@ -131,12 +137,13 @@ export default function AdminOrdersPage() {
       if (res.ok) {
         const updatedOrder = await res.json();
         setOrders(orders.map((o) => (o._id === orderId ? updatedOrder : o)));
+        toast.success("Order retry initiated successfully");
       } else {
         const data = await res.json().catch(() => ({}));
-        alert("Retry failed: " + (data.error || "Failed to retry order"));
+        toast.error("Retry failed: " + (data.error || "Failed to retry order"));
       }
     } catch {
-      alert("Error retrying order");
+      toast.error("Error retrying order");
     } finally {
       setProcessingId(null);
     }
@@ -146,17 +153,21 @@ export default function AdminOrdersPage() {
     if (!confirm("Are you sure you want to delete this order?")) return;
     try {
       const res = await fetch(`/api/admin/orders/${orderId}`, { method: "DELETE" });
-      if (res.ok) setOrders(orders.filter((o) => o._id !== orderId));
-      else alert("Failed to delete order");
+      if (res.ok) {
+        setOrders(orders.filter((o) => o._id !== orderId));
+        toast.success("Order deleted successfully");
+      } else {
+        toast.error("Failed to delete order");
+      }
     } catch {
-      alert("Error deleting order");
+      toast.error("Error deleting order");
     }
   };
 
   const handleCreateOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newOrder.network || !newOrder.bundleName || !newOrder.phoneNumber) {
-      alert("Please fill in all fields.");
+      toast.warn("Please fill in all fields.");
       return;
     }
     setCreatingOrder(true);
@@ -171,15 +182,15 @@ export default function AdminOrdersPage() {
         setOrders([data.order, ...orders]);
         setIsCreateModalOpen(false);
         setNewOrder({ network: "MTN", bundleName: "", phoneNumber: "" });
-        alert("Order created successfully!");
+        toast.success("Order created successfully!");
       } else {
         const data = await res.json().catch(() => ({}));
-        alert("Failed to create order: " + (data.message || "Unknown error"));
+        toast.error("Failed to create order: " + (data.message || "Unknown error"));
       }
     } catch {
-      alert("Error creating order");
+      toast.error("Error creating order");
     } finally {
-      setCreatingOrder(false);
+      creatingOrder && setCreatingOrder(false);
     }
   };
 
@@ -194,9 +205,9 @@ export default function AdminOrdersPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-24">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-slate-600" />
-      </div>
+      <>
+    <Loader />  
+      </>
     );
   }
 
@@ -401,7 +412,11 @@ export default function AdminOrdersPage() {
                       </span>
                       <button
                         type="button"
-                        onClick={() => navigator.clipboard?.writeText(order.transaction_id).catch(() => alert("Failed to copy ID"))}
+                        onClick={() => {
+                          navigator.clipboard?.writeText(order.transaction_id)
+                            .then(() => toast.success("Order ID copied!"))
+                            .catch(() => toast.error("Failed to copy ID"));
+                        }}
                         className="p-1 rounded hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700 transition-colors"
                         title="Copy transaction ID"
                       >
@@ -513,7 +528,11 @@ export default function AdminOrdersPage() {
                     </span>
                     <button
                       type="button"
-                      onClick={() => navigator.clipboard?.writeText(order.transaction_id).catch(() => alert("Failed to copy"))}
+                      onClick={() => {
+                        navigator.clipboard?.writeText(order.transaction_id)
+                          .then(() => toast.success("Order ID copied!"))
+                          .catch(() => toast.error("Failed to copy ID"));
+                      }}
                       className="p-1 rounded hover:bg-zinc-100 text-zinc-400"
                     >
                       <Copy size={12} />

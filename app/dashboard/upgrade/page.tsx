@@ -3,6 +3,7 @@
 import React from "react";
 import { useDashboard } from "../DashboardContext";
 import { ArrowUpCircle } from "lucide-react";
+import { toast } from "react-toastify";
 
 export default function UpgradePage() {
   const { data, setData } = useDashboard();
@@ -12,7 +13,7 @@ export default function UpgradePage() {
   const { user } = data;
 
   const handleUpgrade = () => {
-    alert("Reseller agent account upgrade request sent. You will be upgraded shortly.");
+    toast.success("Reseller agent account upgrade request sent. You will be upgraded shortly.");
     if (setData) {
       setData({
         ...data,

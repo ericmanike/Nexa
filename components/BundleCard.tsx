@@ -113,16 +113,14 @@ export default function BundleCard({
       className={clsx(
         "relative rounded-2xl p-5 pt-8 pb-6 flex flex-col justify-between items-center text-center select-none cursor-pointer transition-all duration-300 w-full min-h-[220px] shadow-sm hover:-translate-y-1 hover:shadow-lg",
         style.cardBg,
-        isSelected
-          ? "ring-4 ring-offset-2 ring-slate-950 scale-[1.02]"
-          : "hover:scale-[1.01] active:scale-[0.98]",
+        "hover:scale-[1.01] active:scale-[0.98]",
         className
       )}
     >
       {/* Network Badge top-left */}
       <div
         className={clsx(
-          "absolute top-0 left-0 px-4 py-1.5 rounded-br-2xl text-[10px] font-black tracking-wider uppercase",
+          "absolute top-0 left-0 px-4 py-1.5 rounded-br-2xl rounded-tl-2xl text-[10px] font-black tracking-wider uppercase",
           style.badgeBg,
           style.badgeText
         )}

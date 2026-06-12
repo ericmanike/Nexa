@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Plus, Trash2, Edit, Package, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { formatCurrency } from "@/lib/utils";
+import { toast } from "react-toastify";
 
 export default function AdminBundlesPage() {
   const [bundles, setBundles] = useState<any[]>([]);
@@ -51,15 +52,17 @@ export default function AdminBundlesPage() {
         const savedBundle = await res.json();
         if (editingBundle) {
           setBundles(bundles.map((b) => (b._id === savedBundle._id ? savedBundle : b)));
+          toast.success("Bundle updated successfully!");
         } else {
           setBundles([...bundles, savedBundle]);
+          toast.success("Bundle added successfully!");
         }
         closeModal();
       } else {
-        alert(editingBundle ? "Failed to update bundle" : "Failed to add bundle");
+        toast.error(editingBundle ? "Failed to update bundle" : "Failed to add bundle");
       }
     } catch {
-      alert("Error saving bundle");
+      toast.error("Error saving bundle");
     } finally {
       setSubmitting(false);
     }
@@ -69,10 +72,14 @@ export default function AdminBundlesPage() {
     if (!confirm("Are you sure you want to delete this bundle?")) return;
     try {
       const res = await fetch(`/api/bundles/${bundleId}`, { method: "DELETE" });
-      if (res.ok) setBundles(bundles.filter((b) => b._id !== bundleId));
-      else alert("Failed to delete bundle");
+      if (res.ok) {
+        setBundles(bundles.filter((b) => b._id !== bundleId));
+        toast.success("Bundle deleted successfully!");
+      } else {
+        toast.error("Failed to delete bundle");
+      }
     } catch {
-      alert("Error deleting bundle");
+      toast.error("Error deleting bundle");
     }
   };
 

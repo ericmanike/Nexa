@@ -10,13 +10,13 @@ export default withAuth(
         // req.nextauth.token is automatically populated by withAuth
         const token = req.nextauth.token;
         const role = token?.role;
-        console.log(token)
-        console.log(role)
+        // console.log(token)
+        // console.log(role)
         const pathname = req.nextUrl.pathname;
        
 
 // 1. Protect Admin Routes: Redirect non-admins to dashboard
-// FIXED: Added missing leading slash to "/dashboard/admin"
+
 if (pathname.startsWith("/dashboard/admin") && role !== "admin") {
     return NextResponse.redirect(new URL("/dashboard", req.url));
 }

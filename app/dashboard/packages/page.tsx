@@ -138,9 +138,7 @@ export default function PackagesPage() {
         <div className="space-y-6">
           {/* 1. Network Selector */}
           <div className="space-y-2">
-            <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1 select-none">
-              1. Choose Network Provider
-            </label>
+           
             <div className="flex flex-wrap gap-2.5 pt-1">
               {/* MTN */}
               <button
@@ -151,16 +149,30 @@ export default function PackagesPage() {
                 }}
                 className={`px-4.5 py-2.5 rounded-xl flex items-center gap-2 border text-xs font-extrabold cursor-pointer transition-all active:scale-[0.97] ${
                   buyNetwork === "MTN"
-                    ? "bg-[#ffcc00] border-[#ffcc00] text-slate-900 shadow-lg"
-                    : "bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                    ? "bg-[#ffcc00] border-[#ffcc00] text-black shadow-lg"
+                    : "bg-slate-50  text-black hover:bg-slate-100 hover:text-slate-700"
                 }`}
               >
-                <div
-                  className={`w-1.5 h-1.5 rounded transition-colors ${
-                    buyNetwork === "MTN" ? "bg-slate-900 " : "bg-[#ffcc00]"
-                  }`}
-                />
+               
                 MTN
+              </button>
+
+
+                {/* Telecel */}
+              <button
+                type="button"
+                onClick={() => {
+                  setBuyNetwork("Telecel");
+                  setBuyBundle(null);
+                }}
+                className={`px-4.5 py-2.5 rounded-xl flex items-center gap-2 border text-xs font-extrabold cursor-pointer transition-all active:scale-[0.97] ${
+                  buyNetwork === "Telecel"
+                    ? "bg-[#df0000] border-[#df0000] text-white shadow-sm"
+                    : "bg-slate-50  text-black hover:bg-slate-100 hover:text-slate-700"
+                }`}
+              >
+               
+                Telecel
               </button>
 
               {/* AirtelTigo */}
@@ -173,37 +185,14 @@ export default function PackagesPage() {
                 className={`px-4.5 py-2.5 rounded-xl flex items-center gap-2 border text-xs font-extrabold cursor-pointer transition-all active:scale-[0.97] ${
                   buyNetwork === "AirtelTigo"
                     ? "bg-[#0066b3] border-[#0066b3] text-white shadow-sm"
-                    : "bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                    : "bg-slate-50  text-black hover:bg-slate-100 hover:text-slate-700"
                 }`}
               >
-                <div
-                  className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                    buyNetwork === "AirtelTigo" ? "bg-white animate-pulse" : "bg-[#0066b3]"
-                  }`}
-                />
+               
                 AirtelTigo
               </button>
 
-              {/* Telecel */}
-              <button
-                type="button"
-                onClick={() => {
-                  setBuyNetwork("Telecel");
-                  setBuyBundle(null);
-                }}
-                className={`px-4.5 py-2.5 rounded-xl flex items-center gap-2 border text-xs font-extrabold cursor-pointer transition-all active:scale-[0.97] ${
-                  buyNetwork === "Telecel"
-                    ? "bg-[#df0000] border-[#df0000] text-white shadow-sm"
-                    : "bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
-                }`}
-              >
-                <div
-                  className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                    buyNetwork === "Telecel" ? "bg-white animate-pulse" : "bg-[#df0000]"
-                  }`}
-                />
-                Telecel
-              </button>
+            
             </div>
           </div>
 

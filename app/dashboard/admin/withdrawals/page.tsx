@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Loader2, CheckCircle, XCircle, Clock, Wallet, User as UserIcon, Phone } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import clsx from "clsx";
+import { toast } from "react-toastify";
 
 interface Withdrawal {
     _id: string;
@@ -55,12 +56,13 @@ export default function AdminWithdrawalsPage() {
 
             if (res.ok) {
                 setWithdrawals(prev => prev.map(w => w._id === id ? { ...w, status } : w));
+                toast.success(`Withdrawal request ${status} successfully!`);
             } else {
-                alert("Failed to update status");
+                toast.error("Failed to update status");
             }
         } catch (err) {
             console.error(err);
-            alert("An error occurred");
+            toast.error("An error occurred while updating status");
         } finally {
             setProcessingId(null);
         }

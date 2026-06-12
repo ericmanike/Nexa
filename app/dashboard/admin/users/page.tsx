@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { Search, Users, UserPlus, Wallet, X, Trash2, Shield } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { formatCurrency } from "@/lib/utils";
+import { toast } from "react-toastify";
 
 export default function AdminUsersPage() {
   const { data: session } = useSession();
@@ -44,12 +45,12 @@ export default function AdminUsersPage() {
       const data = await res.json();
       if (res.ok) {
         setUsers(users.map((u) => (u._id === userId ? { ...u, role: newRole } : u)));
-        alert(`${userName}'s role has been updated to ${newRole}!`);
+        toast.success(`${userName}'s role has been updated to ${newRole}!`);
       } else {
-        alert(data.message || `Failed to update role to ${newRole}`);
+        toast.error(data.message || `Failed to update role to ${newRole}`);
       }
     } catch {
-      alert("Error updating user role");
+      toast.error("Error updating user role");
     }
   };
 
@@ -58,9 +59,9 @@ export default function AdminUsersPage() {
   const handleMakeUser = (userId: string, userName: string) => handleUpdateRole(userId, userName, "user");
 
   const handleTopUpUser = async () => {
-    if (!selectedUser || !topUpAmount) { alert("Please enter an amount"); return; }
+    if (!selectedUser || !topUpAmount) { toast.warn("Please enter an amount"); return; }
     const amount = parseFloat(topUpAmount);
-    if (amount <= 0) { alert("Amount must be greater than 0"); return; }
+    if (amount <= 0) { toast.warn("Amount must be greater than 0"); return; }
     try {
       const res = await fetch("/api/adminTopUp", {
         method: "POST",
@@ -70,15 +71,15 @@ export default function AdminUsersPage() {
       const data = await res.json();
       if (res.ok) {
         setUsers(users.map((u) => (u._id === selectedUser._id ? { ...u, walletBalance: data.user.walletBalance } : u)));
-        alert(`Successfully added ${formatCurrency(amount)} to ${selectedUser.name}'s wallet!`);
+        toast.success(`Successfully added ${formatCurrency(amount)} to ${selectedUser.name}'s wallet!`);
         setTopUpModalOpen(false);
         setSelectedUser(null);
         setTopUpAmount("");
       } else {
-        alert(data.message || "Failed to top up user balance");
+        toast.error(data.message || "Failed to top up user balance");
       }
     } catch {
-      alert("Error topping up user balance");
+      toast.error("Error topping up user balance");
     }
   };
 
@@ -89,11 +90,12 @@ export default function AdminUsersPage() {
       const data = await res.json();
       if (res.ok) {
         setUsers(users.filter((u) => u._id !== userId));
+        toast.success(`${userName} has been successfully deleted.`);
       } else {
-        alert(data.error || "Failed to delete user");
+        toast.error(data.error || "Failed to delete user");
       }
     } catch {
-      alert("Error deleting user");
+      toast.error("Error deleting user");
     }
   };
 

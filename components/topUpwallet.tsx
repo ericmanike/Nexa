@@ -3,6 +3,7 @@ import React from 'react'
 import { useSession, } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import RechargeModal from './rechargeModal'
+import { toast } from 'react-toastify'
 
  declare global {
     interface Window {
@@ -34,12 +35,12 @@ function topUpwallet() {
         console.log(session?.user?.email)
         console.log(session?.user?.name)
         if (!session) {
-            alert('Please login to continue')
+            toast.warn('Please login to continue')
             return;
         }
 
         if (!amount) {
-            alert('Please enter an amount')
+            toast.warn('Please enter an amount')
             return;
         }
 
@@ -83,12 +84,12 @@ function topUpwallet() {
                                 }),
                             });
 
-                            if (verifyResponse.ok) {
-                                console.log('Payment verified');
-                                window.location.reload();
-                            } else {
-                                console.log('Payment verification failed');
-                            }
+                             if (verifyResponse.ok) {
+                                 toast.success('Payment verified successfully!');
+                                 setTimeout(() => window.location.reload(), 1500);
+                             } else {
+                                 toast.error('Payment verification failed');
+                             }
                         } catch (err) {
                             console.error('Error verifying payment', err);
                         } finally {
@@ -106,7 +107,7 @@ function topUpwallet() {
 
             console.log(error)
             console.error(error);
-            alert("Something went wrong with the purchase.");
+            toast.error("Something went wrong with the purchase.");
         } finally {
 
         }

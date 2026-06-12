@@ -9,6 +9,7 @@ import { usePathname } from "next/navigation";
 import { formatCurrency } from "@/lib/utils";
 import { signOut } from "next-auth/react";
 import Loader from "./loading";
+import { ToastContainer } from "react-toastify";
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { data, loading, error } = useDashboard();
@@ -46,6 +47,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 font-sans flex overflow-hidden">
+      <ToastContainer />
       {/* 1. Reusable Static Sidebar */}
       <Sidebar
         sidebarOpen={sidebarOpen}

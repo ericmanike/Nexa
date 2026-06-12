@@ -3,6 +3,9 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, AlertTriangle, Search, ChevronDown, User } from "lucide-react";
+import BundleCard from "@/components/BundleCard";
+import { toast, ToastContainer } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 interface Bundle {
   id: string;
@@ -12,10 +15,18 @@ interface Bundle {
 }
 
 export default function BuyPage() {
+  const router = useRouter();
+  
+  const handleBuy = () => {
+    toast.info("Please sign up or sign in to purchase this bundle!");
+    setTimeout(() => {
+      router.push("/auth/signUp");
+    }, 1500);
+  };
   const [activeCarrier, setActiveCarrier] = useState<"mtn" | "telecel" | "airteltigo">("mtn");
   const [showTracker, setShowTracker] = useState(false);
   const [trackingCode, setTrackingCode] = useState("");
-  const [trackingResult, setTrackingResult] = useState<string | null>(null);
+  const [trackingResult, setTrackingResult] = useState<any[] | string | null>(null);
   const [isSearching, setIsSearching] = useState(false);
 
   // Replicating the 13 MTN bundles from the screenshot
@@ -53,21 +64,29 @@ export default function BuyPage() {
     { id: "a5", size: "35GB", price: "¢98.00", expiry: "No Expiry" },
   ];
 
-  const handleTrackSearch = (e: React.FormEvent) => {
+  const handleTrackSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!trackingCode.trim()) return;
+    const phone = trackingCode.trim();
+    if (!phone) return;
 
     setIsSearching(true);
     setTrackingResult(null);
 
-    setTimeout(() => {
-      setIsSearching(false);
-      if (trackingCode.trim() === "1841445" || trackingCode.trim() === "#1841445") {
-        setTrackingResult("Order #1841445: Delivered successfully on May 27 at 09:50 PM. Thank you for your purchase!");
+    try {
+      const res = await fetch(`/api?phoneNumber=${encodeURIComponent(phone)}`);
+      const data = await res.json();
+      
+      if (res.ok && data.found) {
+        setTrackingResult(data.orders || []);
       } else {
-        setTrackingResult(`Status for Reference "${trackingCode}": Processing. Our gateway is steady, estimated completion is within 15 minutes.`);
+        setTrackingResult(data.error || "No orders found for this phone number.");
       }
-    }, 1000);
+    } catch (err) {
+      console.error(err);
+      setTrackingResult("An error occurred while tracking your order. Please try again.");
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   const getActiveBundles = () => {
@@ -84,6 +103,7 @@ export default function BuyPage() {
 
   return (
     <div className="min-h-screen w-full bg-[#f8fafc] text-slate-800 font-sans antialiased pb-20">
+      <ToastContainer />
       
       {/* 1. Global Brand Header */}
       <header className="sticky top-0 z-50 flex h-14 w-full items-center justify-between bg-white px-4 border-b border-slate-100 shadow-sm sm:px-6 md:px-10 lg:px-16">
@@ -101,7 +121,7 @@ export default function BuyPage() {
           
           <Link
             href="/auth/signUp"
-            className="rounded-lg bg-[#fbcb08] hover:bg-[#eab308] px-4 py-1.5 text-xs font-bold text-slate-900 shadow-sm transition-all active:scale-[0.98]"
+            className="rounded-lg bg-[#fbcb08] hover:bg-[#eab308] px-4 py-2 text-xs font-bold text-slate-900 shadow-sm transition-all active:scale-[0.98]"
           >
             Sign Up
           </Link>
@@ -121,7 +141,7 @@ export default function BuyPage() {
             <span className="text-slate-300">•</span>
             <span>Pay via MoMo</span>
             <span className="text-slate-300">•</span>
-            <span>24/7 Service</span>
+            <span> System Is Active 24/7 </span>
           </p>
         </div>
 
@@ -136,16 +156,17 @@ export default function BuyPage() {
                 Important: No duplicate orders
               </span>
               <span className="text-amber-800">
-                Placing more than one order for the <span className="font-extrabold text-amber-950 underline underline-offset-2">same phone number within 6 minutes</span> will cause one of them to be <span className="font-bold">rejected</span>. <span className="font-bold">No refund</span> will be issued for rejected duplicates.
+                Placing more than one order for the <span className="font-extrabold text-amber-950 underline underline-offset-2">same phone number </span>at the same time will cause one of them to be <span className="font-bold">rejected</span>. 
+                <span className="font-bold">No refund</span>  for rejected duplicates.
               </span>
             </div>
           </div>
 
           {/* Purple Banner: Interactive Toggleable Track Order Card */}
-          <div className="overflow-hidden rounded-2xl border border-indigo-200 bg-indigo-600 text-white shadow-md">
+          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-[#1e3a8a] text-white shadow-md">
             <button
               onClick={() => setShowTracker(!showTracker)}
-              className="flex w-full items-center justify-between p-4 text-left cursor-pointer transition-colors hover:bg-indigo-700"
+              className="flex w-full items-center justify-between p-4 text-left cursor-pointer transition-colors hover:bg-[#2145a8]"
             >
               <div className="flex gap-3.5">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-white">
@@ -156,7 +177,7 @@ export default function BuyPage() {
                     Track Your Order
                   </span>
                   <span className="text-xs text-indigo-100 font-medium">
-                    Check delivery status by phone or reference
+                    Check delivery status by phone number 
                   </span>
                 </div>
               </div>
@@ -170,15 +191,15 @@ export default function BuyPage() {
 
             {/* Expanded tracking console */}
             {showTracker && (
-              <div className="border-t border-indigo-500 bg-indigo-700 p-5 space-y-4 animate-in slide-in-from-top duration-200">
+              <div className="border-t border-indigo-500 bg-[#3158c4] p-5 space-y-4 animate-in slide-in-from-top duration-200">
                 <form onSubmit={handleTrackSearch} className="flex gap-2.5">
                   <input
                     type="text"
                     required
                     value={trackingCode}
                     onChange={(e) => setTrackingCode(e.target.value)}
-                    placeholder="Enter phone number or order tracking reference (#1841445)"
-                    className="block flex-1 rounded-xl border border-indigo-400 bg-indigo-800/40 px-4 py-3 text-sm text-white placeholder-indigo-300 outline-none focus:border-white focus:ring-1 focus:ring-white"
+                    placeholder="Enter phone number"
+                    className="block flex-1 rounded-xl border border-[orange] bg-white/30 px-4 py-3 text-1xl text-slate-900 placeholder-slate-900  placeholder-text-1xl outline-none focus:ring-2 focus:ring-[orange] focus:border-[orange]"
                   />
                   <button
                     type="submit"
@@ -191,8 +212,43 @@ export default function BuyPage() {
 
                 {/* Tracker outputs */}
                 {trackingResult && (
-                  <div className="rounded-xl bg-indigo-900/40 p-4 border border-indigo-500/30 text-xs font-medium leading-relaxed animate-in fade-in duration-300">
-                    {trackingResult}
+                  <div className="rounded-xl bg-[#1e3a8a] p-4 border border-slate-700 text-xs font-medium leading-relaxed animate-in fade-in duration-300">
+                    {typeof trackingResult === "string" ? (
+                      <p className="text-slate-300">{trackingResult}</p>
+                    ) : trackingResult.length === 0 ? (
+                      <p className="text-slate-300">No orders found for this phone number.</p>
+                    ) : (
+                      <div className="space-y-3">
+                        <p className="font-bold text-slate-200 border-b bg-[#1e3a8a] pb-1.5 mb-2">
+                          Recent Orders Found ({trackingResult.length})
+                        </p>
+                        <div className="divide-y divide-slate-700 max-h-[280px] overflow-y-auto pr-1 space-y-3">
+                          {trackingResult.map((order: any, idx: number) => (
+                            <div key={order.transaction_id || idx} className="pt-2 first:pt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-bold text-slate-100">{order.network} {order.bundleName}</span>
+                                  <span className="text-[10px] font-mono text-slate-400">#{order.transaction_id}</span>
+                                </div>
+                                <div className="text-[10px] text-slate-400 mt-0.5">
+                                  Recipient: {order.phoneNumber} • {new Date(order.createdAt).toLocaleString()}
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between sm:justify-end gap-3">
+                                <span className="font-extrabold text-slate-200">GH₵{order.price?.toFixed(2)}</span>
+                                <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider
+                                  ${order.status === "delivered" || order.status === "completed" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" :
+                                    order.status === "failed" ? "bg-rose-500/20 text-rose-400 border border-rose-500/30" :
+                                    order.status === "processing" ? "bg-sky-500/20 text-sky-400 border border-sky-500/30" :
+                                    "bg-amber-500/20 text-amber-400 border border-amber-500/30"}`}>
+                                  {order.status}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -207,12 +263,11 @@ export default function BuyPage() {
             onClick={() => setActiveCarrier("mtn")}
             className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition-all cursor-pointer ${
               activeCarrier === "mtn"
-                ? "bg-[#fbcb08] text-slate-900 shadow-sm border border-[#eab308]"
-                : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
+                ? "bg-[#fbcb08] text-black shadow-sm border border-[#eab308]"
+                : "bg-white border border-black text-black hover:bg-slate-50"
             }`}
           >
-            <span className="h-3 w-3 rounded-full bg-[#fbcb08] border border-amber-500" />
-            MTN
+             MTN
           </button>
           
           {/* Telecel tab */}
@@ -221,10 +276,10 @@ export default function BuyPage() {
             className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition-all cursor-pointer ${
               activeCarrier === "telecel"
                 ? "bg-rose-600 text-white shadow-sm border border-rose-700"
-                : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
+                : "bg-white border border-black text-black hover:bg-slate-50"
             }`}
           >
-            <span className="h-3 w-3 rounded-full bg-rose-600" />
+            
             Telecel
           </button>
 
@@ -234,10 +289,10 @@ export default function BuyPage() {
             className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition-all cursor-pointer ${
               activeCarrier === "airteltigo"
                 ? "bg-violet-600 text-white shadow-sm border border-violet-700"
-                : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
+                : "bg-white border border-black text-black hover:bg-slate-50"
             }`}
           >
-            <span className="h-3 w-3 rounded-full bg-violet-600" />
+            
             AirtelTigo
           </button>
         </div>
@@ -251,59 +306,27 @@ export default function BuyPage() {
 
        
         {/* 7. Grid of Pricing Cards */}
-        <div className="mb-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {getActiveBundles().map((bundle) => (
-            <div
-              key={bundle.id}
-              className={`group relative rounded-[20px] p-5 shadow-sm hover:shadow-md active:scale-[0.99] transition-all duration-200 flex flex-col justify-between ${
-                activeCarrier === "mtn"
-                  ? "bg-[#fbcb08] text-slate-900 border border-[#eab308]"
-                  : activeCarrier === "telecel"
-                  ? "bg-rose-600 text-white border border-rose-700"
-                  : "bg-violet-600 text-white border border-violet-700"
-              }`}
-            >
-              {/* Card Header (Brand outline & small down arrow) */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex h-6.5 w-6.5 items-center justify-center rounded-full border border-black/10 bg-white shadow-sm shrink-0">
-                  <span className={`text-[8.5px] font-black ${
-                    activeCarrier === "mtn" ? "text-slate-900" : "text-slate-800"
-                  }`}>
-                    {activeCarrier === "mtn"
-                      ? "MTN"
-                      : activeCarrier === "telecel"
-                      ? "TEL"
-                      : "A&T"}
-                  </span>
-                </div>
-                <ChevronDown className="h-3.5 w-3.5 opacity-40 group-hover:opacity-75 transition-opacity" strokeWidth={2.5} />
-              </div>
+        <div className="mb-10 grid grid-cols-2 md:grid-cols-3 gap-3 ">
+          {getActiveBundles().map((bundle) => {
+            const networkMap: Record<string, string> = {
+              mtn: "MTN",
+              telecel: "Telecel",
+              airteltigo: "AirtelTigo",
+            };
+            const network = networkMap[activeCarrier] || "MTN";
+            const priceVal = parseFloat(bundle.price.replace("¢", ""));
 
-              {/* Card Body */}
-              <div className="space-y-0.5">
-                <h3 className="text-2xl font-black tracking-tight leading-none">
-                  {bundle.size}
-                </h3>
-                <span className="text-[10px] font-bold opacity-60 block uppercase tracking-wide">
-                  {activeCarrier === "mtn"
-                    ? "MTN Bundle"
-                    : activeCarrier === "telecel"
-                    ? "Telecel Bundle"
-                    : "AirtelTigo Bundle"}
-                </span>
-              </div>
-
-              {/* Card Footer (Price and Expiry) */}
-              <div className="flex items-baseline justify-between mt-5 border-t border-black/5 pt-3">
-                <span className="text-lg font-black tracking-tight">
-                  {bundle.price}
-                </span>
-                <span className="text-[9.5px] font-bold opacity-60 tracking-wide uppercase">
-                  {bundle.expiry}
-                </span>
-              </div>
-            </div>
-          ))}
+            return (
+              <BundleCard
+                key={bundle.id}
+                network={network}
+                name={bundle.size}
+                price={priceVal}
+                onBuy={handleBuy}
+                onClick={handleBuy}
+              />
+            );
+          })}
         </div>
 
         {/* 8. Footer CTA Card */}
@@ -311,12 +334,9 @@ export default function BuyPage() {
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-amber-50 border border-amber-100 text-[#fbcb08]">
             <User className="h-6 w-6" strokeWidth={2} />
           </div>
-          
-          <h4 className="text-[17px] font-bold text-slate-900 mb-1">
-            Want more features?
-          </h4>
+         
           <p className="text-[13px] font-medium text-slate-500 mb-6 max-w-sm mx-auto leading-relaxed">
-            Create a free account for order history and exclusive deals
+            Create a free account for order history and exclusive deals and get more features 
           </p>
 
           <div className="flex justify-center gap-3.5">

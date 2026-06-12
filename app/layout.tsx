@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "react-toastify/dist/ReactToastify.css";
 import AuthProvider from "@/components/SessionProvider";
 
 // Import system-fallback styles to bypass Google Fonts download block in offline environments

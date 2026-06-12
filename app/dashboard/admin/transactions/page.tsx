@@ -5,6 +5,7 @@ import { Search, Copy, Wallet, RefreshCw, Trash2, ArrowUpRight, ArrowDownRight }
 import { Card, CardContent } from "@/components/ui/Card";
 import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 export default function AdminTransactionsPage() {
   const [transactions, setTransactions] = useState<any[]>([]);
@@ -93,7 +94,11 @@ export default function AdminTransactionsPage() {
                         </span>
                         <button
                           type="button"
-                          onClick={() => navigator.clipboard?.writeText(tx.reference).catch(() => alert("Failed to copy ID"))}
+                          onClick={() => {
+                            navigator.clipboard?.writeText(tx.reference)
+                              .then(() => toast.success("Reference copied!"))
+                              .catch(() => toast.error("Failed to copy ID"));
+                          }}
                           className="p-1 rounded hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700 transition-colors"
                           title="Copy reference ID"
                         >

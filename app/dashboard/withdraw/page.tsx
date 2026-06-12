@@ -5,6 +5,7 @@ import { useDashboard } from "../DashboardContext";
 import { Coins } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import WithdrawalModal from "@/components/WithdrawalModal";
+import { toast } from "react-toastify";
 
 export default function WithdrawPage() {
   const { data, setData } = useDashboard();
@@ -16,7 +17,7 @@ export default function WithdrawPage() {
 
   const handleWithdrawSuccess = (amt: number) => {
     setIsWithdrawOpen(false);
-    alert(`Successfully submitted withdrawal request for GH₵ ${amt.toFixed(2)}.`);
+    toast.success(`Successfully submitted withdrawal request for GH₵ ${amt.toFixed(2)}.`);
     // Deduct locally from Context Provider!
     if (setData) {
       setData({
