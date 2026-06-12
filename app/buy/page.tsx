@@ -110,9 +110,7 @@ export default function BuyPage() {
         <Link href="/" className="inline-flex items-center gap-1.5 group">
           <ChevronLeft className="h-4.5 w-4.5 text-slate-600 group-hover:-translate-x-0.5 transition-transform" strokeWidth={2.5} />
           <span className="text-[17px] font-black tracking-widest flex items-baseline gap-1 group-hover:opacity-90 transition-opacity">
-            <span className="text-[#1e3a8a]">Nexa</span>
-            <span className="text-[#fb923c]">Bundles</span> 
-            <span className="text-slate-500 text-[10px] font-semibold">GH</span>
+            <span className="text-[#1e3a8a]">Back</span>
           </span>
         </Link>
 
