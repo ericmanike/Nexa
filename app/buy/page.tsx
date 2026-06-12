@@ -18,10 +18,8 @@ export default function BuyPage() {
   const router = useRouter();
   
   const handleBuy = () => {
-    toast.info("Please sign up or sign in to purchase this bundle!");
-    setTimeout(() => {
-      router.push("/auth/signUp");
-    }, 1500);
+    toast.info("Purchase will soon be made availble!");
+   
   };
   const [activeCarrier, setActiveCarrier] = useState<"mtn" | "telecel" | "airteltigo">("mtn");
   const [showTracker, setShowTracker] = useState(false);

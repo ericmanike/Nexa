@@ -103,7 +103,7 @@ export default function Home() {
             <div className="flex items-end justify-between mb-8">
               <div>
                 <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.25em] block mb-2 select-none">
-                  Choose Your 
+                  Choose A 
                 </span>
                 <div className="flex items-center gap-3">
                   <span className="w-1.5 h-7.5 bg-[#df0000] rounded-full shrink-0" />
@@ -126,7 +126,9 @@ export default function Home() {
 
             {/* Pricing Cards Grid  */}
             <div className="grid grid-cols-2 md:grid-cols-3 md:gap-5 gap-2  md:mb-10 mb-6">
+             
               {/* Card 1: AirtelTigo */}
+              <Link href={'/buy'}>
               <div className="relative bg-[#0066b3] rounded-[28px] pt-6 pb-7 px-3 flex flex-col items-center justify-between shadow-[0_20px_45px_rgba(0,102,179,0.18)] hover:-translate-y-2.5 transition-all duration-300 group cursor-pointer h-[250px]">
                
               
@@ -146,14 +148,18 @@ export default function Home() {
                 </div>
 
                 {/* Price Pill Button */}
+               
                 <div className="w-full bg-white rounded-2xl py-2 shadow-md flex items-center justify-center transition-all duration-200 group-hover:scale-[1.02]">
                   <span className="text-[17px] font-black text-slate-900 tracking-tight">
                     BUY NOW
                   </span>
                 </div>
+              
               </div>
+                </Link>
 
               {/* Card 2: MTN */}
+              <Link href={'/buy'}>
               <div className="relative bg-[#ffcc00] rounded-[28px] pt-6 pb-7 px-3 flex flex-col items-center justify-between shadow-[0_20px_45px_rgba(255,204,0,0.15)] hover:-translate-y-2.5 transition-all duration-300 group cursor-pointer h-[250px]">
             
              
@@ -180,8 +186,10 @@ export default function Home() {
                   </span>
                 </div>
               </div>
+              </Link>
 
               {/* Card 3: Telecel */}
+              <Link href={"/buy"}>
               <div className="relative bg-[#df0000] rounded-[28px] pt-6 pb-7 px-6 flex flex-col items-center justify-between shadow-[0_20px_45px_rgba(223,0,0,0.18)] hover:-translate-y-2.5 transition-all duration-300 group cursor-pointer h-[250px]">
                
 
@@ -207,6 +215,7 @@ export default function Home() {
                   </span>
                 </div>
               </div>
+              </Link>
             </div>
 
             {/* Agent Call to Action Banner (With requested text-gradient styling) */}
@@ -245,10 +254,12 @@ export default function Home() {
               Have questions or need assistance? We&apos;re here to help!
             </p>
             <Link
-              href="/auth/signUp"
+              href="https://t.me/gigsnetgh"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center justify-center rounded-xl bg-[#1e3a8a] hover:bg-[#172554] px-8 py-3.5 text-xs font-black text-white tracking-widest uppercase shadow-md shadow-blue-900/10 transition-all active:scale-[0.98] select-none"
             >
-              Contact Us
+              Join Telegram
             </Link>
           </div>
         </section>
