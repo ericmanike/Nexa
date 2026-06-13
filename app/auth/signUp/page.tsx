@@ -21,10 +21,21 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [reqId,setReqId] = useState('')
+  const [notValid, setNotValid] = useState(false)
 
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
+
+
+    
+        //if password does not contain a special character
+        if(!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password)){  
+          toast.error('Password must contain at least one lowercase letter, one uppercase letter, and one number')
+          setIsLoading(false)
+          return
+        }
+        
     setIsLoading(true)
     if(!phone){
       toast.error('Enter phone number')
@@ -57,6 +68,13 @@ export default function SignUpPage() {
         e.preventDefault();
        
         setIsLoading(true);
+        if(password.length < 6){
+          toast.error('Password must be at least 6 characters')
+          setIsLoading(false)
+          return
+        }
+    
+     
 
         try {
             const res = await fetch("/api/auth/register", {
@@ -285,7 +303,9 @@ export default function SignUpPage() {
             required
             autoComplete="new-password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) =>{
+        
+              setPassword(e.target.value)}}
             placeholder="Password"
             className="block w-full rounded-xl border border-slate-200 bg-[#f4f5f7] py-3.5 pl-12 pr-12 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all duration-200 focus:border-slate-400 focus:bg-white focus:ring-1 focus:ring-slate-400"
           />
@@ -301,7 +321,30 @@ export default function SignUpPage() {
               <Eye className="h-5 w-5" strokeWidth={1.8} />
             )}
           </button>
+         
+            
         </div>
+         {password.length < 8 && ( 
+            <div className="text-red-500 text-sm">
+              Password must be at least 8 characters long
+            </div>
+          )}
+          {password.length >= 8 && !/[a-z]/.test(password) && ( 
+            <div className="text-red-500 text-sm">
+              Password must contain at least one lowercase letter
+            </div>
+          )}
+          {password.length >= 8 && !/[A-Z]/.test(password) && ( 
+            <div className="text-red-500 text-sm">
+              Password must contain at least one uppercase letter
+            </div>
+          )}
+          {password.length >= 8 && !/[0-9]/.test(password) && ( 
+            <div className="text-red-500 text-sm">
+              Password must contain at least one number
+            </div>
+          )}
+
 
 
 
@@ -309,7 +352,7 @@ export default function SignUpPage() {
         <button
         type="submit" 
          
-          disabled={isLoading || !name || !phone || !email || !password}
+          disabled={isLoading || !name || !phone || !email || !password || password.length < 8 || !/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password)}
           className="relative flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#fbcb08] hover:bg-[#eab308] py-3.5 px-4 text-sm font-bold text-slate-900 shadow-sm transition-all duration-200 cursor-pointer select-none active:scale-[0.99] disabled:opacity-40 disabled:pointer-events-none"
         >
           {isLoading ? (

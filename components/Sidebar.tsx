@@ -79,7 +79,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarPr
               <RadioTower className="h-6 w-6 text-[#fcd34d]" />
             </div>
             
-            <span className="text-xl font-bold tracking-tight  select-none">
+            <span className=" text-[10px] md:text-xl font-bold tracking-tight  select-none">
               <Link href="/">
               Nexa BundlesGh
               </Link> 
@@ -89,7 +89,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarPr
 
           <button
             onClick={() => setSidebarOpen(false)}
-            className="xl:hidden p-1.5 rounded-lg bg-slate-900/10 text-slate-900 hover:bg-slate-900/20 transition-colors"
+            className="xl:hidden p-1.5 rounded-lg bg-white/10 text-white hover:bg-slate-900/20 transition-colors"
           >
             <X size={18} />
           </button>
