@@ -19,7 +19,7 @@ export async function GET() {
     const ordersCount = await Order.countDocuments({});
 
     const salesAggregation = await Order.aggregate([
-      { $match: { status: { $in: ["delivered", "completed"] } } },
+      { $match: { status: { $nin: ["failed", "reversed"] } } },
       { $group: { _id: null, total: { $sum: "$price" } } },
     ]);
     const sales = salesAggregation.length > 0 ? salesAggregation[0].total : 0;
