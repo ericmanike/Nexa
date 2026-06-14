@@ -40,9 +40,17 @@ export async function GET() {
 
     // Get count statistics
     const totalOrders = await Order.countDocuments({ user: user._id });
+    const placedOrders = await Order.countDocuments({
+      user: user._id,
+      status: "placed",
+    });
     const processingOrders = await Order.countDocuments({
       user: user._id,
-      status: { $in: ["pending", "processing", "placed"] },
+      status: { $in: ["pending", "processing"] },
+    });
+    const deliveredOrders = await Order.countDocuments({
+      user: user._id,
+      status: "delivered",
     });
 
     // Compute total spent on successful data bundle orders
@@ -65,6 +73,8 @@ export async function GET() {
       stats: {
         totalOrders,
         processingOrders,
+        placedOrders,
+        deliveredOrders,
         totalSpent,
       },
       orders,

@@ -16,6 +16,8 @@ export interface DashboardData {
   stats: {
     totalOrders: number;
     processingOrders: number;
+    placedOrders: number;
+    deliveredOrders: number;
     totalSpent: number;
   };
   orders: any[];
@@ -73,6 +75,8 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     stats: {
       totalOrders: 42,
       processingOrders: 1,
+      placedOrders: 1,
+      deliveredOrders: 40,
       totalSpent: 685.5
     },
     orders: [

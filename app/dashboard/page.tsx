@@ -8,7 +8,11 @@ import {
   Wallet,
   ShoppingCart,
   ChevronRight,
-  AlertCircle
+  AlertCircle,
+  ShoppingBag,
+  CheckCircle2,
+  Clock,
+  RefreshCw
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import TopUpWallet from "@/components/topUpwallet";
@@ -77,21 +81,29 @@ export default function DashboardOverviewPage() {
         </div>
 
         {/* Orders Overview */}
-        <div className="bg-white rounded-[10px] p-4 sm:p-6 shadow-lg flex flex-col justify-between gap-4">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                Total Orders
-              </p>
-              <h3 className="text-3xl font-black text-slate-900 tracking-tight mt-1">
-                {stats.totalOrders}{" "}
-                <span className="text-xs font-semibold text-slate-400">
-                  ({stats.processingOrders} active)
-                </span>
-              </h3>
+        <div className="bg-white rounded-[10px] p-4 sm:p-6 shadow-lg flex flex-col justify-between gap-6">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-[16px] bg-slate-100 text-slate-600 flex items-center justify-center border border-slate-200/50 shadow-sm">
+                <ShoppingBag size={22} />
+              </div>
+              <div>
+                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                  Total Orders
+                </p>
+                <h3 className="text-2xl font-extrabold text-slate-900 mt-0.5">
+                  {stats.totalOrders}
+                </h3>
+              </div>
             </div>
-            <div className="h-10 w-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-              <ShoppingCart size={20} />
+            
+            <div className="flex flex-wrap gap-2 pt-1">
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">
+                <CheckCircle2 size={13} /> {stats.deliveredOrders} Delivered
+              </span>
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
+                <RefreshCw size={13} /> {stats.processingOrders} Processing
+              </span>
             </div>
           </div>
           <Link
