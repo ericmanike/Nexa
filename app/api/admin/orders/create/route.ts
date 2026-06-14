@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongoose";
 import Order from "@/models/Order";
 import Bundle from "@/models/Bundle";
+import Setting from "@/models/Setting";
+import { handleTopily, handleAgentPortal, handleDataBundlesHub } from "@/components/providers/apiProviders";
 
 // POST /api/admin/orders/create - Manually create an order (Admin only)
 export async function POST(req: Request) {
@@ -33,7 +35,7 @@ export async function POST(req: Request) {
 
     // Generate unique transaction_id and payment_id
     const randomHex = () => Math.floor(Math.random() * 16777215).toString(16).padEnd(6, "0");
-    const transactionId = `admin_${Date.now()}_${randomHex()}`;
+    const transactionId = `${Date.now()}_${randomHex()}`;
     const paymentId = `pay_admin_${Date.now()}_${randomHex()}`;
 
     const order = await Order.create({
@@ -47,9 +49,40 @@ export async function POST(req: Request) {
       status: "pending",
     });
 
+    const providerDoc = await Setting.findOne({ key: "provider" });
+    const provider = providerDoc?.value || "agentportal";
+
+    const TOPPILY_API_KEY = process.env.TOPPILY_API_KEY!;
+    const AGENT_PORTAL_API_KEY = process.env.AGENT_PORTAL_API_KEY!;
+    const DATABUNDLEHUB_API_KEY = process.env.DATABUNDLEHUB_API_KEY!;
+
+    const data = {
+      network,
+      bundleName,
+      price,
+      phoneNumber,
+      reference: paymentId,
+    };
+
+    let response;
+    try {
+      if (provider === "databundlehub") {
+        response = await handleDataBundlesHub(order, data, DATABUNDLEHUB_API_KEY);
+      } else if (provider === "toppily") {
+        response = await handleTopily(order, data, TOPPILY_API_KEY);
+      } else if (provider === "agentportal") {
+        response = await handleAgentPortal(order, data, AGENT_PORTAL_API_KEY);
+      }
+    } catch (err) {
+      console.error("Manual order provider call error:", err);
+    }
+
+    const populatedOrder = await Order.findById(order._id).populate("user", "name email phone");
+
     return NextResponse.json({
       message: "Order created successfully",
-      order,
+      order: populatedOrder,
+      response,
     });
   } catch (error: any) {
     console.error("Error creating manual order:", error);

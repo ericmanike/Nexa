@@ -350,10 +350,10 @@ export default function AdminOrdersPage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
               { value: "dakazina", label: "Dakazina" },
-              { value: "spendless", label: "Spendless" },
+              { value: "agentportal", label: "Agent Portal" },
               { value: "toppily", label: "Toppily" },
-              { value: "datamart", label: "Datamart" }
-            ].map((provider) => (
+              { value: "databundlehub", label: "Databundlehub" }
+            ].map((provider) => ( 
               <label
                 key={provider.value}
                 className={`inline-flex items-center gap-2 cursor-pointer px-4 py-2.5 rounded-lg border text-sm font-medium transition-all select-none

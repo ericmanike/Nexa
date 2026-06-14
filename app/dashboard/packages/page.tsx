@@ -73,8 +73,23 @@ export default function PackagesPage() {
 
     setIsPurchasing(true);
     try {
-      // Mock loader for visual animation
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const res = await fetch("/api/buyData", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          network: buyNetwork,
+          bundleId: buyBundle._id || buyBundle.id,
+          phoneNumber: buyPhoneNumber,
+        }),
+      });
+
+      const resData = await res.json();
+
+      if (!res.ok) {
+        throw new Error(resData.error || resData.message || "Failed to process data purchase.");
+      }
 
       setPurchaseSuccess(
         `Successfully ordered ${buyBundle.name} for ${buyPhoneNumber}. The bundle will deliver shortly.`
@@ -86,7 +101,7 @@ export default function PackagesPage() {
           ...data,
           user: {
             ...data.user,
-            walletBalance: data.user.walletBalance - buyBundle.price
+            walletBalance: resData.walletBalance
           },
           stats: {
             ...data.stats,
@@ -94,29 +109,11 @@ export default function PackagesPage() {
             totalSpent: data.stats.totalSpent + buyBundle.price
           },
           orders: [
-            {
-              _id: `order-new-${Date.now()}`,
-              bundleName: buyBundle.name,
-              network: buyNetwork,
-              price: buyBundle.price,
-              phoneNumber: buyPhoneNumber,
-              status: "processing",
-              transaction_id: `TX-${buyNetwork.slice(0, 2).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}X`,
-              createdAt: new Date().toISOString()
-            },
+            resData.order,
             ...data.orders
           ],
           transactions: [
-            {
-              _id: `tx-new-${Date.now()}`,
-              transactionType: "debit",
-              type: "purchase",
-              amount: buyBundle.price,
-              reference: `TX-${buyNetwork.slice(0, 2).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}X`,
-              description: `Bought ${buyNetwork} ${buyBundle.name} for ${buyPhoneNumber}`,
-              status: "success",
-              createdAt: new Date().toISOString()
-            },
+            resData.transaction,
             ...data.transactions
           ]
         });

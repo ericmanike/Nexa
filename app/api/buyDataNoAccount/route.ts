@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongoose";
 import Order from "@/models/Order";
 import Setting from "@/models/Setting";
-import { handleDakazina, handleSpendless, handleTopily } from "@/components/providers/apiProviders";
+import {handleTopily, handleAgentPortal,handleDataBundlesHub } from "@/components/providers/apiProviders";
 import { createOrder } from "@/lib/orderService";
 import Transaction from "@/models/Transaction";
 
@@ -102,11 +102,12 @@ export async function POST(req: Request) {
     }
 
 
-    const DAKAZI_API_KEY = process.env.DAKAZI_API_KEY!;
-    const SPENDLESS_API_KEY = process.env.SPENDLESS_API_KEY!;
+    
     const TOPPILY_API_KEY = process.env.TOPPILY_API_KEY!;
+    const AGENT_PORTAL_API_KEY = process.env.AGENT_PORTAL_API_KEY!;
+    const DATABUNDLEHUB_API_KEY = process.env.DATABUNDLEHUB_API_KEY!;
 
-    if (!DAKAZI_API_KEY || !SPENDLESS_API_KEY || !TOPPILY_API_KEY) {
+    if (!TOPPILY_API_KEY || !AGENT_PORTAL_API_KEY ) {
       return NextResponse.json({ message: "unexpected error occurred" }, { status: 500 });
     }
     const data = {
@@ -135,18 +136,19 @@ export async function POST(req: Request) {
 
 
     const providerDoc = await Setting.findOne({ key: "provider" });
-    const provider = providerDoc?.value || "dakazina";
+    const provider = providerDoc?.value || "agentportal";
 
     let response;
 
-    if (provider === "dakazina") {
-      response = await handleDakazina(order, data, DAKAZI_API_KEY);
-    } else if (provider === "spendless") {
-      response = await handleSpendless(order, data, SPENDLESS_API_KEY);
-    } else if (provider === "toppily") {
+    if (provider === "databundlehub") {
+      response = await handleDataBundlesHub(order, data, DATABUNDLEHUB_API_KEY);
+    }else if (provider === "toppily") {
       response = await handleTopily(order, data, TOPPILY_API_KEY);
+    } else if (provider === "agentportal") {
+      response = await handleAgentPortal(order, data, AGENT_PORTAL_API_KEY);
     }
 
+    
     return NextResponse.json(
       { message: "Order created successfully", response },
       { status: 201 }

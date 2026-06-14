@@ -345,9 +345,6 @@ export default function SignUpPage() {
             </div>
           )}
 
-
-
-
         {/* Yellow Submit CTA (Vibrant Gold from Screenshot) */}
         <button
         type="submit" 

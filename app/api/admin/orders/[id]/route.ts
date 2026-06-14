@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongoose";
 import Order from "@/models/Order";
 import User from "@/models/User";
+import Setting from "@/models/Setting";
+import { handleTopily, handleAgentPortal, handleDataBundlesHub } from "@/components/providers/apiProviders";
 
 // PATCH /api/admin/orders/[id] - Retry a failed order (Admin only)
 export async function PATCH(
@@ -24,16 +26,45 @@ export async function PATCH(
     }
 
     await dbConnect();
-    const updatedOrder = await Order.findByIdAndUpdate(
-      id,
-      { status: "pending" },
-      { new: true, runValidators: true }
-    ).populate("user", "name email phone");
+    const order = await Order.findById(id);
 
-    if (!updatedOrder) {
+    if (!order) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
+    // Set order status to pending for retry
+    order.status = "pending";
+    await order.save();
+
+    const providerDoc = await Setting.findOne({ key: "provider" });
+    const provider = providerDoc?.value || "agentportal";
+
+    const TOPPILY_API_KEY = process.env.TOPPILY_API_KEY!;
+    const AGENT_PORTAL_API_KEY = process.env.AGENT_PORTAL_API_KEY!;
+    const DATABUNDLEHUB_API_KEY = process.env.DATABUNDLEHUB_API_KEY!;
+
+    const data = {
+      network: order.network,
+      bundleName: order.bundleName,
+      price: order.price,
+      phoneNumber: order.phoneNumber,
+      reference: order.payment_id,
+    };
+
+    let response;
+    try {
+      if (provider === "databundlehub") {
+        response = await handleDataBundlesHub(order, data, DATABUNDLEHUB_API_KEY);
+      } else if (provider === "toppily") {
+        response = await handleTopily(order, data, TOPPILY_API_KEY);
+      } else if (provider === "agentportal") {
+        response = await handleAgentPortal(order, data, AGENT_PORTAL_API_KEY);
+      }
+    } catch (err) {
+      console.error("Retry order provider call error:", err);
+    }
+
+    const updatedOrder = await Order.findById(id).populate("user", "name email phone");
     return NextResponse.json(updatedOrder);
   } catch (error: any) {
     console.error("Error retrying order:", error);
