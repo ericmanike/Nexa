@@ -18,7 +18,7 @@ export default function Home() {
           <span className="text-[17px] font-black tracking-widest flex items-baseline gap-1 group-hover:opacity-90 transition-opacity">
             <span className="text-[#1e3a8a]">Nexa</span>
             <span className="text-[#fb923c]">Bundles</span> 
-            <span className="text-slate-500 text-[10px] font-semibold">GH</span>
+
           </span>
         </Link>
 

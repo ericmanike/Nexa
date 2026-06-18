@@ -19,7 +19,6 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
           <span className="text-[27px] font-extrabold flex items-baseline leading-none">
             <span className="text-[#1e3a8a]">Nexa</span>
             <span className="text-[#fb923c] ml-1">Bundles</span> 
-            <span className="text-slate-500 text-xs font-semibold ml-1 align-super">GH</span>
           </span>
         </Link>
        

@@ -89,3 +89,59 @@ export async function GET() {
     );
   }
 }
+
+export async function POST(req: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { storeName, description, whatsappSupport } = await req.json();
+
+    if (!storeName || !storeName.trim()) {
+      return NextResponse.json({ error: "Store name is required" }, { status: 400 });
+    }
+
+    await dbConnect();
+
+    // Query active user
+    const user = await User.findById((session.user as any).id);
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    if (user.role !== "agent") {
+      return NextResponse.json({ error: "Unauthorized: Only agents can have stores" }, { status: 403 });
+    }
+
+    // Find or create agent storefront
+    let agentStore = await AgentStore.findOne({ user: user._id });
+    if (!agentStore) {
+      // Create slug from username or unique suffix
+      const baseSlug = user.name.toLowerCase().replace(/[^a-z0-9]/g, "") || "store";
+      const slug = `${baseSlug}-${Math.random().toString(36).substring(2, 6)}`;
+      agentStore = new AgentStore({
+        user: user._id,
+        storeName: storeName.trim(),
+        slug,
+        description: (description || "").trim(),
+        whatsappSupport: (whatsappSupport || "").trim(),
+      });
+    } else {
+      agentStore.storeName = storeName.trim();
+      agentStore.description = (description || "").trim();
+      agentStore.whatsappSupport = (whatsappSupport || "").trim();
+    }
+
+    await agentStore.save();
+
+    return NextResponse.json({ success: true, agentStore });
+  } catch (error: any) {
+    console.error("Error updating storefront settings:", error);
+    return NextResponse.json(
+      { error: "Server error. Please try again." },
+      { status: 500 }
+    );
+  }
+}

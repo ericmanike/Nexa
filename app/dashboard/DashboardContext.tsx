@@ -129,7 +129,8 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       slug: "nexabundlesexpress",
       isActive: true,
       totalSalesCount: 15,
-      totalProfit: 72.5
+      totalProfit: 72.5,
+      whatsappSupport: "233549961293"
     }
   });
 

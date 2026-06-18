@@ -105,7 +105,7 @@ export default function WithdrawalModal({ isOpen, onClose, maxAmount, onSuccess 
                                 step="0.5"
                                 value={amount}
                                 onChange={e => setAmount(e.target.value)}
-                                className="w-full pl-12 pr-4 py-3 bg-zinc-50 border-2 border-zinc-100 focus:border-black rounded-2xl outline-none font-bold text-2xl"
+                                className="w-full pl-12 pr-4 py-2 bg-zinc-50 border-2 border-zinc-200 focus:border-black rounded-2xl outline-none font-bold text-2xl"
                                 placeholder="0.00"
                                 required
                                 min={50}
@@ -142,7 +142,7 @@ export default function WithdrawalModal({ isOpen, onClose, maxAmount, onSuccess 
                                 type="text"
                                 value={momoName}
                                 onChange={e => setMomoName(e.target.value)}
-                                className="w-full pl-12 pr-4 py-3 bg-zinc-50 border-2 border-zinc-100 focus:border-black rounded-2xl outline-none"
+                                className="w-full pl-12 pr-4 py-2 bg-zinc-50 border-2 border-zinc-100 focus:border-black rounded-2xl outline-none"
                                 placeholder="Full Name on Account"
                                 required
                             />
@@ -153,7 +153,7 @@ export default function WithdrawalModal({ isOpen, onClose, maxAmount, onSuccess 
                         <button
                             type="submit" 
                             disabled={loading || !amount || !phoneNumber || !momoName}
-                            className="w-full py-3 bg-[#feb400] hover:bg-[#e6a200] text-slate-900 rounded-2xl font-black text-base transition-all active:scale-[0.99] disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                            className="w-full py-3 bg-[#1e3a8a] hover:bg-[#1e3a8a] text-slate-900 rounded-2xl font-black text-base transition-all active:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed text-white flex items-center justify-center gap-2 cursor-pointer shadow-sm"
                         >
 
                             {loading ? <Loader2 className="animate-spin" /> : <Wallet size={20} />}
