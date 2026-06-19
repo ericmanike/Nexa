@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import {
   Search, CheckCircle2, XCircle, Clock, ShoppingBag, Trash2, Copy, RefreshCw,
-  CreditCard, Users, Shield, Megaphone
+  CreditCard, Users
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { formatCurrency } from "@/lib/utils";
@@ -309,31 +309,7 @@ export default function AdminOrdersPage() {
         </Card>
       </div>
 
-      {/* Navigation Tabs */}
-      <div className="flex border-b border-zinc-200 gap-1 mb-6">
-        {[
-          { href: "/dashboard/admin/orders", label: "Manage Orders", icon: ShoppingBag },
-          { href: "/dashboard/admin/users", label: "Manage Users", icon: Users },
-          { href: "/dashboard/admin/bundles", label: "Manage Bundles", icon: Shield },
-          { href: "/dashboard/admin/notifications", label: "Manage Notifications", icon: Megaphone },
-        ].map((tab) => {
-          const isActive = pathname === tab.href;
-          const Icon = tab.icon;
-          return (
-            <Link
-              key={tab.href}
-              href={tab.href}
-              className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-all -mb-px
-                ${isActive
-                  ? "border-purple-600 text-purple-600 font-bold"
-                  : "border-transparent text-zinc-500 hover:text-zinc-800 hover:border-zinc-300"}`}
-            >
-              <Icon size={16} />
-              {tab.label}
-            </Link>
-          );
-        })}
-      </div>
+
 
       {/* API Providers */}
       <Card className="border-zinc-200 bg-white">

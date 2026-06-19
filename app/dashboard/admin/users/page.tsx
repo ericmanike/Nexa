@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { Search, Users, UserPlus, Wallet, X, Trash2, Shield, ArrowLeft, ShoppingBag, Megaphone } from "lucide-react";
+import { Search, Users, UserPlus, Wallet, X, Trash2, Shield, ArrowLeft } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -130,31 +130,7 @@ export default function AdminUsersPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-3 duration-400">
-      {/* Navigation Tabs */}
-      <div className="flex border-b border-zinc-200 gap-1 mb-6">
-        {[
-          { href: "/dashboard/admin/orders", label: "Manage Orders", icon: ShoppingBag },
-          { href: "/dashboard/admin/users", label: "Manage Users", icon: Users },
-          { href: "/dashboard/admin/bundles", label: "Manage Bundles", icon: Shield },
-          { href: "/dashboard/admin/notifications", label: "Manage Notifications", icon: Megaphone },
-        ].map((tab) => {
-          const isActive = pathname === tab.href;
-          const Icon = tab.icon;
-          return (
-            <Link
-              key={tab.href}
-              href={tab.href}
-              className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-all -mb-px
-                ${isActive
-                  ? "border-purple-600 text-purple-600 font-bold"
-                  : "border-transparent text-zinc-500 hover:text-zinc-800 hover:border-zinc-300"}`}
-            >
-              <Icon size={16} />
-              {tab.label}
-            </Link>
-          );
-        })}
-      </div>
+
 
       <div>
         <h2 className="text-lg font-bold text-zinc-900">Users</h2>

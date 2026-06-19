@@ -18,7 +18,9 @@ import {
   Coins,
   User as UserIcon,
   X,
-  Shield
+  Shield,
+  Settings,
+  Bell
 } from "lucide-react";
 
 // Custom logo wrapper using Lucide Wifi
@@ -48,12 +50,49 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarPr
   ];
 
   if (user.role === "admin") {
+    sidebarItems.length = 0;
     sidebarItems.push({
-      id: "admin",
-      label: "Admin Panel",
-      href: "/dashboard/admin",
-      icon: Shield,
-      color: "bg-red-100 text-red-600"
+      id: "orders",
+      label: "Orders & Settings",
+      href: "/dashboard/admin/orders",
+      icon: ShoppingCart,
+      color: "bg-purple-100 text-purple-600"
+    },{
+      id: "users",
+      label: "Manage Users",
+      href: "/dashboard/admin/users",
+      icon: UserIcon,
+      color: "bg-blue-100 text-blue-600"
+    },
+    {
+      id: "bundles",
+      label: "Manage Bundles",
+      href: "/dashboard/admin/bundles",
+      icon: Wifi,
+      color: "bg-emerald-100 text-emerald-600"
+    },
+
+
+     {
+      id: "store",
+      label: "Manage Agent Stores",
+      href: "/dashboard/admin/store",
+      icon: Store,
+      color: "bg-emerald-100 text-emerald-600"
+    },
+    {
+      id: "transactions", 
+      label: "Transactions",
+      href: "/dashboard/admin/transactions",
+      icon: ArrowLeftRight,
+      color: "bg-orange-100 text-orange-600"
+    },
+    {
+      id: "notifications", 
+      label: "Manage Notifications", 
+      href: "/dashboard/admin/notifications",
+      icon: Bell, 
+      color: "bg-blue-100 text-blue-600"
     });
   }
 
