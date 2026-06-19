@@ -25,10 +25,10 @@ export default function OrdersPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <h3 className="font-black text-slate-900 text-lg tracking-tight">
-            Internet Purchase Orders
+          Data Purchase History
           </h3>
           <p className="text-xs font-semibold text-slate-500 leading-relaxed mt-0.5 select-none">
-            Log and tracking details of internet bundle purchases.
+            Log and tracking details of data bundle purchases.
           </p>
         </div>
 
@@ -91,7 +91,7 @@ export default function OrdersPage() {
                   </td>
                   <td className="py-3.5 px-4">{ord.bundleName}</td>
                   <td className="py-3.5 px-4 font-mono text-[10px] text-slate-400">
-                    {ord.transaction_id}
+                    {ord.transaction_id ? (ord.transaction_id.length > 10 ? ord.transaction_id.slice(0,  10) + "..." : ord.transaction_id) : ""}
                   </td>
                   <td className="py-3.5 px-4 font-black text-slate-950">
                     {formatCurrency(ord.price)}

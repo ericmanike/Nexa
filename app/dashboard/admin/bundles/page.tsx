@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Trash2, Edit, Package, X, ArrowLeft, Users, ShoppingBag, Shield } from "lucide-react";
+import { Plus, Trash2, Edit, Package, X, ArrowLeft, Users, ShoppingBag, Shield, Megaphone } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -208,6 +208,7 @@ export default function AdminBundlesPage() {
           { href: "/dashboard/admin/orders", label: "Manage Orders", icon: ShoppingBag },
           { href: "/dashboard/admin/users", label: "Manage Users", icon: Users },
           { href: "/dashboard/admin/bundles", label: "Manage Bundles", icon: Shield },
+          { href: "/dashboard/admin/notifications", label: "Manage Notifications", icon: Megaphone },
         ].map((tab) => {
           const isActive = pathname === tab.href;
           const Icon = tab.icon;

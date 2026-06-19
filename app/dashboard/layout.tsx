@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useDashboard, DashboardProvider } from "./DashboardContext";
 import Sidebar from "@/components/Sidebar";
@@ -16,6 +16,41 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const pathname = usePathname();
+
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
+  const [hasUnreadNotif, setHasUnreadNotif] = useState(false);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const res = await fetch("/api/notifications");
+        if (res.ok) {
+          const data = await res.json();
+          setNotifications(data);
+          
+          if (data.length > 0) {
+            const lastViewed = localStorage.getItem("last_viewed_notification_time");
+            const newestTime = new Date(data[0].createdAt).getTime();
+            if (!lastViewed || newestTime > new Date(lastViewed).getTime()) {
+              setHasUnreadNotif(true);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Error loading notifications:", err);
+      }
+    };
+    fetchNotifications();
+  }, []);
+
+  const handleBellClick = () => {
+    setNotifDropdownOpen(!notifDropdownOpen);
+    if (notifications.length > 0) {
+      localStorage.setItem("last_viewed_notification_time", new Date().toISOString());
+      setHasUnreadNotif(false);
+    }
+  };
 
   // Find human-readable label for the current route
   const getRouteLabel = () => {
@@ -76,12 +111,73 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 
           {/* User Profile Avatar & Notifications */}
           <div className="flex items-center gap-4">
-            {/* Notification Bell button */}
-            <button className="relative p-2 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-50 transition-all cursor-pointer">
-              <Bell size={30} />
-              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 " />
-              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500" />
-            </button>
+            {/* Notification Bell button & Dropdown */}
+            <div className="relative">
+              <button
+                onClick={handleBellClick}
+                className="relative p-2 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-50 transition-all cursor-pointer"
+              >
+                <Bell size={30} />
+                {hasUnreadNotif && (
+                  <>
+                    <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 rounded-full bg-red-500 animate-ping" />
+                    <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 rounded-full bg-red-500" />
+                  </>
+                )}
+              </button>
+
+              {notifDropdownOpen && (
+                <>
+                  <div
+                    onClick={() => setNotifDropdownOpen(false)}
+                    className="fixed inset-0 z-30 cursor-default"
+                  />
+                  <div className="absolute right-0 mt-2.5 w-80 sm:w-96 bg-white border border-slate-100 rounded-2xl shadow-xl p-4 z-40 animate-in fade-in slide-in-from-top-3 duration-200">
+                    <div className="flex items-center justify-between pb-3 border-b border-slate-50">
+                      <h4 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                        <Bell size={16} className="text-[#1e3a8a]" />
+                        Notifications
+                      </h4>
+                      {notifications.length > 0 && (
+                        <span className="text-[10px] bg-blue-50 text-[#1e3a8a] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                          {notifications.length} Total
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="max-h-72 overflow-y-auto mt-2 space-y-3 pr-1 scrollbar-thin">
+                      {notifications.length === 0 ? (
+                        <div className="py-8 text-center text-slate-400 text-xs italic">
+                          No notifications yet.
+                        </div>
+                      ) : (
+                        notifications.map((notif) => (
+                          <div
+                            key={notif._id}
+                            className="p-3 bg-slate-50 rounded-xl border border-slate-100/50 hover:bg-slate-100/40 transition-colors"
+                          >
+                            <h5 className="font-bold text-xs text-slate-900 leading-tight">
+                              {notif.title}
+                            </h5>
+                            <p className="text-[11px] text-slate-600 mt-1 whitespace-pre-wrap leading-relaxed text-left">
+                              {notif.message}
+                            </p>
+                            <span className="text-[9px] text-slate-400 font-medium mt-2 block text-left">
+                              {new Date(notif.createdAt).toLocaleDateString(undefined, {
+                                month: "short",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit"
+                              })}
+                            </span>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
 
             {/* Profile Avatar Card with Dropdown */}
             <div className="relative">

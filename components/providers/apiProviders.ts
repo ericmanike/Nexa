@@ -20,11 +20,11 @@ export async function handleDataBundlesHub(order: any, data: any, apiKey: string
   const result = await res.json();
 
   if(result.success=true) {
-    order.transaction_id ="DataBundleHub -"+result.data.transactionReference;
+    order.transaction_id ="nexa-"+result.data.transactionReference;
     order.status = "processing";
     await order.save();
   }
-    console.log('Databundlehub result:', result);
+  //  console.log('Databundlehub result:', result);
   return result;
 
 }
@@ -63,11 +63,11 @@ export async  function  handleTopily(order: any, data: any, apiKey: string){
   const result = await res.json();
 
   if (result.transaction_code) {
-    order.transaction_id = result.transaction_code;
+    order.transaction_id = "nexa-"+ result.transaction_code;
     order.status = "processing";
     await order.save();
   }
-    console.log('Dakazina result:', result);
+ //   console.log('Dakazina result:', result);
   return result;
 
 
@@ -99,13 +99,13 @@ export async function handleAgentPortal(order: any, data: any, apiKey: string) {
 
   const result = await res.json();
 
-  console.log('AgentPortal result:', result);
+  //console.log('AgentPortal result:', result);
 
 if(result.charged){
-  order.transaction_id = 'AgentPortal'+ result.batch_id;
+  order.transaction_id = 'nexa-'+ result.batch_id;
   order.status = "processing"; 
   await order.save();
 }
-  console.log('AgentPortal result:', result);
+ // console.log('AgentPortal result:', result);
   return result;
 }

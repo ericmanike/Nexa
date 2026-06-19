@@ -315,6 +315,7 @@ export default function AdminOrdersPage() {
           { href: "/dashboard/admin/orders", label: "Manage Orders", icon: ShoppingBag },
           { href: "/dashboard/admin/users", label: "Manage Users", icon: Users },
           { href: "/dashboard/admin/bundles", label: "Manage Bundles", icon: Shield },
+          { href: "/dashboard/admin/notifications", label: "Manage Notifications", icon: Megaphone },
         ].map((tab) => {
           const isActive = pathname === tab.href;
           const Icon = tab.icon;
