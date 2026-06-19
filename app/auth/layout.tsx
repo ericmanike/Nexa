@@ -1,6 +1,12 @@
 import React from "react";
 import Link from "next/link";
 import { RadioTower, ArrowRight, HelpCircle } from "lucide-react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Authentication",
+  description: "Sign in or create a free account with Nexa Bundles. Start your mobile data agent business or buy bundles directly.",
+};
 
 interface AuthLayoutProps {
   children: React.ReactNode;
