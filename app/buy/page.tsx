@@ -322,7 +322,7 @@ export default function BuyPage() {
                               <div>
                                 <div className="flex items-center gap-2">
                                   <span className="font-bold text-slate-100">{order.network} {order.bundleName}</span>
-                                  <span className="text-[10px] font-mono text-slate-400">#{order.transaction_id ? (order.transaction_id.length > 10 ? order.transaction_id.slice(9, 20) + "..." : order.transaction_id) : ""}</span>
+                                  <span className="text-[10px] font-mono text-slate-400">#{order.transaction_id ? (order.transaction_id.length > 10 ? order.transaction_id.slice(0, 10) + "..." : order.transaction_id) : ""}</span>
                                 </div>
                                 <div className="text-[10px] text-slate-400 mt-0.5">
                                   Recipient: {order.phoneNumber} • {new Date(order.createdAt).toLocaleString()}
