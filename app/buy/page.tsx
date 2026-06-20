@@ -144,7 +144,10 @@ export default function BuyPage() {
         },
         callback: function (response: any) {
           toast.success(`Purchase successful ,data bundle will be delived shortly`);
-       
+            setIsConfirmOpen(false);
+            setIsPurchasing(false);
+            setBuyPhoneNumber("");
+            setBuyBundle(null);
         },
       });
 
