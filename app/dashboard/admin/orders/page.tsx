@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import {
-  Search, CheckCircle2, XCircle, Clock, ShoppingBag, Trash2, Copy, RefreshCw,
+  Search, CheckCircle2, XCircle,  ShoppingBag, Trash2, Copy, RefreshCw,
   CreditCard, Users
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
@@ -10,7 +10,7 @@ import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { toast } from "react-toastify";
- import Loader from "../../loading";
+import Loader from "../../loading";
 
 export default function AdminOrdersPage() {
   const pathname = usePathname();
