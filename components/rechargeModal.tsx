@@ -152,11 +152,11 @@ export default function RechargeModal({ isOpen, setAmount, amount, setIsOpen, ha
                             <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Send Mobile Money To</p>
                             <div className="flex items-center justify-between bg-white border border-slate-200 p-2.5 rounded-lg">
                                 <div>
-                                    <p className="font-bold text-slate-900 text-sm">054 344 2518</p>
-                                    <p className="text-[10px] text-slate-500 font-medium">Eric Manike Haare</p>
+                                    <p className="font-bold text-slate-900 text-sm">Available soon</p>
+                                    <p className="text-[10px] text-slate-500 font-medium">Coming soon...</p>
                                 </div>
-                                <button onClick={() => copyToClipboard('0543442518')} className="p-1.5 bg-slate-50 text-slate-600 rounded-md hover:bg-slate-100 transition-colors" title="Copy Number">
-                                    <Copy size={14} />
+                                <button onClick={() => copyToClipboard('undefined')} className="p-1.5 bg-slate-50 text-slate-600 rounded-md hover:bg-slate-100 transition-colors" title="Copy Number">
+                                    <Copy size={14} /> 
                                 </button>
                             </div>
                         </div>

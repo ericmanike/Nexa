@@ -17,7 +17,7 @@ import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
 
 export default function AFAOrdersPage() {
-  const { data, setData } = useDashboard();
+  const { data, setData, refresh } = useDashboard();
 
   // Form states
   const [fullName, setFullName] = useState("");
@@ -78,8 +78,24 @@ export default function AFAOrdersPage() {
 
     setIsSubmitting(true);
     try {
-      // 2 seconds visual submission loader
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const res = await fetch("/api/afa", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fullName,
+          phoneNumber,
+          ghanaCard,
+          location,
+        }),
+      });
+
+      const responseData = await res.json();
+
+      if (!res.ok) {
+        throw new Error(responseData.error || "Failed to process AFA Registration.");
+      }
 
       setSubmitSuccess(
         `AFA Registration successful for ${fullName} (${phoneNumber}). Wallet debited ${formatCurrency(
@@ -87,49 +103,9 @@ export default function AFAOrdersPage() {
         )}.`
       );
 
-      // Deduct balance and insert new AFA order/transaction into the DashboardContext
-      if (setData) {
-        const newOrderId = `order-afa-${Date.now()}`;
-        const newTxId = `TX-AT-AFA-${Math.floor(100000 + Math.random() * 900000)}`;
-
-        setData({
-          ...data,
-          user: {
-            ...data.user,
-            walletBalance: data.user.walletBalance - AFA_REGISTRATION_PRICE
-          },
-          stats: {
-            ...data.stats,
-            totalOrders: data.stats.totalOrders + 1,
-            totalSpent: data.stats.totalSpent + AFA_REGISTRATION_PRICE
-          },
-          orders: [
-            {
-              _id: newOrderId,
-              bundleName: "AFA Registration Package",
-              network: "AirtelTigo",
-              price: AFA_REGISTRATION_PRICE,
-              phoneNumber: phoneNumber,
-              status: "delivered",
-              transaction_id: newTxId,
-              createdAt: new Date().toISOString()
-            },
-            ...data.orders
-          ],
-          transactions: [
-            {
-              _id: `tx-afa-${Date.now()}`,
-              transactionType: "debit",
-              type: "purchase",
-              amount: AFA_REGISTRATION_PRICE,
-              reference: newTxId,
-              description: `AFA calltime registration for ${fullName} (${phoneNumber})`,
-              status: "success",
-              createdAt: new Date().toISOString()
-            },
-            ...data.transactions
-          ]
-        });
+      // Trigger context refresh to sync stats, orders, and transactions with DB
+      if (refresh) {
+        await refresh();
       }
 
       // Reset form

@@ -254,12 +254,12 @@ export default function Home() {
               Have questions or need assistance? We&apos;re here to help!
             </p>
             <Link
-              href="https://t.me/gigsnetgh"
+              href="https://whatsapp.com/channel/0029VbCQ91f6LwHoZ9KDuc0U"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center rounded-xl bg-[#1e3a8a] hover:bg-[#172554] px-8 py-3.5 text-xs font-black text-white tracking-widest uppercase shadow-md shadow-blue-900/10 transition-all active:scale-[0.98] select-none"
             >
-              Join Telegram
+              Join Whatsapp Channel
             </Link>
           </div>
         </section>

@@ -66,36 +66,21 @@ function topUpwallet() {
                 email: session?.user?.email!,
                 currency: 'GHS',
                 amount: Math.round((amount! + (amount! * 0.02)) * 100), // Convert to kobo
-
+                metadata:{
+                    userId: session?.user?.id,
+                    purchaseType: "top_up",
+                    amount: amount,
+                    reference: reference,
+                     
+                }, 
                 ref: reference,
                 onClose: () => {
+                  toast.error('Payment cancelled');
 
                 },
                 callback: function (response : any) {
-                    (async () => {
-                        try {
-                            const verifyResponse = await fetch('/api/topupWallet', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    email: session?.user?.email!,
-                                    amount,
-                                    reference,
-                                }),
-                            });
-
-                             if (verifyResponse.ok) {
-                                 toast.success('Payment verified successfully!');
-                                 setTimeout(() => window.location.reload(), 1500);
-                             } else {
-                                 toast.error('Payment verification failed');
-                             }
-                        } catch (err) {
-                            console.error('Error verifying payment', err);
-                        } finally {
-
-                        }
-                    })();
+                  toast.success('Payment successful! Wallet will be credited shortly.');
+                  setTimeout(() => window.location.reload(), 1500);
                 },
 
             })

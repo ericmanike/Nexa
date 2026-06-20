@@ -13,6 +13,9 @@ export interface IOrder extends Document {
 
     status: 'pending' | 'delivered' | 'failed' | 'reversed' | 'processing' | 'placed';
     transactionId?: string; // External or generated ID
+    fullName?: string;      // AFA Specific
+    ghanaCard?: string;     // AFA Specific
+    location?: string;      // AFA Specific
     createdAt: Date;
     updatedAt: Date;
 }
@@ -33,6 +36,9 @@ const OrderSchema = new Schema<IOrder>(
             default: 'processing'
         },
         transactionId: { type: String },
+        fullName: { type: String, required: false },
+        ghanaCard: { type: String, required: false },
+        location: { type: String, required: false },
     },
     { timestamps: true }
 );

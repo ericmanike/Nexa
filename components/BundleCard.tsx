@@ -139,10 +139,10 @@ export default function BundleCard({
       <div className="flex justify-center items-center mt-2 mb-4">
         <div
           className={clsx(
-            "w-14 h-14 rounded-full flex items-center justify-center shadow-md",
+            " md:w-14 w-10 md:h-14 h-10 rounded-full flex items-center justify-center shadow-md",
             style.iconBg
           )}
-        >
+        > 
           <Wifi className={clsx("w-6 h-6", style.iconColor)} />
         </div>
       </div>

@@ -165,13 +165,13 @@ export async function POST(request: Request) {
       };
 
      let providerResponse;
-      if (provider === "agentportal" && AGENT_PORTAL_API_KEY) {
-        providerResponse = await handleAgentPortal(order, providerData, AGENT_PORTAL_API_KEY);
-      } else if (provider === "databundlehub" && DATABUNDLEHUB_API_KEY) {
-        providerResponse = await handleDataBundlesHub(order, providerData, DATABUNDLEHUB_API_KEY);
-      } else if (provider === "toppily" && TOPPILY_API_KEY) {
-        providerResponse = await handleTopily(order, providerData, TOPPILY_API_KEY);
-      }
+      // if (provider === "agentportal" && AGENT_PORTAL_API_KEY) {
+      //   providerResponse = await handleAgentPortal(order, providerData, AGENT_PORTAL_API_KEY);
+      // } else if (provider === "databundlehub" && DATABUNDLEHUB_API_KEY) {
+      //   providerResponse = await handleDataBundlesHub(order, providerData, DATABUNDLEHUB_API_KEY);
+      // } else if (provider === "toppily" && TOPPILY_API_KEY) {
+      //   providerResponse = await handleTopily(order, providerData, TOPPILY_API_KEY);
+      // }
 
       await SystemLog.create({
         level: "info",
@@ -260,33 +260,45 @@ export async function POST(request: Request) {
       };
 
       let providerResponse;
-      if (provider === "agentportal" && AGENT_PORTAL_API_KEY) {
-        providerResponse = await handleAgentPortal(order, providerData, AGENT_PORTAL_API_KEY);
-      } else if (provider === "databundlehub" && DATABUNDLEHUB_API_KEY) {
-        providerResponse = await handleDataBundlesHub(order, providerData, DATABUNDLEHUB_API_KEY);
-      } else if (provider === "toppily" && TOPPILY_API_KEY) {
-        providerResponse = await handleTopily(order, providerData, TOPPILY_API_KEY);
-      }
+      // if (provider === "agentportal" && AGENT_PORTAL_API_KEY) {
+      //   providerResponse = await handleAgentPortal(order, providerData, AGENT_PORTAL_API_KEY);
+      // } else if (provider === "databundlehub" && DATABUNDLEHUB_API_KEY) {
+      //   providerResponse = await handleDataBundlesHub(order, providerData, DATABUNDLEHUB_API_KEY);
+      // } else if (provider === "toppily" && TOPPILY_API_KEY) {
+      //   providerResponse = await handleTopily(order, providerData, TOPPILY_API_KEY);
+      // }
 
-      await SystemLog.create({
-        level: "info",
-        category: "webhook",
-        message: `Paystack Webhook: Processed agent store order ${order._id}`,
-        meta: { orderId: order._id, reference, provider, providerResponse },
-      });
+     
 
       return NextResponse.json({ message: "Agent store order created successfully", orderId: order._id }, { status: 201 });
 
-    } else {
-      // Unknown or missing purchaseType
-      console.warn("Paystack Webhook: Unknown or missing purchaseType in metadata", purchaseType);
-      await SystemLog.create({
-        level: "warn",
-        category: "webhook",
-        message: "Paystack Webhook: Unknown or missing purchaseType in metadata",
-        meta: { reference, amount, metadata },
-      });
-      return NextResponse.json({ message: "Webhook received but missing/unrecognized purchaseType" }, { status: 200 });
+    } else if (purchaseType === "top_up") {
+        const { userId, amount, reference } = metadata;
+      
+        // Create transaction log
+        await Transaction.create({
+            user: userId as mongoose.Types.ObjectId,
+            transactionType: "credit",
+            type: "topup",
+            amount: amount,
+            reference: reference,
+            description: `Wallet top-up of GH₵${amount}`,
+            status: "success",
+        });
+        
+        // Credit user's wallet
+        const updatedUser = await User.findOneAndUpdate(
+            { _id: userId },
+            { $inc: { walletBalance: amount } },
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return NextResponse.json({ message: "Wallet top-up failed" }, { status: 400 });
+        }
+        console.log("User wallet balance updated", updatedUser.walletBalance)
+        
+         return NextResponse.json({ message: "Wallet top-up successful", transactionId: reference }, { status: 200 });
     }
 
   } catch (error: any) {

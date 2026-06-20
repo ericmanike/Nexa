@@ -57,7 +57,15 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarPr
       href: "/dashboard/admin/orders",
       icon: ShoppingCart,
       color: "bg-purple-100 text-purple-600"
-    },{
+    },
+    {
+      id: "afa",
+      label: "AFA Orders",
+      href: "/dashboard/admin/afa",
+      icon: Star,
+      color: "bg-amber-100 text-amber-600"
+    },
+    {
       id: "users",
       label: "Manage Users",
       href: "/dashboard/admin/users",

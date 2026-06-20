@@ -56,6 +56,21 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const getRouteLabel = () => {
     const segments = pathname.split("/").filter(Boolean);
     if (segments.length <= 1) return "Dashboard";
+
+    // Handle admin subroutes
+    if (segments[1] === "admin" && segments[2]) {
+      const adminLabels: Record<string, string> = {
+        orders: "Admin Orders & Settings",
+        afa: "AFA Orders (Admin)",
+        users: "Manage Users",
+        bundles: "Manage Bundles",
+        store: "Manage Agent Stores",
+        transactions: "Admin Transactions",
+        notifications: "Manage Notifications"
+      };
+      return adminLabels[segments[2]] || segments[2];
+    }
+
     const subRoute = segments[1];
     const labels: Record<string, string> = {
       packages: "Data Packages",
