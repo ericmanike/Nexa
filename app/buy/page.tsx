@@ -15,6 +15,20 @@ interface Bundle {
   expiry: string;
 }
 
+
+
+interface PaystackMetadata {
+    phoneNumber: string;
+    network: string;
+    bundleId: string;
+    bundleName: string;
+    provider: string;
+    price: number;
+    purchaseType: 'standard' | 'agent_store' | 'top_up';
+    userId: string;
+    agentId: string | null;
+
+}
 export default function BuyPage() {
   const router = useRouter();
 
@@ -115,43 +129,22 @@ export default function BuyPage() {
         currency: "GHS",
         amount: amountInCents,
         ref: reference,
+        metadata:{
+                    phoneNumber: buyPhoneNumber,
+                    network: network,
+                    bundleId: buyBundle.id,
+                    bundleName: buyBundle.name.replaceAll('GB' ,''),
+                    price: mappedPrice,
+                    purchaseType: "standard", 
+                    userId: "",
+                    agentId: null,
+        },
         onClose: () => {
           setIsPurchasing(false);
         },
         callback: function (response: any) {
-          (async () => {
-            try {
-              const res = await fetch("/api/buyDataNoAccount", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  network,
-                  bundleName,
-                  price: mappedPrice,
-                  phoneNumber: buyPhoneNumber,
-                  reference,
-                  
-                }),
-              });
-
-              const data = await res.json();
-
-              if (res.ok) {
-                setPurchaseSuccess(
-                  `Successfully ordered ${bundleName} for ${buyPhoneNumber}. The bundle will deliver shortly.`
-                );
-                setBuyPhoneNumber("");
-              } else {
-                setPurchaseError(data.message || "Payment verification failed.");
-              }
-            } catch (err: any) {
-              setPurchaseError(err.message || "Failed to process data purchase.");
-            } finally {
-              setIsPurchasing(false);
-            }
-          })();
+          toast.success(`Purchase successful ,data bundle will be delived shortly`);
+       
         },
       });
 

@@ -6,12 +6,12 @@ export async function POST(request: Request) {
   try {
     await dbConnect();
 
+    
     const data = await request.json();
 
     const { reference, status } = data;
     console.log('Received webhook data:', data);
 
- 
 
     const order = await Order.findOneAndUpdate(
       { transaction_id: reference,  },
