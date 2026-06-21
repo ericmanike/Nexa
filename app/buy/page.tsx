@@ -108,6 +108,21 @@ export default function BuyPage() {
     setIsPurchasing(true);
 
     try {
+      const statusRes = await fetch("/api/orders-status");
+      if (statusRes.ok) {
+        const statusData = await statusRes.json();
+        if (statusData.ordersClosed) {
+          toast.error("Orders are currently close check back later");
+          setIsConfirmOpen(false);
+          setIsPurchasing(false);
+          return;
+        }
+      }
+    } catch (err) {
+      console.error("Error checking orders status:", err);
+    }
+
+    try {
       const reference = "BUY-" + Date.now().toString();
       const networkMap: Record<string, string> = {
         mtn: "MTN",

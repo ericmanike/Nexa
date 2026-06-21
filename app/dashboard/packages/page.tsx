@@ -6,6 +6,7 @@ import { Wifi } from "lucide-react";
 import BundleCard from "@/components/BundleCard";
 import PurchaseBundleModal from "@/components/PurchaseBundleModal";
 import Loader from "../loading";
+import { toast } from "react-toastify";
 
 export default function PackagesPage() {
   const { data, setData } = useDashboard();
@@ -72,6 +73,21 @@ export default function PackagesPage() {
     }
 
     setIsPurchasing(true);
+
+    try {
+      const statusRes = await fetch("/api/orders-status");
+      if (statusRes.ok) {
+        const statusData = await statusRes.json();
+        if (statusData.ordersClosed) {
+          toast.error("Orders are currently close check back later");
+          setIsConfirmOpen(false);
+          setIsPurchasing(false);
+          return;
+        }
+      }
+    } catch (err) {
+      console.error("Error checking orders status:", err);
+    }
     try {
       const res = await fetch("/api/buyData", {
         method: "POST",
