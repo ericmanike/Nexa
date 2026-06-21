@@ -72,15 +72,16 @@ export async function POST(request: Request) {
       user: user._id,
       transaction_id: newTxId,
       bundleName: "AFA Registration Package",
-      network: "AirtelTigo",
-      price: AFA_REGISTRATION_PRICE,
+      network: "MTN",
+      price: AFA_REGISTRATION_PRICE, 
       phoneNumber,
-      payment_id: `pay-afa-${Date.now()}-${Math.floor(100000 + Math.random() * 900000)}`,
-      status: "delivered", // Automatically set to delivered as registered successfully
-      fullName: fullName.trim(),
+      payment_id: `afa-${Date.now()}-${Math.floor(100000 + Math.random() * 900000)}`,
+      status: "processing", // Automatically set to delivered as registered successfully
+      fullName: fullName.trim(),  
       ghanaCard: ghanaCard.trim().toUpperCase(),
       location: location.trim(),
     });
+
 
     // Create Transaction Log
     await Transaction.create({

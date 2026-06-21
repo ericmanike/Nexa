@@ -101,16 +101,17 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarPr
       href: "/dashboard/admin/notifications",
       icon: Bell, 
       color: "bg-blue-100 text-blue-600"
-    });
-  }
-
-  sidebarItems.push({
-    id: "profile",
-    label: "Profile",
-    href: "/dashboard/profile",
+    } ,   {
+      id: "dashboard",
+    label: "User Dashboard",
+    href: "/dashboard",
     icon: UserIcon,
     color: "bg-gray-100 text-gray-700"
-  });
+    })
+  
+  }
+
+  
 
   return (
     <>

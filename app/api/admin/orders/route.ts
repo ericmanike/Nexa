@@ -14,7 +14,7 @@ export async function GET() {
     }
 
     await dbConnect();
-    const orders = await Order.find({})
+    const orders = await Order.find({ bundleName: { $ne: "AFA Registration Package" } })
       .populate("user", "name email phone")
       .sort({ createdAt: -1 });
 

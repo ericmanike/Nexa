@@ -17,7 +17,7 @@ export default function WhatsAppWidget() {
     }, []);
 
     // Hide on specific administrative routes
-    const hiddenRoutes = [ "/dashboard/admin", "/dashboard"];
+    const hiddenRoutes = [ "/dashboard/admin"];
     const isHiddenRoute = hiddenRoutes.some(route => pathname?.startsWith(route));
 
     if (isHiddenRoute || !isVisible) return null;
