@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongoose";
 import Order from "@/models/Order";
 import User from "@/models/User";
+import Setting from "@/models/Setting";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,7 @@ export async function GET() {
 
     await dbConnect();
     const orders = await Order.find({ bundleName: "AFA Registration Package" })
-      .populate("user", "name email phone")
+      .populate("user", "name email phone ")
       .sort({ createdAt: -1 });
 
     return NextResponse.json(orders);
@@ -55,6 +56,34 @@ export async function PATCH(req: Request) {
     return NextResponse.json(updatedOrder);
   } catch (error: any) {
     console.error("Error updating admin AFA order status:", error);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  }
+}
+
+// PUT /api/admin/afa - Update AFA price setting (Admin only)
+export async function PUT(req: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user || (session.user as any).role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { price } = await req.json();
+
+    if (price === undefined || isNaN(Number(price)) || Number(price) < 0) {
+      return NextResponse.json({ error: "Invalid price value" }, { status: 400 });
+    }
+
+    await dbConnect();
+    const setting = await Setting.findOneAndUpdate(
+      { key: "afaRegistrationPrice" },
+      { value: Number(price) },
+      { upsert: true, new: true }
+    );
+
+    return NextResponse.json({ price: Number(setting.value) });
+  } catch (error: any) {
+    console.error("Error updating AFA price setting:", error);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

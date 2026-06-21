@@ -17,6 +17,11 @@ export default function AdminAFAOrdersPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [processingId, setProcessingId] = useState<string | null>(null);
 
+  const [afaPrice, setAfaPrice] = useState(5.0);
+  const [isEditingPrice, setIsEditingPrice] = useState(false);
+  const [newPriceInput, setNewPriceInput] = useState("");
+  const [savingPrice, setSavingPrice] = useState(false);
+
   const fetchAFAOrders = async () => {
     try {
       setLoading(true);
@@ -30,13 +35,68 @@ export default function AdminAFAOrdersPage() {
       console.error(e);
       toast.error("Error fetching AFA orders");
     } finally {
+     
       setLoading(false);
+    }
+  };
+
+  const fetchAFAPrice = async () => {
+    
+    try {
+      const res = await fetch("/api/afa");
+      if (res.ok) {
+        const result = await res.json();
+        if (result.price !== undefined) {
+          setAfaPrice(Number(result.price));
+          setNewPriceInput(result.price.toString());
+        }
+      }
+    } catch (e) {
+      console.error("Error fetching AFA price:", e);
     }
   };
 
   useEffect(() => {
     fetchAFAOrders();
+    fetchAFAPrice();
+
   }, []);
+
+
+  useEffect(() => {
+     console.log("orders", orders);
+  }, [orders]);
+
+  const handleSavePrice = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const val = parseFloat(newPriceInput);
+    if (isNaN(val) || val < 0) {
+      toast.error("Please enter a valid price");
+      return;
+    }
+    setSavingPrice(true);
+    try {
+      const res = await fetch("/api/admin/afa", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ price: val }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setAfaPrice(data.price);
+        setIsEditingPrice(false);
+        toast.success("AFA Registration Price updated successfully!");
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        toast.error("Failed to save price: " + (errorData.error || "Unknown error"));
+      }
+    } catch (e) {
+      console.error("Error saving AFA price:", e);
+      toast.error("Error saving price");
+    } finally {
+      setSavingPrice(false);
+    }
+  };
 
   const handleUpdateStatus = async (orderId: string, status: string) => {
     setProcessingId(orderId);
@@ -93,9 +153,59 @@ export default function AdminAFAOrdersPage() {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-3 duration-400">
-      <div>
-        <h2 className="text-lg font-bold text-zinc-900">AFA Registration Orders</h2>
-        <p className="text-sm text-zinc-500 mt-0.5">Manage user AFA calltime registration details and updates</p>
+      <div className="flex flex-col gap-4 md:flex-row justify-between items-center w-full bg-gradient-to-r from-[#1e3a8a] to-[#2563eb] p-6 rounded-2xl shadow-md border border-slate-200/20 text-white">
+        <div>
+          <h2 className="text-xl font-black text-white tracking-tight flex items-center gap-2 select-none">
+            <Star className="h-5 w-5 text-amber-400 fill-amber-400 animate-pulse" />
+            AFA Registration Orders
+          </h2>
+          <p className="text-xs text-blue-100 font-medium mt-1">Manage user AFA calltime registration details, check Ghana Cards, and update pricing settings</p>
+        </div>
+        
+        {/* Dynamic AFA Price Editor */}
+        <div className="bg-white/10 backdrop-blur-sm px-5 py-3.5 rounded-xl border border-white/15 text-white w-full md:w-auto min-w-[220px]">  
+          <span className="text-[10px] font-black text-blue-200 uppercase tracking-widest block select-none">AFA Registration Price</span>
+          {isEditingPrice ? (
+            <form onSubmit={handleSavePrice} className="flex gap-2.5 items-center mt-1.5">
+              <input
+                type="number"
+                step="0.01"
+                required
+                value={newPriceInput}
+                onChange={(e) => setNewPriceInput(e.target.value)}
+                className="w-24 px-2.5 py-1.5 rounded-lg bg-white text-slate-900 text-xs font-black outline-none border border-slate-200 focus:ring-2 focus:ring-amber-400"
+                disabled={savingPrice}
+              />
+              <button
+                type="submit"
+                disabled={savingPrice}
+                className="px-3.5 py-1.5 bg-amber-400 hover:bg-amber-500 text-slate-900 text-xs font-bold rounded-lg shadow-sm transition-all cursor-pointer disabled:opacity-50 active:scale-95"
+              >
+                {savingPrice ? "Saving..." : "Save"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsEditingPrice(false);
+                  setNewPriceInput(afaPrice.toString());
+                }}
+                className="text-xs font-bold text-slate-300 hover:text-white underline cursor-pointer"
+              >
+                Cancel
+              </button>
+            </form>
+          ) : (
+            <div className="flex justify-between items-baseline gap-6 mt-1">
+              <span className="text-2xl font-black text-white">{formatCurrency(afaPrice)}</span>
+              <button
+                onClick={() => setIsEditingPrice(true)}
+                className="text-xs font-black text-amber-300 hover:text-amber-400 underline cursor-pointer uppercase tracking-wider"
+              >
+                Edit Price
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Stats Cards */}

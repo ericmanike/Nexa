@@ -69,19 +69,7 @@ export async function POST(request: Request) {
     }
     metadata = metadata || {};
 
-    // // Check if orders are closed
-    // const ordersClosedDoc = await Setting.findOne({ key: "ordersClosed" }).select("value");
-    // if (Boolean(ordersClosedDoc?.value)) {
-    //   console.warn("Paystack Webhook: Orders are closed but payment went through.");
-    //   await SystemLog.create({
-    //     level: "warn",
-    //     category: "webhook",
-    //     message: "Paystack Webhook: Payment received while orders are closed",
-    //     meta: { reference, amount, metadata },
-    //   });
-    // }
-
-    // Prevent duplicate orders
+ 
     const existingOrder = await Order.findOne({ payment_id: reference });
     if (existingOrder) {
       console.log(`Paystack Webhook: Order already exists for reference ${reference}. Skipping.`);
@@ -165,13 +153,13 @@ export async function POST(request: Request) {
       };
 
      let providerResponse;
-      // if (provider === "agentportal" && AGENT_PORTAL_API_KEY) {
-      //   providerResponse = await handleAgentPortal(order, providerData, AGENT_PORTAL_API_KEY);
-      // } else if (provider === "databundlehub" && DATABUNDLEHUB_API_KEY) {
-      //   providerResponse = await handleDataBundlesHub(order, providerData, DATABUNDLEHUB_API_KEY);
-      // } else if (provider === "toppily" && TOPPILY_API_KEY) {
-      //   providerResponse = await handleTopily(order, providerData, TOPPILY_API_KEY);
-      // }
+      if (provider === "agentportal" && AGENT_PORTAL_API_KEY) {
+        providerResponse = await handleAgentPortal(order, providerData, AGENT_PORTAL_API_KEY);
+      } else if (provider === "databundlehub" && DATABUNDLEHUB_API_KEY) {
+        providerResponse = await handleDataBundlesHub(order, providerData, DATABUNDLEHUB_API_KEY);
+      } else if (provider === "toppily" && TOPPILY_API_KEY) {
+        providerResponse = await handleTopily(order, providerData, TOPPILY_API_KEY);
+      }
 
       await SystemLog.create({
         level: "info",
@@ -260,13 +248,13 @@ export async function POST(request: Request) {
       };
 
       let providerResponse;
-      // if (provider === "agentportal" && AGENT_PORTAL_API_KEY) {
-      //   providerResponse = await handleAgentPortal(order, providerData, AGENT_PORTAL_API_KEY);
-      // } else if (provider === "databundlehub" && DATABUNDLEHUB_API_KEY) {
-      //   providerResponse = await handleDataBundlesHub(order, providerData, DATABUNDLEHUB_API_KEY);
-      // } else if (provider === "toppily" && TOPPILY_API_KEY) {
-      //   providerResponse = await handleTopily(order, providerData, TOPPILY_API_KEY);
-      // }
+      if (provider === "agentportal" && AGENT_PORTAL_API_KEY) {
+        providerResponse = await handleAgentPortal(order, providerData, AGENT_PORTAL_API_KEY);
+      } else if (provider === "databundlehub" && DATABUNDLEHUB_API_KEY) {
+        providerResponse = await handleDataBundlesHub(order, providerData, DATABUNDLEHUB_API_KEY);
+      } else if (provider === "toppily" && TOPPILY_API_KEY) {
+        providerResponse = await handleTopily(order, providerData, TOPPILY_API_KEY);
+      }
 
      
 

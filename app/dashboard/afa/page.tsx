@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDashboard } from "../DashboardContext";
 import {
   Smartphone,
@@ -25,14 +25,32 @@ export default function AFAOrdersPage() {
   const [ghanaCard, setGhanaCard] = useState("");
   const [location, setLocation] = useState("");
 
+  const [afaPrice, setAfaPrice] = useState(5.0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
+  useEffect(() => {
+    const fetchPrice = async () => {
+      try {
+        const res = await fetch("/api/afa");
+        if (res.ok) {
+          const result = await res.json();
+          if (result.price !== undefined) {
+            setAfaPrice(Number(result.price));
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching dynamic AFA price:", err);
+      }
+    };
+    fetchPrice();
+  }, []);
+
   if (!data) return null;
 
   const user = data.user || { name: "User", email: "guest@dakazina.com", role: "user", walletBalance: 0 };
-  const AFA_REGISTRATION_PRICE = 5.0; // Defined price for registration (GHS 5.00)
+  const AFA_REGISTRATION_PRICE = afaPrice; // Dynamically loaded price
   const isBalanceInsufficient = user.walletBalance < AFA_REGISTRATION_PRICE;
 
   // Real-time Validation rules
@@ -41,7 +59,7 @@ export default function AFAOrdersPage() {
   const isGhanaCardValid = /^GHA-\d{9}-\d$/i.test(ghanaCard);
   const isNameValid = fullName.trim().length > 0;
   const isLocationValid = location.trim().length >= 3;
-  const isFormValid = isNameValid && isPhoneValid && isGhanaCardValid && isLocationValid && !isBalanceInsufficient;
+
 
   // Auto-format Ghana Card input as user types
   const handleGhanaCardChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,8 +89,24 @@ export default function AFAOrdersPage() {
     setSubmitError(null);
     setSubmitSuccess(null);
 
-    if (!isFormValid) {
-      setSubmitError("Please fill in all fields correctly and ensure your balance is sufficient.");
+    if (!isNameValid) {
+      setSubmitError("Please enter your Full Name as it appears on your Ghana Card.");
+      return;
+    }
+    if (!isPhoneValid) {
+      setSubmitError("Please enter a valid 10-digit phone number.");
+      return;
+    }
+    if (!isGhanaCardValid) {
+      setSubmitError("Please enter a valid Ghana Card number in the format: GHA-XXXXXXXXX-X.");
+      return;
+    }
+    if (!isLocationValid) {
+      setSubmitError("Please enter a detailed location or address (minimum 3 characters).");
+      return;
+    }
+    if (isBalanceInsufficient) {
+      setSubmitError(`Insufficient wallet balance. Available balance: ${formatCurrency(user.walletBalance)}. Required: ${formatCurrency(AFA_REGISTRATION_PRICE)}.`);
       return;
     }
 
@@ -135,7 +169,7 @@ export default function AFAOrdersPage() {
             AFA Registration
           </h3>
           <p className="text-[11px] font-semibold text-indigo-100/90 leading-relaxed max-w-sm">
-            Register for AFA Calltime Package - Stay connected with affordable rates
+            Register for AFA Calltime Package for {formatCurrency(AFA_REGISTRATION_PRICE)} - Stay connected with affordable rates
           </p>
         </div>
 
@@ -251,7 +285,10 @@ export default function AFAOrdersPage() {
                   : "bg-emerald-50 text-emerald-800 border-emerald-100"
               }`}>
                 <Info size={16} className={isBalanceInsufficient ? "text-red-500" : "text-emerald-500"} />
-                <span>Available balance: {formatCurrency(user.walletBalance)}</span>
+                <div className="flex flex-col sm:flex-row justify-between w-full gap-1">
+                  <span>Registration Fee: {formatCurrency(AFA_REGISTRATION_PRICE)}</span>
+                  <span className="sm:text-right font-medium text-slate-400">Available Balance: {formatCurrency(user.walletBalance)}</span>
+                </div>
               </div>
 
               {/* Insufficient Wallet Warning Box */}
@@ -272,12 +309,8 @@ export default function AFAOrdersPage() {
             {/* Submit Action Button */}
             <button
               type="submit"
-              disabled={isSubmitting || !isFormValid}
-              className={`w-full py-3.5 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2.5 transition-all duration-200 select-none shadow-sm cursor-pointer ${
-                isFormValid 
-                  ? "bg-indigo-600 hover:bg-indigo-700 text-white active:scale-[0.99] hover:shadow-md" 
-                  : "bg-slate-200 text-slate-400 cursor-not-allowed"
-              }`}
+              disabled={isSubmitting}
+              className="w-full py-3.5 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2.5 transition-all duration-200 select-none shadow-sm cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white active:scale-[0.99] hover:shadow-md disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>
@@ -285,7 +318,7 @@ export default function AFAOrdersPage() {
                 </>
               ) : (
                 <>
-                  <UserPlus size={15} /> Continue
+                  <UserPlus size={15} /> Continue - Pay {formatCurrency(AFA_REGISTRATION_PRICE)}
                 </>
               )}
             </button>

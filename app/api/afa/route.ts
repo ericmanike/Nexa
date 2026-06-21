@@ -5,8 +5,22 @@ import dbConnect from "@/lib/mongoose";
 import User from "@/models/User";
 import Order from "@/models/Order";
 import Transaction from "@/models/Transaction";
+import Setting from "@/models/Setting";
 
 export const dynamic = "force-dynamic";
+
+// GET /api/afa - Fetch the current AFA registration price
+export async function GET() {
+  try {
+    await dbConnect();
+    const afaPriceDoc = await Setting.findOne({ key: "afaRegistrationPrice" });
+    const price = afaPriceDoc && afaPriceDoc.value !== undefined ? Number(afaPriceDoc.value) : 5.0;
+    return NextResponse.json({ price });
+  } catch (error: any) {
+    console.error("Error fetching AFA registration price:", error);
+    return NextResponse.json({ error: "Failed to fetch price" }, { status: 500 });
+  }
+}
 
 export async function POST(request: Request) {
   try {
@@ -33,13 +47,16 @@ export async function POST(request: Request) {
 
     await dbConnect();
 
+    // Fetch the dynamic price from settings
+    const afaPriceDoc = await Setting.findOne({ key: "afaRegistrationPrice" });
+    const AFA_REGISTRATION_PRICE = afaPriceDoc && afaPriceDoc.value !== undefined ? Number(afaPriceDoc.value) : 5.0;
+
     // Get current user and verify balance
     const user = await User.findById((session.user as any).id);
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const AFA_REGISTRATION_PRICE = 5.0;
     if (user.walletBalance < AFA_REGISTRATION_PRICE) {
       return NextResponse.json({ error: "Insufficient wallet balance." }, { status: 400 });
     }
@@ -48,7 +65,7 @@ export async function POST(request: Request) {
     user.walletBalance -= AFA_REGISTRATION_PRICE;
     await user.save();
 
-    const newTxId = `TX-AT-AFA-${Math.floor(100000 + Math.random() * 900000)}`;
+    const newTxId = `NEXA-AFA-${Math.floor(100000 + Math.random() * 900000)}`;
 
     // Create Order
     const order = await Order.create({
@@ -72,7 +89,7 @@ export async function POST(request: Request) {
       type: "purchase",
       amount: AFA_REGISTRATION_PRICE,
       reference: newTxId,
-      description: `AFA calltime registration for ${fullName.trim()} (${phoneNumber})`,
+      description: `AFA registration for ${fullName.trim()} (${phoneNumber})`,
       status: "success",
     });
 

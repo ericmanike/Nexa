@@ -153,14 +153,14 @@ export default function AdminBundlesPage() {
                 >
                   <option value="user">Regular User</option>
                   <option value="agent">Agent / Reseller</option>
-                  <option value="promo">Promo Bundle</option>
+                  <option value="afa"> Set AFA Package Price</option>
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-zinc-700 mb-1">Bundle Name</label>
                 <input
                   type="text"
-                  placeholder="e.g. 1GB"
+                  placeholder="e.g. 1GB "
                   required
                   className="w-full px-4 py-2 rounded-lg border border-zinc-300 focus:ring-2 focus:ring-slate-200 focus:border-slate-400 outline-none"
                   value={bundleForm.name}
