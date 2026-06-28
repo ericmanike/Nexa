@@ -32,11 +32,8 @@ export async function GET() {
       .sort({ createdAt: -1 })
       .limit(10);
 
-    // Fetch agent storefront if role is agent
-    let agentStore = null;
-    if (user.role === "agent") {
-      agentStore = await AgentStore.findOne({ user: user._id });
-    }
+    // Fetch agent storefront
+    const agentStore = await AgentStore.findOne({ user: user._id });
 
     // Get count statistics
     const totalOrders = await Order.countDocuments({ user: user._id });
@@ -111,9 +108,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    if (user.role !== "agent") {
-      return NextResponse.json({ error: "Unauthorized: Only agents can have stores" }, { status: 403 });
-    }
 
     // Find or create agent storefront
     let agentStore = await AgentStore.findOne({ user: user._id });

@@ -72,6 +72,11 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     }
 
     const subRoute = segments[1];
+    if (subRoute === "store" && segments[2]) {
+      if (segments[2] === "settings") return "Store Settings";
+      if (segments[2] === "prices") return "Package Prices";
+    }
+
     const labels: Record<string, string> = {
       packages: "Data Packages",
       orders: "My Orders",
