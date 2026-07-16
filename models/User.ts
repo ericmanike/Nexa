@@ -3,6 +3,7 @@ import mongoose, { Schema, Document, Model } from 'mongoose';
 export interface IUser extends Document {
     name: string;
     email: string;
+    referralCode: string;
     password?: string;
     role: 'user' | 'agent' | 'admin' | 'moderator';
     walletBalance: number;
@@ -16,6 +17,7 @@ const UserSchema = new Schema<IUser>(
     {
         name: { type: String, required: true },
         email: { type: String, required: true, unique: true },
+        referralCode: { type: String, unique: true  },
         password: { type: String, select: false },
         role: { type: String, enum: ['user','agent', 'admin', 'moderator'], default: 'user' },
         walletBalance: { type: Number, default: 0.00 },

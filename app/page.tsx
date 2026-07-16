@@ -32,7 +32,7 @@ export default function Home() {
             Login
           </Link>
           <Link
-            href="/buy"
+            href="/auth/signIn"
             className="rounded-xl bg-[#fdc700] hover:bg-[#a98700] px-5 py-2.5 text-xs font-black text-black tracking-wider uppercase shadow-md shadow-red-600/10 transition-all active:scale-[0.98]"
           >
             Buy Now
@@ -114,7 +114,7 @@ export default function Home() {
               </div>
 
               <Link
-                href="/buy"
+                href="/auth/signIn"
                 className="text-[#df0000] font-black tracking-wider uppercase text-xs sm:text-sm hover:underline flex items-center gap-1 group pb-0.5"
               >
                 See More{" "}
@@ -128,7 +128,7 @@ export default function Home() {
             <div className="grid grid-cols-2 md:grid-cols-3 md:gap-5 gap-2  md:mb-10 mb-6">
              
               {/* Card 1: AirtelTigo */}
-              <Link href={'/buy'}>
+              <Link href={'/auth/signIn'}>
               <div className="relative bg-[#0066b3] rounded-[28px] pt-6 pb-7 px-3 flex flex-col items-center justify-between shadow-[0_20px_45px_rgba(0,102,179,0.18)] hover:-translate-y-2.5 transition-all duration-300 group cursor-pointer h-[250px]">
                
               
@@ -159,7 +159,7 @@ export default function Home() {
                 </Link>
 
               {/* Card 2: MTN */}
-              <Link href={'/buy'}>
+              <Link href={'/auth/signIn'}>
               <div className="relative bg-[#ffcc00] rounded-[28px] pt-6 pb-7 px-3 flex flex-col items-center justify-between shadow-[0_20px_45px_rgba(255,204,0,0.15)] hover:-translate-y-2.5 transition-all duration-300 group cursor-pointer h-[250px]">
             
              
@@ -189,7 +189,7 @@ export default function Home() {
               </Link>
 
               {/* Card 3: Telecel */}
-              <Link href={"/buy"}>
+              <Link href={"/auth/signIn"}>
               <div className="relative bg-[#df0000] rounded-[28px] pt-6 pb-7 px-6 flex flex-col items-center justify-between shadow-[0_20px_45px_rgba(223,0,0,0.18)] hover:-translate-y-2.5 transition-all duration-300 group cursor-pointer h-[250px]">
                
 

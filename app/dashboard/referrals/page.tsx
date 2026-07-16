@@ -55,7 +55,7 @@ export default function ReferralsPage() {
             <input
               type="text"
               readOnly
-              value={`https://nexabundlesgh.com/auth/signUp?ref=${user.id}`}
+              value={`https://nexabundles.com/auth/signUp?ref=${user.id}`}  
               className="bg-transparent border-none flex-1 outline-none text-xs text-slate-600 px-2 font-mono"
             />
             <button

@@ -31,7 +31,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
       </div>
 
       {/* 2. Promo Banner Card (Green) */}
-      <div className="w-full max-w-[430px] mb-5">
+      {/* <div className="w-full max-w-[430px] mb-5">
         <Link
           href="/buy"
           className="flex items-center justify-between rounded-2xl border border-[#bef2dc] bg-[#e6fbf3] px-5 py-4 shadow-sm hover:bg-[#dbf8ec] transition-all duration-200 group"
@@ -46,7 +46,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
           </div>
           <ArrowRight className="h-4.5 w-4.5 text-[#047857] group-hover:translate-x-0.5 transition-transform duration-200" strokeWidth={2.5} />
         </Link>
-      </div>
+      </div> */}
 
       {/* 3. The Dynamic Card Content (Children) */}
       <div className="w-full max-w-[430px]">

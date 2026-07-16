@@ -37,15 +37,27 @@ export async function POST(req: Request) {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Generate a unique referral code
+        let referralCode = "";
+        let isUnique = false;
+        while (!isUnique) {
+            referralCode = "NEXA-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+            const existing = await User.findOne({ referralCode });
+            if (!existing) {
+                isUnique = true;
+            }
+        }
+
         const user = await User.create({
             name,
             email,
             password: hashedPassword,
             phone,
+            referralCode,
         });
 
         return NextResponse.json(
-            { message: "User created successfully", user: { id: user._id, name: user.name, email: user.email } },
+            { message: "User created successfully", user: { id: user._id, name: user.name, email: user.email, referralCode: user.referralCode } },
             { status: 201 }
         );
     } catch (error) {
