@@ -84,7 +84,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarPr
      {
       id: "store",
       label: "Manage Agent Stores",
-      href: "/dashboard/admin/store",
+      href: "/dashboard/admin/stores",
       icon: Store,
       color: "bg-emerald-100 text-emerald-600"
     },
@@ -101,7 +101,14 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarPr
       href: "/dashboard/admin/notifications",
       icon: Bell, 
       color: "bg-blue-100 text-blue-600"
-    } ,   {
+    },
+    {
+      id: "withdrawals",
+      label: "Withdrawals",
+      href: "/dashboard/admin/withdrawals",
+      icon: Coins,
+      color: "bg-amber-100 text-amber-600"
+    },   {
       id: "dashboard",
     label: "User Dashboard",
     href: "/dashboard",

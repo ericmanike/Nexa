@@ -64,9 +64,11 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         afa: "AFA Orders (Admin)",
         users: "Manage Users",
         bundles: "Manage Bundles",
+        stores: "Manage Agent Stores",
         store: "Manage Agent Stores",
         transactions: "Admin Transactions",
-        notifications: "Manage Notifications"
+        notifications: "Manage Notifications",
+        withdrawals: "Agent Withdrawals"
       };
       return adminLabels[segments[2]] || segments[2];
     }

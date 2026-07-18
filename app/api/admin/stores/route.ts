@@ -15,7 +15,7 @@ export async function GET() {
 
     await dbConnect();
     const stores = await AgentStore.find({})
-      .populate("user", "name email")
+      .populate("user", "name email phone role walletBalance")
       .sort({ createdAt: -1 });
 
     return NextResponse.json(stores);

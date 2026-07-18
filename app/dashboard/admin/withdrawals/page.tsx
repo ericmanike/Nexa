@@ -158,7 +158,7 @@ export default function AdminWithdrawalsPage() {
                                         </td>
                                         <td className="px-6 py-5 text-right">
                                             {w.status === 'pending' ? (
-                                                <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <div className="flex justify-end gap-2 transition-opacity">
                                                     <button
                                                         onClick={() => handleStatusUpdate(w._id, 'approved')}
                                                         disabled={processingId === w._id}
