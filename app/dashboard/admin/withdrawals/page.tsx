@@ -118,11 +118,11 @@ export default function AdminWithdrawalsPage() {
                                         <td className="px-6 py-5">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-400 font-black text-xs">
-                                                    {w.agent.name?.[0] || 'A'}
+                                                    {w.agent?.name?.[0] || 'A'}
                                                 </div>
                                                 <div>
-                                                    <p className="font-bold text-zinc-900 leading-none mb-1">{w.agent.name}</p>
-                                                    <p className="text-xs text-zinc-500">{w.agent.email}</p>
+                                                    <p className="font-bold text-zinc-900 leading-none mb-1">{w.agent?.name || "Unknown Agent"}</p>
+                                                    <p className="text-xs text-zinc-500">{w.agent?.email || "N/A"}</p>
                                                 </div>
                                             </div>
                                         </td>

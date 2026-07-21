@@ -21,6 +21,7 @@ export async function POST(req: Request) {
     if (!network || !bundleId || !phoneNumber) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
+    
 
     await dbConnect();
 
@@ -44,14 +45,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Bundle not found or inactive" }, { status: 404 });
     }
 
-    // Verify sufficient balance
-    if (user.walletBalance < bundle.price) {
+    // Deduct balance atomically to prevent race conditions / double spending
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: user._id, walletBalance: { $gte: bundle.price } },
+      { $inc: { walletBalance: -bundle.price } },
+      { returnDocument: 'after' }
+    );
+
+    if (!updatedUser) {
       return NextResponse.json({ error: "Insufficient wallet balance" }, { status: 400 });
     }
-
-    // Deduct balance
-    user.walletBalance -= bundle.price;
-    await user.save();
 
     // Generate unique transaction reference and payment id
     const randomHex = () => Math.floor(Math.random() * 16777215).toString(16).padEnd(6, "0");
@@ -106,6 +109,7 @@ export async function POST(req: Request) {
       } else if (provider === "agentportal") {
         response = await handleAgentPortal(order, providerData, AGENT_PORTAL_API_KEY);
       }
+      console.log("Provider Response:  ",response)
     } catch (err) {
       console.error("Logged-in user buy provider call error:", err);
     }
@@ -115,7 +119,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      walletBalance: user.walletBalance,
+      walletBalance: updatedUser.walletBalance,
       order: finalOrder,
       transaction,
       response,

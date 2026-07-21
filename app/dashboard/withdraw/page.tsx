@@ -2,16 +2,22 @@
 
 import React, { useState } from "react";
 import { useDashboard } from "../DashboardContext";
-import { Coins } from "lucide-react";
+import { Coins, Loader2 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import WithdrawalModal from "@/components/WithdrawalModal";
 import { toast } from "react-toastify";
 
 export default function WithdrawPage() {
-  const { data, setData } = useDashboard();
+  const { data, setData, loading } = useDashboard();
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
 
-  if (!data) return null;
+  if (loading || !data) {
+    return (
+      <div className="flex justify-center items-center py-20">
+        <Loader2 className="animate-spin text-zinc-500" size={32} />
+      </div>
+    );
+  }
 
   const { user } = data;
 

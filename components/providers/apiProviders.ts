@@ -19,8 +19,8 @@ export async function handleDataBundlesHub(order: any, data: any, apiKey: string
 
   const result = await res.json();
 
-  if(result.success=true) {
-    order.transaction_id ="nexa-"+result.data.transactionReference;
+  if (result.success && result.data) {
+    order.transaction_id = "nexa-" + result.data.transactionReference;
     order.status = "processing";
     await order.save();
   }
@@ -55,8 +55,8 @@ export async  function  handleTopily(order: any, data: any, apiKey: string){
       body: JSON.stringify({
         recipient_msisdn: data.phoneNumber.trim(),
         network_id: networkId,
-        shared_bundle: Number(data.bundleName),
-        incoming_api_ref: data.reference,
+        shared_bundle: (parseInt(data.bundleName) *1000),
+        incoming_api_ref: data.reference, 
       }),
     }
   );
