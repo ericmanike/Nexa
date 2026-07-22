@@ -11,7 +11,7 @@ export async function POST(req: Request) {
         try {
             const { success } = await loginRateLimit.limit(`auth:reset:${identifier}`);
             if (!success) {
-                return NextResponse.json({ error: "Too many password reset attempts. Please try again in 30 minutes." }, { status: 429 });
+                return NextResponse.json({ error: "Too many password reset attempts. Please try again in 5 minutes." }, { status: 429 });
             }
         } catch (rateErr) {
             console.warn("Rate limit check warning:", rateErr);
