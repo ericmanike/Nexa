@@ -7,8 +7,8 @@ import Setting from "@/models/Setting";
 import {handleTopily, handleAgentPortal,handleDataBundlesHub } from "@/components/providers/apiProviders";
 import { createOrder } from "@/lib/orderService";
 import Transaction from "@/models/Transaction";
-
-
+import { validateBody, buyDataNoAccountSchema } from "@/lib/schemas";
+import { buyDataRateLimit } from "@/lib/ratelimit";
 
 export async function POST(req: Request) {
   try {
@@ -16,20 +16,31 @@ export async function POST(req: Request) {
     // Session is optional — guests can place orders too
     const session = await getServerSession(authOptions);
 
-    // const ip = session.user.id;
-    // console.log(  'order rate limit identifier:', ip)
-    // const { success } = await orderRateLimit.limit(ip);
+    let clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+                   req.headers.get("x-real-ip") ||
+                   req.headers.get("cf-connecting-ip") ||
+                   "127.0.0.1";
 
-    // if (!success) {
-    //   return NextResponse.json({ message: "Too many order attempts. Please try again later." }, { status: 429 });
-    // }
-
-    const { network, bundleName, price, phoneNumber, reference } = await req.json();
-
-    console.log('Received data:', { network, bundleName, price, phoneNumber, reference });
-    if (!network || !bundleName || !price || !phoneNumber || !reference) {
-      return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
+    if (clientIp === "::1" || clientIp === "::ffff:127.0.0.1") {
+      clientIp = "127.0.0.1";
     }
+
+    const identifier = session?.user?.id ? `buyDataGuest:user:${session.user.id}` : `buyDataGuest:ip:${clientIp}`;
+    try {
+      const { success } = await buyDataRateLimit.limit(identifier);
+      if (!success) {
+        return NextResponse.json({ message: "Too many order attempts. Please try again later." }, { status: 429 });
+      }
+    } catch (rateErr) {
+      console.warn("Rate limit check warning:", rateErr);
+    }
+
+    const validation = await validateBody(req, buyDataNoAccountSchema);
+    if (!validation.success) {
+      return validation.response;
+    }
+
+    const { network, bundleName, price, phoneNumber, reference } = validation.data;
 
     await dbConnect();
 

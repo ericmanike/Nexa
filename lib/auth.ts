@@ -4,6 +4,8 @@ import GoogleProvider from 'next-auth/providers/google';
 import bcrypt from 'bcryptjs';
 import dbConnect from './mongoose';
 import User from '@/models/User';
+import { loginSchema } from '@/lib/schemas';
+import { loginRateLimit } from '@/lib/ratelimit';
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -17,19 +19,55 @@ export const authOptions: NextAuthOptions = {
                 email: { label: 'Email', type: 'email' },
                 password: { label: 'Password', type: 'password' },
             },
-            async authorize(credentials) {
-                if (!credentials?.email || !credentials?.password) {
-                    throw new Error('Please enter an email and password');
+            async authorize(credentials, req) {
+                const validation = loginSchema.safeParse(credentials);
+                if (!validation.success) {
+                    const issue = validation.error.issues[0];
+                    throw new Error(issue ? issue.message : 'Please enter a valid email and password');
+                }
+
+                const { email, password } = validation.data;
+
+                try {
+                    let clientIp = (req?.headers?.['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
+                                   (req?.headers?.['x-real-ip'] as string) ||
+                                   (req?.headers?.['cf-connecting-ip'] as string) ||
+                                   "127.0.0.1";
+
+                    if (clientIp === "::1" || clientIp === "::ffff:127.0.0.1") {
+                        clientIp = "127.0.0.1";
+                    }
+
+                    const emailIdentifier = `login:email:${email.toLowerCase()}`;
+                    const ipIdentifier = `login:ip:${clientIp}`;
+
+                    console.log(`[Auth Rate Limit] Email: ${email} | IP: ${clientIp}`);
+
+
+                    const [emailCheck, ipCheck] = await Promise.all([
+                        loginRateLimit.limit(emailIdentifier),
+                        loginRateLimit.limit(ipIdentifier),
+                        
+                    ]);
+                
+                    if (!emailCheck.success || !ipCheck.success) {
+                        throw new Error('Too many login attempts. Please try again in 5 minutes.');
+                    }
+                } catch (rateErr: any) {
+                    if (rateErr.message?.includes('Too many login attempts')) {
+                        throw rateErr;
+                    }
+                    console.warn('Login rate limit check warning:', rateErr);
                 }
 
                 await dbConnect();
-                const user = await User.findOne({ email: credentials.email }).select('+password');
+                const user = await User.findOne({ email }).select('+password');
 
                 if (!user) {
                     throw new Error('No user found with this email');
                 }
 
-                const isValid = await bcrypt.compare(credentials.password, user.password!);
+                const isValid = await bcrypt.compare(password, user.password!);
 
                 if (!isValid) {
                     throw new Error('Incorrect password');

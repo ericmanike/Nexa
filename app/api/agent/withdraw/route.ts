@@ -5,6 +5,7 @@ import dbConnect from "@/lib/mongoose";
 import User from "@/models/User";
 import Withdrawal from "@/models/Withdrawal";
 import Transaction from "@/models/Transaction";
+import { validateBody, withdrawSchema } from "@/lib/schemas";
 
 export async function POST(req: Request) {
   try {
@@ -13,32 +14,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const validation = await validateBody(req, withdrawSchema);
+    if (!validation.success) {
+      return validation.response;
+    }
+
+    const { amount: valAmount, phoneNumber, momoName } = validation.data;
+
     await dbConnect();
-
-    const { amount, phoneNumber, momoName } = await req.json();
-
-    // Field validations
-    const valAmount = parseFloat(amount);
-    if (isNaN(valAmount) || valAmount < 50) {
-      return NextResponse.json(
-        { error: "Minimum withdrawal amount is GH₵ 50.00" },
-        { status: 400 }
-      );
-    }
-
-    if (!phoneNumber || phoneNumber.trim().length < 10) {
-      return NextResponse.json(
-        { error: "Valid MoMo phone number is required (min 10 characters)" },
-        { status: 400 }
-      );
-    }
-
-    if (!momoName || !momoName.trim()) {
-      return NextResponse.json(
-        { error: "MoMo account name is required" },
-        { status: 400 }
-      );
-    }
 
     // Retrieve agent profile
     const user = await User.findById((session.user as any).id);

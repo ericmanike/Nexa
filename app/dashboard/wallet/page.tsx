@@ -39,7 +39,7 @@ export default function WalletPage() {
         <div className="space-y-2">
           <h5 className="font-black text-sm">Need Help with Top-Ups?</h5>
           <p className="text-xs text-blue-800 leading-relaxed font-medium">
-            We support automatic deposits via Mobile Money/Card using Paystack. If you prefer, manual Mobile Money transfers can also be processed. Send momo to **054 344 2518** (Eric Manike Haare) and **MUST** use your registered email address **{user.email}** as the reference.
+            We support automatic deposits via Mobile Money/Card using Paystack. If you prefer, manual Mobile Money transfers can also be processed. Contact 054 996 1293.
           </p>
         </div>
       </div>

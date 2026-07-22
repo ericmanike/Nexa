@@ -3,9 +3,20 @@ import bcrypt from 'bcryptjs';
 import dbConnect from '@/lib/mongoose';
 import User from '@/models/User';
 import PasswordReset from '@/models/PasswordReset';
+import { loginRateLimit } from '@/lib/ratelimit';
 
 export async function POST(req: Request) {
     try {
+        const identifier = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "anonymous";
+        try {
+            const { success } = await loginRateLimit.limit(`auth:reset:${identifier}`);
+            if (!success) {
+                return NextResponse.json({ error: "Too many password reset attempts. Please try again in 30 minutes." }, { status: 429 });
+            }
+        } catch (rateErr) {
+            console.warn("Rate limit check warning:", rateErr);
+        }
+
         const { token, password } = await req.json();
 
       

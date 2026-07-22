@@ -51,7 +51,7 @@ export default function DashboardOverviewPage() {
           <Sparkles className=" text-[#fcd34d]  shadow-[25px_30px_60px_#ffffff] " size={30}/>
           </div> 
           <p className="text-[9px] sm:text-sm text-gray-200 font-semibold leading-relaxed">
-        Purchase  data bundles  Easily, Manage orders, Share referrals and Earn  profits.
+            Purchase data bundles easily, manage orders, and earn profits.
           </p>
            <button onClick={()=> router.push('/dashboard/packages')} className="bg-[#ffffff] mt-3 w-full sm:w-auto rounded-2xl text-slate-700 cursor-pointer px-4 py-2 text-sm md:text-xl">Buy Data</button>
         </div> 

@@ -2,19 +2,27 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/mongoose";
 import User from "@/models/User";
-// import { authOptions } from "@/lib/auth";
-// import { verifyOTP } from "@/lib/bulkclick";
+import { validateBody, registerSchema } from "@/lib/schemas";
+import { loginRateLimit } from "@/lib/ratelimit";
 
 export async function POST(req: Request) {
     try {
-        const { name, email, password, phone} = await req.json();
-      //  console.log("The details are : ", { name, email, password, phone, reqId , otp})
-        if (!name || !email || !password || !phone) {
-            return NextResponse.json(
-                { message: "Missing required fields" },
-                { status: 400 }
-            );
+        const identifier = req.headers.get("x-forwarded-for") || "anonymous";
+        try {
+            const { success } = await loginRateLimit.limit(identifier);
+            if (!success) {
+                return NextResponse.json({ message: "Too many registration attempts. Please try again in 30 minutes." }, { status: 429 });
+            }
+        } catch (rateErr) {
+            console.warn("Rate limit check warning:", rateErr);
         }
+
+        const validation = await validateBody(req, registerSchema);
+        if (!validation.success) {
+            return validation.response;
+        }
+
+        const { name, email, password, phone } = validation.data;
 
 
         await dbConnect();

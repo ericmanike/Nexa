@@ -6,6 +6,7 @@ import User from "@/models/User";
 import Order from "@/models/Order";
 import Transaction from "@/models/Transaction";
 import Setting from "@/models/Setting";
+import { buyAfaDataRateLimit } from "@/lib/ratelimit";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,16 @@ export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const identifier = (session.user as any).id || request.headers.get("x-forwarded-for") || "anonymous";
+    try {
+      const { success } = await buyAfaDataRateLimit.limit(identifier);
+      if (!success) {
+        return NextResponse.json({ error: "Too many AFA order attempts. Please wait 5 minutes." }, { status: 429 });
+      }
+    } catch (rateErr) {
+      console.warn("Rate limit check warning:", rateErr);
     }
 
     const { fullName, phoneNumber, ghanaCard, location } = await request.json();

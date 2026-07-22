@@ -85,7 +85,6 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       afa: "AFA Orders",
       wallet: "Wallet",
       transactions: "Transactions",
-      referrals: "My Referrals",
       upgrade: "Role Upgrade",
       store: "My Store",
       withdraw: "Withdraw Rewards",

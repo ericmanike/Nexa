@@ -5,21 +5,58 @@ import Transaction from "@/models/Transaction";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import mongoose from "mongoose";
+import { topUpRateLimit } from "@/lib/ratelimit";
 
 export async function POST(req:NextRequest){
     const mongoSession = await mongoose.startSession();
     mongoSession.startTransaction();
     const session = await getServerSession(authOptions);
+
     if (!session) {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
+ 
+
+        let clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+                       req.headers.get("x-real-ip") ||
+                       req.headers.get("cf-connecting-ip") ||
+                       "127.0.0.1";
+    
+        if (clientIp === "::1" || clientIp === "::ffff:127.0.0.1") {
+          clientIp = "127.0.0.1";
+        }
+    
+        const userId = (session.user as any).id;
+        const userKey = `buyData:user:${userId}`;
+        const ipKey = `buyData:ip:${clientIp}`;
+    
+        try {
+          const [userCheck, ipCheck] = await Promise.all([
+            topUpRateLimit.limit(userKey),
+            topUpRateLimit.limit(ipKey),
+          ]);
+    
+          if (!userCheck.success || !ipCheck.success) {
+            return NextResponse.json({ error: "Too many order attempts. Please try again in 5 minutes." }, { status: 429 });
+          }
+        } catch (rateErr) {
+          console.warn("Rate limit check warning:", rateErr);
+        }
+
+  
+
+
+
+
+
+
     try {
         await dbConnect();
 
         const {email , amount, reference} = await req.json();
 
         // Validate top-up amount
-        if (typeof amount !== 'number' || amount <= 0 || isNaN(amount)) {
+        if (typeof amount !== 'number' || amount <= 10 || isNaN(amount)) {
             return NextResponse.json({ message: "Invalid top-up amount" }, { status: 400 });
         }
 

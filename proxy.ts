@@ -1,10 +1,6 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
-
-
-
-
 export default withAuth(
     async function proxy(req: any) {
         // req.nextauth.token is automatically populated by withAuth

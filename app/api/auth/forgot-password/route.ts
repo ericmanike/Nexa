@@ -4,11 +4,22 @@ import dbConnect from '@/lib/mongoose';
 import User from '@/models/User';
 import PasswordReset from '@/models/PasswordReset';
 import { Resend } from 'resend';
+import { loginRateLimit } from '@/lib/ratelimit';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
     try {
+        const identifier = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "anonymous";
+        try {
+            const { success } = await loginRateLimit.limit(`auth:forgot:${identifier}`);
+            if (!success) {
+                return NextResponse.json({ error: "Too many password reset attempts. Please try again in 30 minutes." }, { status: 429 });
+            }
+        } catch (rateErr) {
+            console.warn("Rate limit check warning:", rateErr);
+        }
+
         const { email } = await req.json();
 
         if (!email) {

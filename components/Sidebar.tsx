@@ -44,8 +44,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarPr
     { id: "afa", label: "AFA Orders", href: "/dashboard/afa", icon: Star, color: "bg-amber-100 text-amber-600" },
     { id: "wallet", label: "Wallet", href: "/dashboard/wallet", icon: Wallet, color: "bg-slate-100 text-slate-700" },
     { id: "transactions", label: "Transactions", href: "/dashboard/transactions", icon: ArrowLeftRight, color: "bg-orange-100 text-orange-600" },
-
-    { id: "referrals", label: "My Referrals", href: "/dashboard/referrals", icon: Gift, color: "bg-rose-100 text-rose-600" },
     { id: "upgrade", label: "Role Upgrade", href: "/dashboard/upgrade", icon: ArrowUpCircle, color: "bg-violet-100 text-violet-600" },
     { id: "store", label: "My Store", href: "/dashboard/store", icon: Store, color: "bg-teal-100 text-teal-600" },
   ];

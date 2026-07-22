@@ -20,7 +20,7 @@ export async function POST(request: Request) {
 
     const key = process.env.PAYSTACK_SECRET_KEY;
     if (!key) {
-      console.error("PAYSTACK_SECRET_KEY is not defined in env variables");
+     
    
       return NextResponse.json({ error: "Webhook signature key missing" }, { status: 500 });
     }
@@ -51,9 +51,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: `Ignored event: ${payload.event}` }, { status: 200 });
     }
 
-    const { reference, status: paymentStatus, amount, metadata: rawMetadata } = payload.data;
+    const { reference, status: paymentStatus, amount: paidAmountInPesewas, metadata: rawMetadata } = payload.data;
+    const paidAmount = paidAmountInPesewas ? (paidAmountInPesewas / 100) - (0.02 * (paidAmountInPesewas / 100)) : 0; 
 
-    if (paymentStatus !== "success") {
+    if (paymentStatus !== "success") { 
       console.log(`Paystack Webhook: Payment status is ${paymentStatus}. Skipping.`);
       return NextResponse.json({ message: `Payment status is ${paymentStatus}` }, { status: 200 });
     }
@@ -86,23 +87,23 @@ export async function POST(request: Request) {
       if (!network || !bundleName || !price || !phoneNumber) {
         throw new Error("Missing required standard metadata fields: network, bundleName, price, phoneNumber");
       }
+       const bundle = await Bundle.findOne({
+        network: network,
+        name: bundleName,
+        amount:price,
+        isActive: true
+       })
 
-//       //Check the price from the database and compare it with the price sent from the frontend (price)
-//       const user = await User.findById(userId);
-//       const dbBundle = await Bundle.findOne({ bundleName: bundleName+"GB" , audience:((session?.user?.role == "agent")? 'agent' : 'user').toString() }); 
-    
-//       if(!dbBundle){ 
-//         throw new Error(`Bundle not found for network: ${network}, bundleName: ${bundleName}`);
-//       } 
-
-//       const tax = 0.02 * price;
-
-//       const expectedPriceInPesewas = Math.round((dbBundle.price + tax) * 100);
-//    console.log("expectedPriceInPesewas", expectedPriceInPesewas, "payload.data.amount", payload.data.amount)
-// if (payload.data.amount !== expectedPriceInPesewas) {
-
-//     return NextResponse.json({ error: "Security Alert: Paid amount mismatch!" }, { status: 400 });
-// }
+      if (paidAmount !== bundle?.price!) {
+        console.log(`Paystack Webhook: Invalid amount for reference ${reference}. Amount ${paidAmount} is less than bundle price ${bundle?.price}`);
+        await SystemLog.create({
+          level: "error",
+          category: "webhook",
+          message: `Paystack Webhook: Invalid amount for reference ${reference}. Amount ${paidAmount} is less than bundle price ${bundle?.price}`,
+          meta: { reference, paidAmount, bundlePrice: bundle?.price },
+        });
+        return NextResponse.json({ message: "Invalid amount" }, { status: 400 });
+      }
 
 
       // Create order
@@ -197,6 +198,21 @@ export async function POST(request: Request) {
       const profit = customPrice - basePrice;
       const network = bundle.network;
 
+      if (paidAmount !== customPrice) {
+        console.log(`Paystack Webhook: Invalid amount for reference ${reference}. Amount ${paidAmount} is less than bundle price ${bundle?.price}`);
+        await SystemLog.create({
+          level: "error",
+          category: "webhook",
+          message: `Paystack Webhook: Invalid amount for reference ${reference}. Amount ${paidAmount} is less than bundle price ${bundle?.price}`,
+          meta: { reference, paidAmount, bundlePrice: bundle?.price },
+        });
+        return NextResponse.json({ message: "Invalid amount" }, { status: 400 });
+      }
+
+      
+
+      
+
       // Create transaction log for the agent
       await Transaction.create({
         user: agentId as mongoose.Types.ObjectId,
@@ -228,7 +244,7 @@ export async function POST(request: Request) {
       await AgentStore.findOneAndUpdate(
         { user: agentId },
         { $inc: { totalProfit: profit, totalSalesCount: 1 } },
-        { new: true }
+        { returnDocument: 'after' }
       );
 
       // Call external provider to send data bundle
@@ -262,23 +278,25 @@ export async function POST(request: Request) {
 
     } else if (purchaseType === "top_up") {
         const { userId, amount, reference } = metadata;
-      
+
+        const topUpAmount = paidAmount 
+
         // Create transaction log
         await Transaction.create({
             user: userId as mongoose.Types.ObjectId,
             transactionType: "credit",
             type: "topup",
-            amount: amount,
+            amount: topUpAmount,
             reference: reference,
-            description: `Wallet top-up of GH₵${amount}`,
+            description: `Wallet top-up of GH₵${topUpAmount}`,
             status: "success",
         });
         
         // Credit user's wallet
         const updatedUser = await User.findOneAndUpdate(
             { _id: userId },
-            { $inc: { walletBalance: amount } },
-            { new: true }
+            { $inc: { walletBalance: topUpAmount } },
+            { returnDocument: 'after' }
         );
 
         if (!updatedUser) {

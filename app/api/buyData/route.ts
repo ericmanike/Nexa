@@ -8,6 +8,8 @@ import Bundle from "@/models/Bundle";
 import Setting from "@/models/Setting";
 import Transaction from "@/models/Transaction";
 import { handleTopily, handleAgentPortal, handleDataBundlesHub } from "@/components/providers/apiProviders";
+import { validateBody, buyDataSchema } from "@/lib/schemas";
+import { buyDataRateLimit } from "@/lib/ratelimit";
 
 export async function POST(req: Request) {
   try {
@@ -16,12 +18,38 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { network, bundleId, phoneNumber } = await req.json();
+    let clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+                   req.headers.get("x-real-ip") ||
+                   req.headers.get("cf-connecting-ip") ||
+                   "127.0.0.1";
 
-    if (!network || !bundleId || !phoneNumber) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    if (clientIp === "::1" || clientIp === "::ffff:127.0.0.1") {
+      clientIp = "127.0.0.1";
     }
-    
+
+    const userId = (session.user as any).id;
+    const userKey = `buyData:user:${userId}`;
+    const ipKey = `buyData:ip:${clientIp}`;
+
+    try {
+      const [userCheck, ipCheck] = await Promise.all([
+        buyDataRateLimit.limit(userKey),
+        buyDataRateLimit.limit(ipKey),
+      ]);
+
+      if (!userCheck.success || !ipCheck.success) {
+        return NextResponse.json({ error: "Too many order attempts. Please try again in 5 minutes." }, { status: 429 });
+      }
+    } catch (rateErr) {
+      console.warn("Rate limit check warning:", rateErr);
+    }
+
+    const validation = await validateBody(req, buyDataSchema);
+    if (!validation.success) {
+      return validation.response;
+    }
+
+    const { network, bundleId, phoneNumber } = validation.data;
 
     await dbConnect();
 
