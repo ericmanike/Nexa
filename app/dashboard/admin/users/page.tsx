@@ -23,6 +23,7 @@ export default function AdminUsersPage() {
   const [topUpModalOpen, setTopUpModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [topUpAmount, setTopUpAmount] = useState("");
+  const [topUpAction, setTopUpAction] = useState("credit");
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -66,24 +67,29 @@ export default function AdminUsersPage() {
     if (!selectedUser || !topUpAmount) { toast.warn("Please enter an amount"); return; }
     const amount = parseFloat(topUpAmount);
     if (amount <= 0) { toast.warn("Amount must be greater than 0"); return; }
+    if (topUpAction === "debit" && (selectedUser.walletBalance || 0) < amount) {
+      toast.warn("Insufficient balance for debit");
+      return;
+    }
     try {
       const res = await fetch("/api/adminTopUp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: selectedUser._id, amount }),
+        body: JSON.stringify({ userId: selectedUser._id, amount, action: topUpAction }),
       });
       const data = await res.json();
       if (res.ok) {
         setUsers(users.map((u) => (u._id === selectedUser._id ? { ...u, walletBalance: data.user.walletBalance } : u)));
-        toast.success(`Successfully added ${formatCurrency(amount)} to ${selectedUser.name}'s wallet!`);
+        toast.success(`Successfully ${topUpAction === "credit" ? "added" : "deducted"} ${formatCurrency(amount)} ${topUpAction === "credit" ? "to" : "from"} ${selectedUser.name}'s wallet!`);
         setTopUpModalOpen(false);
         setSelectedUser(null);
         setTopUpAmount("");
+        setTopUpAction("credit");
       } else {
-        toast.error(data.message || "Failed to top up user balance");
+        toast.error(data.error || data.message || "Failed to update user balance");
       }
     } catch {
-      toast.error("Error topping up user balance");
+      toast.error("Error updating user balance");
     }
   };
 
@@ -104,7 +110,7 @@ export default function AdminUsersPage() {
   };
 
   const openTopUpModal = (user: any) => { setSelectedUser(user); setTopUpModalOpen(true); };
-  const closeTopUpModal = () => { setTopUpModalOpen(false); setSelectedUser(null); setTopUpAmount(""); };
+  const closeTopUpModal = () => { setTopUpModalOpen(false); setSelectedUser(null); setTopUpAmount(""); setTopUpAction("credit"); };
 
   const filteredUsers = users.filter(
     (user) =>
@@ -233,9 +239,9 @@ export default function AdminUsersPage() {
                       )}
                       <button
                         onClick={() => openTopUpModal(user)}
-                        className="inline-flex items-center gap-2 px-3 py-1.5 text-slate-600 hover:text-white hover:bg-slate-600 border border-slate-600 rounded-lg transition-all text-sm font-medium"
+                        className="inline-flex items-center gap-2 px-2 py-1.5 text-slate-600 hover:text-white hover:bg-slate-600 border border-slate-600 rounded-lg transition-all text-xs font-medium"
                       >
-                        <Wallet size={16} /> Top Up
+                       Credit/Debit 
                       </button>
                       {user._id !== currentUserId && (
                         <button
@@ -323,7 +329,7 @@ export default function AdminUsersPage() {
                   onClick={() => openTopUpModal(user)}
                   className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-slate-600 hover:text-white hover:bg-slate-600 border border-slate-600 rounded-lg transition-all text-sm font-medium"
                 >
-                  <Wallet size={16} /> Top Up Balance
+                  <Wallet size={16} /> Manage Balance
                 </button>
                 {user._id !== currentUserId && (
                   <button
@@ -350,7 +356,7 @@ export default function AdminUsersPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in zoom-in fade-in duration-200">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-zinc-900">Top Up User Balance</h3>
+              <h3 className="text-xl font-bold text-zinc-900">Manage User Balance</h3>
               <button onClick={closeTopUpModal} className="text-zinc-400 hover:text-zinc-600 transition-colors">
                 <X size={24} />
               </button>
@@ -366,7 +372,18 @@ export default function AdminUsersPage() {
                 </p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-zinc-700 mb-2">Amount to Add (GHS)</label>
+                <label className="block text-sm font-medium text-zinc-700 mb-2">Action</label>
+                <div className="flex gap-4 mb-4">
+                  <label className="flex items-center gap-2 text-sm text-zinc-700 cursor-pointer">
+                    <input type="radio" value="credit" checked={topUpAction === "credit"} onChange={() => setTopUpAction("credit")} className="accent-slate-600" />
+                    Top Up (Credit)
+                  </label>
+                  <label className="flex items-center gap-2 text-sm text-zinc-700 cursor-pointer">
+                    <input type="radio" value="debit" checked={topUpAction === "debit"} onChange={() => setTopUpAction("debit")} className="accent-slate-600" />
+                    Deduct (Debit)
+                  </label>
+                </div>
+                <label className="block text-sm font-medium text-zinc-700 mb-2">Amount (GHS)</label>
                 <input
                   type="number"
                   step="0.01"
@@ -382,7 +399,10 @@ export default function AdminUsersPage() {
                   <p className="text-sm text-slate-600">
                     New Balance:{" "}
                     <span className="font-bold">
-                      {formatCurrency((selectedUser.walletBalance || 0) + parseFloat(topUpAmount))}
+                      {topUpAction === "credit" 
+                        ? formatCurrency((selectedUser.walletBalance || 0) + parseFloat(topUpAmount))
+                        : formatCurrency(Math.max(0, (selectedUser.walletBalance || 0) - parseFloat(topUpAmount)))
+                      }
                     </span>
                   </p>
                 </div>
@@ -398,7 +418,7 @@ export default function AdminUsersPage() {
                   onClick={handleTopUpUser}
                   className="flex-1 px-4 py-3 bg-slate-600 text-white rounded-xl hover:bg-slate-700 transition-colors font-medium"
                 >
-                  Confirm Top Up
+                  Confirm {topUpAction === "credit" ? "Top Up" : "Deduction"}
                 </button>
               </div>
             </div>

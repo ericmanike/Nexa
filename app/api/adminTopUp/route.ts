@@ -13,11 +13,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { userId, amount } = await req.json();
+    const { userId, amount, action = "credit" } = await req.json();
     const valAmount = parseFloat(amount);
 
     if (!userId || isNaN(valAmount) || valAmount <= 0) {
       return NextResponse.json({ error: "Invalid userId or amount" }, { status: 400 });
+    }
+
+    if (action !== "credit" && action !== "debit") {
+      return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     }
 
     await dbConnect();
@@ -28,18 +32,26 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    user.walletBalance = (user.walletBalance || 0) + valAmount;
+    if (action === "debit" && (user.walletBalance || 0) < valAmount) {
+      return NextResponse.json({ error: "Insufficient balance for debit" }, { status: 400 });
+    }
+
+    if (action === "debit") {
+      user.walletBalance = (user.walletBalance || 0) - valAmount;
+    } else {
+      user.walletBalance = (user.walletBalance || 0) + valAmount;
+    }
     await user.save();
 
-    // Create a credit transaction log
+    // Create a transaction log
     const reference = `TUP-${user._id.toString().substring(0, 8).toUpperCase()}-${Date.now().toString().slice(-4)}`;
     await Transaction.create({
       user: user._id,
-      transactionType: "credit",
-      type: "topup",
+      transactionType: action,
+      type: action === "credit" ? "topup" : "deduction",
       amount: valAmount,
       reference,
-      description: `Admin wallet top up of GH₵ ${valAmount.toFixed(2)}`,
+      description: `Admin wallet ${action === "credit" ? "top up" : "deduction"} of GH₵ ${valAmount.toFixed(2)}`,
       status: "success",
     });
 
