@@ -80,7 +80,7 @@ export async function handleAgentPortal(order: any, data: any, apiKey: string) {
 
   if (data.network.toUpperCase() === "MTN") networkKey = "MTN";
   else if (data.network.toUpperCase() === "TELECEL") networkKey = "Telecel";
-  else if (data.network.toUpperCase().startsWith("AT")) networkKey = "AirtelTigo";
+  else if (data.network.toUpperCase().startsWith("A")) networkKey = "AirtelTigo";
   else throw new Error("Invalid network");
 
   const res = await fetch("https://api.agentportalgh.com/api/queue/add", {

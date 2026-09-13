@@ -1,6 +1,4 @@
 "use client";
-
-import React from "react";
 import Link from "next/link";
 import { useDashboard } from "./DashboardContext";
 import { Sparkles } from 'lucide-react';
