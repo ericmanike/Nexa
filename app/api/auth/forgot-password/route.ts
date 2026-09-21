@@ -57,11 +57,11 @@ export async function POST(req: Request) {
             token: resetToken
         });
 
-        console.log('💾 Password reset record created');
-        console.log('   - Record ID:', resetRecord._id);
-        console.log('   - User ID:', resetRecord.userId);
-        console.log('   - Token (first 10):', resetRecord.token.substring(0, 10));
-        console.log('   - Expires at:', resetRecord.expiresAt);
+        // console.log('💾 Password reset record created');
+        // console.log('   - Record ID:', resetRecord._id);
+        // console.log('   - User ID:', resetRecord.userId);
+        // console.log('   - Token (first 10):', resetRecord.token.substring(0, 10));
+        // console.log('   - Expires at:', resetRecord.expiresAt);
 
         // Create reset URL
         const resetUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/auth/reset-password?token=${resetToken}`;
@@ -74,12 +74,12 @@ export async function POST(req: Request) {
         const emailResult = await resend.emails.send({
             from: process.env.RESEND_FROM_EMAIL || 'info@nyamekyeloans.com',
             to: email,
-            subject: 'Password Reset - MegaGigs',
+            subject: 'Password Reset - Nexa Bundles GH',
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #2563eb;">Password Reset Request</h2>
                     <p>Hi ${user.name},</p>
-                    <p>You requested a password reset for your MegaGigs account.</p>
+                    <p>You requested a password reset for your NexaBundles account.</p>
                     <p>Click the button below to reset your password:</p>
                     <a href="${resetUrl}" 
                        style="display: inline-block; background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 16px 0;">
