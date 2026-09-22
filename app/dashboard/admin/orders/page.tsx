@@ -448,15 +448,18 @@ export default function AdminOrdersPage() {
                       className={`cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border-2 focus:outline-none focus:ring-4 focus:ring-purple-500/10 transition-all shadow-sm
                         ${order.status === "delivered" ? "bg-green-600 text-white border-green-700 hover:bg-green-700" :
                               order.status === "processing" ? "bg-blue-600 text-white border-blue-700 hover:bg-blue-700" :
-                                "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"}
+                                order.status === "failed" ? "bg-red-50 text-red-700 border-red-200 hover:bg-red-100" :
+                                  order.status === "refunded" ? "bg-purple-600 text-white border-purple-700 hover:bg-purple-700" :
+                                    "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"}
                         ${processingId === order._id ? "opacity-50 cursor-not-allowed" : ""}`}
                     >
                       <option value="pending" className="bg-white text-zinc-900">Pending</option>
                       <option value="processing" className="bg-white text-zinc-900">Processing</option>
                       <option value="delivered" className="bg-white text-zinc-900">Delivered</option>
                       <option value="failed" className="bg-white text-zinc-900">Failed</option>
-
-                    
+                      <option value="placed" className="bg-white text-zinc-900">Placed</option>
+                      <option value="reversed" className="bg-white text-zinc-900">Reversed</option>
+                      <option value="refunded" className="bg-white text-zinc-900">Refunded</option>
                     </select>
                   </td>
                   <td className="px-6 py-4 text-right">
@@ -558,7 +561,8 @@ export default function AdminOrdersPage() {
                       order.status === "completed" ? "bg-emerald-500 text-white border-emerald-600 hover:bg-emerald-600" :
                         order.status === "failed" ? "bg-red-50 text-red-700 border-red-200 hover:bg-red-100" :
                           order.status === "processing" ? "bg-blue-600 text-white border-blue-700 hover:bg-blue-700" :
-                            "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"}
+                            order.status === "refunded" ? "bg-purple-600 text-white border-purple-700 hover:bg-purple-700" :
+                              "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"}
                     ${processingId === order._id ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   <option value="pending" className="bg-white text-zinc-900">Pending</option>
@@ -568,6 +572,7 @@ export default function AdminOrdersPage() {
                   <option value="failed" className="bg-white text-zinc-900">Failed</option>
                   <option value="placed" className="bg-white text-zinc-900">Placed</option>
                   <option value="reversed" className="bg-white text-zinc-900">Reversed</option>
+                  <option value="refunded" className="bg-white text-zinc-900">Refunded</option>
                 </select>
               </div>
 

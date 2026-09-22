@@ -352,6 +352,7 @@ export default function AdminAFAOrdersPage() {
                         ${order.status === "delivered" || order.status === "completed" ? "bg-green-600 text-white border-green-700 hover:bg-green-700" :
                           order.status === "processing" ? "bg-blue-600 text-white border-blue-700 hover:bg-blue-700" :
                           order.status === "failed" ? "bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100" :
+                          order.status === "refunded" ? "bg-purple-600 text-white border-purple-700 hover:bg-purple-700" :
                           "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"}
                         ${processingId === order._id ? "opacity-50 cursor-not-allowed" : ""}`}
                     >
@@ -360,6 +361,7 @@ export default function AdminAFAOrdersPage() {
                       <option value="delivered" className="bg-white text-zinc-900">Delivered</option>
                       <option value="completed" className="bg-white text-zinc-900">Completed</option>
                       <option value="failed" className="bg-white text-zinc-900">Failed</option>
+                      <option value="refunded" className="bg-white text-zinc-900">Refunded</option>
                     </select>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
@@ -440,6 +442,7 @@ export default function AdminAFAOrdersPage() {
                     ${order.status === "delivered" || order.status === "completed" ? "bg-green-600 text-white border-green-700 hover:bg-green-700" :
                       order.status === "processing" ? "bg-blue-600 text-white border-blue-700 hover:bg-blue-700" :
                       order.status === "failed" ? "bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100" :
+                      order.status === "refunded" ? "bg-purple-600 text-white border-purple-700 hover:bg-purple-700" :
                       "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"}
                     ${processingId === order._id ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
@@ -448,6 +451,7 @@ export default function AdminAFAOrdersPage() {
                   <option value="delivered" className="bg-white text-zinc-900">Delivered</option>
                   <option value="completed" className="bg-white text-zinc-900">Completed</option>
                   <option value="failed" className="bg-white text-zinc-900">Failed</option>
+                  <option value="refunded" className="bg-white text-zinc-900">Refunded</option>
                 </select>
 
                 <button

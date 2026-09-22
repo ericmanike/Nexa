@@ -110,11 +110,13 @@ export async function POST(request: Request) {
           continue;
         }
 
-        let newStatus: "delivered" | "failed" | null = null;
+        let newStatus: "delivered" | "failed" | "refunded" | null = null;
         if (itemStatus === "success") {
           newStatus = "delivered";
         } else if (itemStatus === "failed") {
           newStatus = "failed";
+        } else if (itemStatus === "refunded") {
+          newStatus = "refunded";
         }
 
         if (newStatus && order.status !== newStatus) {

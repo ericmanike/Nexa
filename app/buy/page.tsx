@@ -345,6 +345,7 @@ export default function BuyPage() {
                                   ${order.status === "delivered" || order.status === "completed" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" :
                                     order.status === "failed" ? "bg-rose-500/20 text-rose-400 border border-rose-500/30" :
                                     order.status === "processing" ? "bg-sky-500/20 text-sky-400 border border-sky-500/30" :
+                                    order.status === "refunded" ? "bg-purple-500/20 text-purple-400 border border-purple-500/30" :
                                     "bg-amber-500/20 text-amber-400 border border-amber-500/30"}`}>
                                   {order.status}
                                 </span>

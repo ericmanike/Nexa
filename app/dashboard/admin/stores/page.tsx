@@ -764,13 +764,15 @@ export default function AdminStoresPage() {
                                 <td className="px-4 py-2.5 font-bold text-zinc-900">{formatCurrency(ord.price)}</td>
                                 <td className="px-4 py-2.5">
                                   <span
-                                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                                      ord.status === "delivered"
-                                        ? "bg-emerald-50 text-emerald-700"
-                                        : ord.status === "failed"
-                                        ? "bg-rose-50 text-rose-700"
-                                        : "bg-amber-50 text-amber-700"
-                                    }`}
+                                     className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                                       ord.status === "delivered"
+                                         ? "bg-emerald-50 text-emerald-700"
+                                         : ord.status === "failed"
+                                         ? "bg-rose-50 text-rose-700"
+                                         : ord.status === "refunded"
+                                         ? "bg-purple-50 text-purple-700"
+                                         : "bg-amber-50 text-amber-700"
+                                     }`}
                                   >
                                     {ord.status}
                                   </span>
@@ -926,9 +928,9 @@ export default function AdminStoresPage() {
               <AlertTriangle size={24} />
             </div>
             <div className="text-center">
-              <h3 className="text-lg font-bold text-zinc-900">Delete Agent Store?</h3>
+              <h3 className="text-lg font-bold text-zinc-900">Delete Agent Shop ?</h3>
               <p className="text-xs text-zinc-500 mt-1">
-                Are you sure you want to permanently delete store{" "}
+                Are you sure you want to permanently delete shop{" "}
                 <span className="font-bold text-zinc-900 truncate inline-block max-w-[200px] align-bottom" title={deletingStore.storeName}>"{deletingStore.storeName}"</span>?
                 This action cannot be undone.
               </p>
@@ -946,7 +948,7 @@ export default function AdminStoresPage() {
                 className="flex-1 py-2.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition-colors inline-flex items-center justify-center gap-1.5 shadow-sm"
               >
                 {deleting && <div className="animate-spin h-3 w-3 border-b-2 border-white rounded-full" />}
-                Delete Store
+                Delete Shop
               </button>
             </div>
           </div>

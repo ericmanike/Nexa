@@ -11,7 +11,7 @@ export interface IOrder extends Document {
     phoneNumber: string;
     payment_id: string;
 
-    status: 'pending' | 'delivered' | 'failed' | 'reversed' | 'processing' | 'placed';
+    status: 'pending' | 'delivered' | 'failed' | 'reversed' | 'processing' | 'placed' | 'refunded';
     transactionId?: string; // External or generated ID
     fullName?: string;      // AFA Specific
     ghanaCard?: string;     // AFA Specific
@@ -32,7 +32,7 @@ const OrderSchema = new Schema<IOrder>(
         payment_id: { type: String, required: true, unique: true },
         status: {
             type: String,
-            enum: ['pending', 'delivered', 'failed','placed', 'reversed', 'processing'],
+            enum: ['pending', 'delivered', 'failed', 'placed', 'reversed', 'processing', 'refunded'],
             default: 'processing'
         },
         transactionId: { type: String },
