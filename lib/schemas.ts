@@ -32,7 +32,7 @@ export const buyDataNoAccountSchema = z.object({
 
 // 3. Agent withdrawal request schema
 export const withdrawSchema = z.object({
-  amount: z.number().min(50, "Minimum withdrawal amount is GH₵ 50.00"),
+  amount: z.number().min(1, "Minimum withdrawal amount is GH₵ 1.00"),
   phoneNumber: phoneNumberSchema,
   momoName: z.string().trim().min(1, "MoMo account name is required"),
 });

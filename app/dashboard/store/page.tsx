@@ -18,10 +18,12 @@ export default function StorePage() {
     if (setData && data) {
       setData({
         ...data,
-        user: {
-          ...data.user,
-          walletBalance: data.user.walletBalance - amt
-        },
+        agentStore: data.agentStore
+          ? {
+              ...data.agentStore,
+              totalProfit: (data.agentStore.totalProfit || 0) - amt
+            }
+          : data.agentStore,
         transactions: [
           {
             _id: `tx-wdr-${Date.now()}`,
@@ -93,7 +95,7 @@ export default function StorePage() {
             <button
               type="button"
               onClick={() => setIsWithdrawOpen(true)}
-              disabled={user.walletBalance < 50}
+              disabled={(Number(agentStore?.totalProfit) || 0) < 1}
               className="mt-3 w-full max-w-[150px] py-1.5 bg-[#feb400] hover:bg-[#e6a200] disabled:opacity-50 text-slate-900 font-bold text-[10px] uppercase tracking-wider rounded-xl transition-all shadow-sm active:scale-[0.99] cursor-pointer"
             >
               Withdraw
@@ -152,7 +154,7 @@ export default function StorePage() {
       <WithdrawalModal
         isOpen={isWithdrawOpen}
         onClose={() => setIsWithdrawOpen(false)}
-        maxAmount={user.walletBalance}
+        maxAmount={agentStore?.totalProfit || 0}
         onSuccess={handleWithdrawSuccess}
       />
     </div>

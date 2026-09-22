@@ -7,6 +7,7 @@ import {  AlertTriangle, Search, ChevronDown, MessageCircle } from "lucide-react
 import BundleCard from "@/components/BundleCard";
 import NologinbuyModal from "@/components/NologinbuyModal";
 import { toast, ToastContainer } from "react-toastify";
+import Loader from "@/app/dashboard/loading";
 
 
 export default function StorefrontPage() {
@@ -201,14 +202,7 @@ export default function StorefrontPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-[#f8fafc]">
-        <div className="flex flex-col items-center gap-3">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#1e3a8a]" />
-          <p className="text-xs font-bold text-slate-500">Loading Storefront...</p>
-        </div>
-      </div>
-    );
+    return <Loader />;
   }
 
   if (notFound || !store) {

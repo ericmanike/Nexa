@@ -65,7 +65,7 @@ export async function PATCH(
 
     const { id } = await params;
     const body = await req.json();
-    const { storeName, slug, description, whatsappSupport, isActive } = body;
+    const { storeName, slug, description, whatsappSupport, isActive, totalProfit } = body;
 
     await dbConnect();
 
@@ -94,6 +94,7 @@ export async function PATCH(
     if (description !== undefined) store.description = description.trim();
     if (whatsappSupport !== undefined) store.whatsappSupport = whatsappSupport.trim();
     if (isActive !== undefined) store.isActive = Boolean(isActive);
+    if (totalProfit !== undefined) store.totalProfit = Number(totalProfit) || 0;
 
     await store.save();
     await store.populate("user", "name email phone role walletBalance");

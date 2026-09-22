@@ -19,7 +19,8 @@ export default function WithdrawPage() {
     );
   }
 
-  const { user } = data;
+  const { user, agentStore } = data;
+  const storeProfit = agentStore?.totalProfit || 0;
 
   const handleWithdrawSuccess = (amt: number) => {
     setIsWithdrawOpen(false);
@@ -28,10 +29,12 @@ export default function WithdrawPage() {
     if (setData) {
       setData({
         ...data,
-        user: {
-          ...data.user,
-          walletBalance: data.user.walletBalance - amt
-        },
+        agentStore: data.agentStore
+          ? {
+              ...data.agentStore,
+              totalProfit: (data.agentStore.totalProfit || 0) - amt
+            }
+          : data.agentStore,
         transactions: [
           {
             _id: `tx-wdr-${Date.now()}`,
@@ -63,19 +66,19 @@ export default function WithdrawPage() {
 
         <div className="bg-slate-50 border border-slate-100 p-6 rounded-2xl text-center space-y-2">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest select-none">
-            Total Active Balance
+            Total Store Profit Balance
           </p>
-          <h4 className="text-4xl font-black text-slate-950 tracking-tight">
-            {formatCurrency(user.walletBalance)}
+          <h4 className="text-4xl font-black text-emerald-600 tracking-tight">
+            {formatCurrency(storeProfit)}
           </h4>
           <p className="text-[11px] text-slate-400 select-none font-semibold">
-            Minimum cashout threshold is GH₵ 50.00
+            Minimum cashout threshold is GH₵ 1.00
           </p>
         </div>
 
         <button
           onClick={() => setIsWithdrawOpen(true)}
-          disabled={user.walletBalance < 50}
+          disabled={(Number(storeProfit) || 0) < 1}
           className="w-full py-4 bg-[#feb400] hover:bg-[#e6a200] text-slate-900 font-bold tracking-wider uppercase text-xs sm:text-sm rounded-2xl shadow-md transition-all active:scale-[0.99] disabled:opacity-50 cursor-pointer"
         >
           Withdraw Profits Now
@@ -85,7 +88,7 @@ export default function WithdrawPage() {
       <WithdrawalModal
         isOpen={isWithdrawOpen}
         onClose={() => setIsWithdrawOpen(false)}
-        maxAmount={user.walletBalance}
+        maxAmount={storeProfit}
         onSuccess={handleWithdrawSuccess}
       />
     </div>

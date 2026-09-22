@@ -5,6 +5,7 @@ import dbConnect from "@/lib/mongoose";
 import Withdrawal from "@/models/Withdrawal";
 import User from "@/models/User";
 import Transaction from "@/models/Transaction";
+import AgentStore from "@/models/AgentStore";
 
 // GET /api/admin/withdrawals - Fetch all agent withdrawal requests (Admin only)
 export async function GET() {
@@ -74,11 +75,17 @@ export async function PATCH(req: Request) {
         await transaction.save();
       }
 
-      // Refund the agent
-      const agent = await User.findById(withdrawal.agent);
-      if (agent) {
-        agent.walletBalance = (agent.walletBalance || 0) + withdrawal.amount;
-        await agent.save();
+      // Refund the agent store totalProfit
+      const agentStore = await AgentStore.findOne({ user: withdrawal.agent });
+      if (agentStore) {
+        agentStore.totalProfit = (agentStore.totalProfit || 0) + withdrawal.amount;
+        await agentStore.save();
+      } else {
+        const agent = await User.findById(withdrawal.agent);
+        if (agent) {
+          agent.walletBalance = (agent.walletBalance || 0) + withdrawal.amount;
+          await agent.save();
+        }
       }
     }
 

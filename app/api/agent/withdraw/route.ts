@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongoose";
 import User from "@/models/User";
 import Withdrawal from "@/models/Withdrawal";
+import AgentStore from "@/models/AgentStore";
 import Transaction from "@/models/Transaction";
 import { validateBody, withdrawSchema } from "@/lib/schemas";
 
@@ -29,17 +30,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Agent account not found" }, { status: 404 });
     }
 
-    // Balance check
-    if (user.walletBalance < valAmount) {
+    // Atomically check and deduct amount from agent store total profit
+    const updatedStore = await AgentStore.findOneAndUpdate(
+      { user: user._id, totalProfit: { $gte: valAmount } },
+      { $inc: { totalProfit: -valAmount } },
+      { returnDocument: "after" }
+    );
+
+    if (!updatedStore) {
+      const existingStore = await AgentStore.findOne({ user: user._id });
+      if (!existingStore) {
+        return NextResponse.json({ error: "Agent store not found" }, { status: 404 });
+      }
       return NextResponse.json(
-        { error: "Insufficient wallet balance for this withdrawal" },
+        { error: "Insufficient store profit balance for this withdrawal" },
         { status: 400 }
       );
     }
-
-    // Deduct amount from wallet balance
-    user.walletBalance -= valAmount;
-    await user.save();
 
     // Create a new pending withdrawal log
     const withdrawal = await Withdrawal.create({
@@ -64,7 +71,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       message: "Withdrawal request submitted successfully.",
       withdrawal,
-      newBalance: user.walletBalance,
+      newTotalProfit: updatedStore.totalProfit,
     });
   } catch (error: any) {
     console.error("Error processing agent withdrawal:", error);

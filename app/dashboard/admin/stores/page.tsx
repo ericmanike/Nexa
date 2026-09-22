@@ -48,6 +48,7 @@ export default function AdminStoresPage() {
     description: "",
     whatsappSupport: "",
     isActive: true,
+    totalProfit: 0,
   });
   const [savingEdit, setSavingEdit] = useState(false);
 
@@ -135,6 +136,7 @@ export default function AdminStoresPage() {
       description: store.description || "",
       whatsappSupport: store.whatsappSupport || "",
       isActive: Boolean(store.isActive),
+      totalProfit: store.totalProfit || 0,
     });
     setEditModalOpen(true);
   };
@@ -211,6 +213,7 @@ export default function AdminStoresPage() {
   const activeStores = stores.filter((s) => s.isActive).length;
   const inactiveStores = totalStores - activeStores;
   const totalSalesCount = stores.reduce((acc, s) => acc + (s.totalSalesCount || 0), 0);
+  const totalProfitSum = stores.reduce((acc, s) => acc + (s.totalProfit || 0), 0);
 
   // Filtered and Sorted Stores
   const filteredStores = stores
@@ -265,7 +268,7 @@ export default function AdminStoresPage() {
       </div>
 
       {/* Summary KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
         <Card className="p-4 bg-white border-zinc-200">
           <div className="flex items-center justify-between">
             <span className="text-xs text-zinc-500 font-semibold uppercase tracking-wider">Active</span>
@@ -294,6 +297,16 @@ export default function AdminStoresPage() {
             </div>
           </div>
           <p className="text-2xl font-black text-blue-600 mt-2">{totalSalesCount}</p>
+        </Card>
+
+        <Card className="p-4 bg-white border-zinc-200">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-zinc-500 font-semibold uppercase tracking-wider">Total Store Profit</span>
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
+              <ShoppingBag size={18} />
+            </div>
+          </div>
+          <p className="text-2xl font-black text-emerald-600 mt-2">{formatCurrency(totalProfitSum)}</p>
         </Card>
       </div>
 
@@ -359,49 +372,54 @@ export default function AdminStoresPage() {
         </div>
 
         {/* Desktop Table */}
-        <div className="hidden lg:block overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-zinc-50 text-zinc-500 font-semibold text-xs uppercase tracking-wider">
+        <div className="hidden lg:block overflow-x-auto h-fit py-5">
+          <table className="w-full text-xs text-left">
+            <thead className="bg-zinc-50 text-zinc-500 font-semibold text-[11px] uppercase tracking-wider">
               <tr>
-                <th className="px-6 py-4">Store Details</th>
-                <th className="px-6 py-4">Owner Account</th>
-                <th className="px-6 py-4">Sales</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4">Created Date</th>
-                <th className="px-6 py-4 text-right">Actions</th>
+                <th className="px-4 py-3">Store Details</th>
+                <th className="px-4 py-3">Owner Account</th>
+                <th className="px-4 py-3">Sales & Profit</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3">Created Date</th>
+                <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100">
               {filteredStores.map((store) => (
                 <tr key={store._id} className="hover:bg-zinc-50/70 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700 shadow-xs border border-slate-200 shrink-0">
-                        <Store size={20} />
+                  <td className="px-4 py-2.5">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-700 border border-slate-200 shrink-0">
+                        <Store size={16} />
                       </div>
-                      <div className="min-w-0">
-                        <p className="font-bold text-zinc-900 text-sm truncate">{store.storeName}</p>
-                        <p className="text-xs text-slate-600 font-mono">/{store.slug}</p>
+                      <div className="min-w-0 max-w-[180px]">
+                        <p className="font-bold text-zinc-900 text-xs truncate" title={store.storeName}>{store.storeName}</p>
+                        <p className="text-[11px] text-slate-500 font-mono truncate">/{store.slug}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2.5">
                     <div className="flex flex-col">
-                      <span className="font-semibold text-zinc-900">{store.user?.name || "Unknown Owner"}</span>
-                      <span className="text-xs text-zinc-500">{store.user?.email || "No email"}</span>
+                      <span className="font-bold text-zinc-900 text-xs">{store.user?.name || "Unknown Owner"}</span>
+                      <span className="text-[11px] text-zinc-500">{store.user?.email || "No email"}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-1.5 font-semibold text-zinc-800">
-                      <Package size={14} className="text-zinc-400" />
-                      {store.totalSalesCount || 0}
+                  <td className="px-4 py-2.5">
+                    <div className="flex flex-col gap-0.5">
+                      <div className="flex items-center gap-1.5 font-semibold text-zinc-800 text-[11px]">
+                        <Package size={12} className="text-zinc-400" />
+                        {store.totalSalesCount || 0} sales
+                      </div>
+                      <div className="text-[11px] font-extrabold text-emerald-600">
+                        {formatCurrency(store.totalProfit || 0)} profit
+                      </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2.5">
                     <button
                       onClick={() => handleToggleActive(store)}
                       disabled={togglingId === store._id}
-                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold transition-all border ${
+                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold transition-all border ${
                         store.isActive
                           ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
                           : "bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100"
@@ -411,50 +429,50 @@ export default function AdminStoresPage() {
                       {togglingId === store._id ? (
                         <div className="animate-spin h-3 w-3 border-b-2 border-current rounded-full" />
                       ) : store.isActive ? (
-                        <CheckCircle2 size={13} />
+                        <CheckCircle2 size={12} />
                       ) : (
-                        <XCircle size={13} />
+                        <XCircle size={12} />
                       )}
                       {store.isActive ? "Active" : "Suspended"}
                     </button>
                   </td>
-                  <td className="px-6 py-4 text-zinc-500 text-xs">
+                  <td className="px-4 py-2.5 text-zinc-500 text-[11px]">
                     {new Date(store.createdAt).toLocaleDateString("en-GB", {
                       day: "numeric",
                       month: "short",
                       year: "numeric",
                     })}
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
+                  <td className="px-4 py-2.5 text-right">
+                    <div className="flex items-center justify-end gap-1">
                       <button
                         onClick={() => handleOpenViewModal(store._id)}
-                        className="p-2 text-zinc-600 hover:text-slate-700 hover:bg-zinc-100 rounded-lg transition-colors"
+                        className="p-1.5 text-zinc-600 hover:text-slate-700 hover:bg-zinc-100 rounded-lg transition-colors"
                         title="View Full Details"
                       >
-                        <Eye size={16} />
+                        <Eye size={14} />
                       </button>
                       <button
                         onClick={() => handleOpenEditModal(store)}
-                        className="p-2 text-zinc-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="p-1.5 text-zinc-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                         title="Edit Store Settings"
                       >
-                        <Edit size={16} />
+                        <Edit size={14} />
                       </button>
                       <Link
                         href={`/store/${store.slug}`}
                         target="_blank"
-                        className="p-2 text-zinc-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                        className="p-1.5 text-zinc-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
                         title="Open Public Storefront"
                       >
-                        <ExternalLink size={16} />
+                        <ExternalLink size={14} />
                       </Link>
                       <button
                         onClick={() => handleOpenDeleteModal(store)}
-                        className="p-2 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                        className="p-1.5 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
                         title="Delete Store"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={14} />
                       </button>
                     </div>
                   </td>
@@ -484,10 +502,10 @@ export default function AdminStoresPage() {
                   <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-700 border border-slate-100 shrink-0">
                     <Store size={20} />
                   </div>
-                  <div>
-                    <p className="font-bold text-zinc-900 text-sm">{store.storeName}</p>
-                    <p className="text-xs text-slate-600 font-mono">/{store.slug}</p>
-                    <p className="text-xs text-zinc-500 mt-0.5">{store.user?.name || "Unknown Owner"}</p>
+                  <div className="min-w-0 max-w-[180px] sm:max-w-[240px]">
+                    <p className="font-bold text-zinc-900 text-sm truncate" title={store.storeName}>{store.storeName}</p>
+                    <p className="text-xs text-slate-600 font-mono truncate">/{store.slug}</p>
+                    <p className="text-xs text-zinc-500 mt-0.5 truncate">{store.user?.name || "Unknown Owner"}</p>
                   </div>
                 </div>
 
@@ -505,10 +523,15 @@ export default function AdminStoresPage() {
               </div>
 
               <div className="bg-zinc-50 p-3 rounded-xl border border-zinc-100 text-xs flex items-center justify-between">
-                <span className="text-[10px] text-zinc-400 uppercase font-bold tracking-wider">Total Sales</span>
-                <div className="flex items-center gap-1.5 font-bold text-zinc-900">
-                  <Package size={14} className="text-zinc-400" />
-                  {store.totalSalesCount || 0} sales
+                <span className="text-[10px] text-zinc-400 uppercase font-bold tracking-wider">Sales & Profit</span>
+                <div className="flex flex-col items-end">
+                  <div className="flex items-center gap-1.5 font-bold text-zinc-900">
+                    <Package size={13} className="text-zinc-400" />
+                    {store.totalSalesCount || 0} sales
+                  </div>
+                  <div className="text-xs font-extrabold text-emerald-600">
+                    {formatCurrency(store.totalProfit || 0)} profit
+                  </div>
                 </div>
               </div>
 
@@ -603,7 +626,7 @@ export default function AdminStoresPage() {
                           {selectedStoreData.store.isActive ? "Active" : "Suspended"}
                         </span>
                       </div>
-                      <p className="font-extrabold text-zinc-900 text-base">{selectedStoreData.store.storeName}</p>
+                      <p className="font-extrabold text-zinc-900 text-base truncate" title={selectedStoreData.store.storeName}>{selectedStoreData.store.storeName}</p>
                       <p className="text-xs text-slate-600 font-mono">Link: /{selectedStoreData.store.slug}</p>
                       {selectedStoreData.store.description && (
                         <p className="text-xs text-zinc-600 italic bg-white p-2 rounded-lg border border-zinc-100 mt-2">
@@ -656,15 +679,15 @@ export default function AdminStoresPage() {
                     </h4>
                     {selectedStoreData.storeBundles && selectedStoreData.storeBundles.length > 0 ? (
                       <div className="overflow-x-auto border border-zinc-200 rounded-xl">
-                        <table className="w-full text-xs text-left">
-                          <thead className="bg-zinc-50 text-zinc-500 font-semibold uppercase">
+                        <table className="w-full text-[11px] text-left">
+                          <thead className="bg-zinc-50 text-zinc-500 font-semibold uppercase text-[10px] tracking-wide">
                             <tr>
-                              <th className="px-4 py-2.5">Package</th>
-                              <th className="px-4 py-2.5">Network</th>
-                              <th className="px-4 py-2.5">Base Price</th>
-                              <th className="px-4 py-2.5">Custom Price</th>
-                              <th className="px-4 py-2.5">Margin / Unit</th>
-                              <th className="px-4 py-2.5 text-right">Status</th>
+                              <th className="px-3 py-2">Package</th>
+                              <th className="px-3 py-2">Network</th>
+                              <th className="px-3 py-2">Base Price</th>
+                              <th className="px-3 py-2">Custom Price</th>
+                              <th className="px-3 py-2">Margin / Unit</th>
+                              <th className="px-3 py-2 text-right">Status</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-zinc-100">
@@ -672,19 +695,19 @@ export default function AdminStoresPage() {
                               const margin = sb.customPrice - sb.basePrice;
                               return (
                                 <tr key={sb._id} className="hover:bg-zinc-50">
-                                  <td className="px-4 py-2.5 font-bold text-zinc-900">
+                                  <td className="px-3 py-2 font-bold text-zinc-900">
                                     {sb.bundle?.name || "Deleted Bundle"}
                                   </td>
-                                  <td className="px-4 py-2.5 uppercase font-medium text-zinc-600">
+                                  <td className="px-3 py-2 uppercase font-medium text-zinc-600">
                                     {sb.bundle?.network || "-"}
                                   </td>
-                                  <td className="px-4 py-2.5 text-zinc-600">
+                                  <td className="px-3 py-2 text-zinc-600">
                                     {formatCurrency(sb.basePrice)}
                                   </td>
-                                  <td className="px-4 py-2.5 font-bold text-zinc-900">
+                                  <td className="px-3 py-2 font-bold text-zinc-900">
                                     {formatCurrency(sb.customPrice)}
                                   </td>
-                                  <td className="px-4 py-2.5 font-bold text-emerald-600">
+                                  <td className="px-3 py-2 font-bold text-emerald-600">
                                     +{formatCurrency(margin)}
                                   </td>
                                   <td className="px-4 py-2.5 text-right">
@@ -846,6 +869,18 @@ export default function AdminStoresPage() {
                 />
               </div>
 
+              <div>
+                <label className="block text-xs font-bold text-zinc-700 mb-1">Agent Store Total Profit (GH₵)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={editForm.totalProfit}
+                  onChange={(e) => setEditForm({ ...editForm, totalProfit: parseFloat(e.target.value) || 0 })}
+                  className="w-full px-3.5 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-sm focus:outline-none focus:border-slate-400 transition-colors font-bold text-emerald-600"
+                />
+              </div>
+
               <div className="flex items-center justify-between pt-2 border-t border-zinc-100">
                 <div>
                   <p className="font-bold text-zinc-900 text-xs">Storefront Status</p>
@@ -894,7 +929,7 @@ export default function AdminStoresPage() {
               <h3 className="text-lg font-bold text-zinc-900">Delete Agent Store?</h3>
               <p className="text-xs text-zinc-500 mt-1">
                 Are you sure you want to permanently delete store{" "}
-                <span className="font-bold text-zinc-900">"{deletingStore.storeName}"</span>?
+                <span className="font-bold text-zinc-900 truncate inline-block max-w-[200px] align-bottom" title={deletingStore.storeName}>"{deletingStore.storeName}"</span>?
                 This action cannot be undone.
               </p>
             </div>
