@@ -10,7 +10,8 @@ import {
   ShoppingBag,
   CheckCircle2,
   Clock,
-  RefreshCw
+  RefreshCw,
+  ShieldCheck
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import TopUpWallet from "@/components/topUpwallet";
@@ -51,7 +52,16 @@ export default function DashboardOverviewPage() {
           <p className="text-[9px] sm:text-sm text-gray-200 font-semibold leading-relaxed">
             Purchase data bundles easily, manage orders, and earn profits.
           </p>
-           <button onClick={()=> router.push('/dashboard/packages')} className="bg-[#ffffff] mt-3 w-full sm:w-auto rounded-2xl text-slate-700 cursor-pointer px-4 py-2 text-sm md:text-xl">Buy Data</button>
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <button onClick={()=> router.push('/dashboard/packages')} className="bg-[#ffffff] rounded-2xl text-slate-700 font-bold cursor-pointer px-4 py-2.5 text-sm md:text-base hover:bg-slate-100 transition-colors">
+              Buy Data
+            </button>
+            {user.role !== "agent" && user.role !== "admin" && (
+              <button onClick={()=> router.push('/dashboard/role-upgrade')} className="bg-[#fcd34d] hover:bg-amber-300 text-slate-950 font-black rounded-2xl cursor-pointer px-4 py-2.5 text-sm md:text-base flex items-center gap-1.5 transition-colors shadow-md">
+                <ShieldCheck size={18} /> Become an Agent
+              </button>
+            )}
+          </div>
         </div> 
       </div>
 

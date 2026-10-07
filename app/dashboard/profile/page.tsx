@@ -13,11 +13,15 @@ import {
   CheckCircle2,
   Key,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  ShieldCheck,
+  Sparkles
 } from "lucide-react";
+import RoleUpgradeModal from "@/components/RoleUpgradeModal";
 
 export default function ProfilePage() {
   const { data, setData } = useDashboard();
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
 
   // Account form states
   const [fullName, setFullName] = useState("");
@@ -384,6 +388,39 @@ export default function ProfilePage() {
         </div>
 
       </div>
+
+      {/* PANEL 3: ACCOUNT ROLE & AGENT UPGRADE */}
+      <div className="bg-[#1e3a8a] text-white rounded-[16px] p-6 sm:p-8 shadow-lg relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="space-y-2 max-w-xl relative z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-400/20 text-amber-300 rounded-full text-[10px] font-extrabold uppercase tracking-widest border border-amber-400/30">
+            <Sparkles size={13} /> Current Status: {user.role.toUpperCase()}
+          </div>
+          <h3 className="text-xl font-black tracking-tight text-white">
+            {user.role === "agent" ? "You are an Official Agent" : "Upgrade Account Role to Agent"}
+          </h3>
+          <p className="text-xs text-slate-200 font-medium leading-relaxed">
+            {user.role === "agent"
+              ? "You currently have access to discounted wholesale data bundle pricing and your reseller storefront."
+              : "Upgrade your account to Agent status to unlock wholesale bundle pricing, setup your reseller storefront, and earn reseller profit commissions."}
+          </p>
+        </div>
+
+        {user.role !== "agent" && user.role !== "admin" && (
+          <button
+            type="button"
+            onClick={() => setIsUpgradeModalOpen(true)}
+            className="shrink-0 px-6 py-3.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all active:scale-[0.98] flex items-center gap-2 cursor-pointer"
+          >
+            <ShieldCheck size={18} /> Upgrade Role to Agent
+          </button>
+        )}
+      </div>
+
+      <RoleUpgradeModal
+        isOpen={isUpgradeModalOpen}
+        onClose={() => setIsUpgradeModalOpen(false)}
+      />
     </div>
   );
 }
+

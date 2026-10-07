@@ -20,6 +20,10 @@ export async function GET() {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    if (user.role !== "agent" && user.role !== "admin") {
+      return NextResponse.json({ error: "Access denied. Agent role required." }, { status: 403 });
+    }
+
 
     // Get all active standard bundles (which are sold to public storefront users)
     const bundles = await Bundle.find({ isActive: true, audience: "user" }).sort({
@@ -74,6 +78,10 @@ export async function POST(req: Request) {
     const user = await User.findById((session.user as any).id);
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    if (user.role !== "agent" && user.role !== "admin") {
+      return NextResponse.json({ error: "Access denied. Agent role required." }, { status: 403 });
     }
 
 

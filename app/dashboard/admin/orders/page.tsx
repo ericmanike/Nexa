@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import {
   Search, CheckCircle2, XCircle,  ShoppingBag, Trash2, Copy, RefreshCw,
-  CreditCard, Users
+  CreditCard, Users, ShieldCheck, Tag, Save
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { formatCurrency } from "@/lib/utils";
@@ -27,6 +27,8 @@ export default function AdminOrdersPage() {
   const [ordersClosedUpdating, setOrdersClosedUpdating] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState("dakazina");
   const [savingProvider, setSavingProvider] = useState(false);
+  const [agentUpgradeFee, setAgentUpgradeFee] = useState<number | string>(50);
+  const [savingAgentFee, setSavingAgentFee] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [creatingOrder, setCreatingOrder] = useState(false);
   const [bundles, setBundles] = useState<any[]>([]);
@@ -50,6 +52,7 @@ export default function AdminOrdersPage() {
           const data = await ordersClosedRes.json();
           setOrdersClosed(Boolean(data?.ordersClosed));
           if (data?.provider) setSelectedProvider(data.provider);
+          if (data?.agentUpgradeFee !== undefined) setAgentUpgradeFee(data.agentUpgradeFee);
         }
         if (bundlesRes.ok) {
           const data = await bundlesRes.json();
@@ -63,6 +66,34 @@ export default function AdminOrdersPage() {
     };
     fetchEverything();
   }, []);
+
+  const handleSaveAgentFee = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const numericFee = Number(agentUpgradeFee);
+    if (isNaN(numericFee) || numericFee < 0) {
+      toast.error("Please enter a valid non-negative price");
+      return;
+    }
+    setSavingAgentFee(true);
+    try {
+      const res = await fetch("/api/admin/settings/orders-closed", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ agentUpgradeFee: numericFee }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.agentUpgradeFee !== undefined) setAgentUpgradeFee(data.agentUpgradeFee);
+        toast.success(`Agent registration price updated to ${formatCurrency(numericFee)}!`);
+      } else {
+        toast.error("Failed to update registration price");
+      }
+    } catch {
+      toast.error("Error saving registration price");
+    } finally {
+      setSavingAgentFee(false);
+    }
+  };
 
   const handleToggleOrdersClosed = async () => {
     const nextValue = !ordersClosed;

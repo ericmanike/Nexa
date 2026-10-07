@@ -37,6 +37,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Agent account not found" }, { status: 404 });
     }
 
+    if (user.role !== "agent" && user.role !== "admin") {
+      return NextResponse.json({ error: "Access denied. Agent role required." }, { status: 403 });
+    }
+
     // Atomically check and deduct amount from agent store total profit
     const updatedStore = await AgentStore.findOneAndUpdate(
       { user: user._id, totalProfit: { $gte: valAmount } },

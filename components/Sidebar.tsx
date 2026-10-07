@@ -18,6 +18,7 @@ import {
   User as UserIcon,
   X,
   Shield,
+  ShieldCheck,
   Settings,
   Bell
 } from "lucide-react";
@@ -44,6 +45,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, user }: SidebarPr
     { id: "wallet", label: "Wallet", href: "/dashboard/wallet", icon: Wallet, color: "bg-slate-100 text-slate-700" },
     { id: "transactions", label: "Transactions", href: "/dashboard/transactions", icon: ArrowLeftRight, color: "bg-orange-100 text-orange-600" },
     { id: "store", label: "My Store", href: "/dashboard/store", icon: Store, color: "bg-teal-100 text-teal-600" },
+    { id: "role-upgrade", label: "Role Upgrade", href: "/dashboard/role-upgrade", icon: ShieldCheck, color: "bg-indigo-100 text-indigo-600" },
   ];
 
   if (user.role === "admin") {

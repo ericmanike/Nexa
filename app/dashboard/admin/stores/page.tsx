@@ -20,6 +20,7 @@ import {
   Clock,
   AlertTriangle,
   RefreshCw,
+  ShieldCheck,
 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { formatCurrency } from "@/lib/utils";
@@ -33,6 +34,10 @@ export default function AdminStoresPage() {
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "sales" | "name">("newest");
   const [togglingId, setTogglingId] = useState<string | null>(null);
+
+  // Agent Registration Price state
+  const [agentUpgradeFee, setAgentUpgradeFee] = useState<number | string>(50);
+  const [savingAgentFee, setSavingAgentFee] = useState(false);
 
   // View Modal State
   const [viewModalOpen, setViewModalOpen] = useState(false);
@@ -60,18 +65,57 @@ export default function AdminStoresPage() {
   const fetchStores = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/admin/stores");
-      if (res.ok) {
-        const data = await res.json();
+      const [storesRes, feeRes] = await Promise.all([
+        fetch("/api/admin/stores"),
+        fetch("/api/admin/settings/orders-closed"),
+      ]);
+
+      if (storesRes.ok) {
+        const data = await storesRes.json();
         setStores(data);
       } else {
         toast.error("Failed to load agent stores");
+      }
+
+      if (feeRes.ok) {
+        const feeData = await feeRes.json();
+        if (feeData.agentUpgradeFee !== undefined) {
+          setAgentUpgradeFee(feeData.agentUpgradeFee);
+        }
       }
     } catch (e) {
       console.error("Failed to fetch stores:", e);
       toast.error("Error fetching agent stores");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSaveAgentFee = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const numericFee = Number(agentUpgradeFee);
+    if (isNaN(numericFee) || numericFee < 0) {
+      toast.error("Please enter a valid non-negative price");
+      return;
+    }
+    setSavingAgentFee(true);
+    try {
+      const res = await fetch("/api/admin/settings/orders-closed", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ agentUpgradeFee: numericFee }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.agentUpgradeFee !== undefined) setAgentUpgradeFee(data.agentUpgradeFee);
+        toast.success(`Agent registration price updated to ${formatCurrency(numericFee)}!`);
+      } else {
+        toast.error("Failed to update registration price");
+      }
+    } catch {
+      toast.error("Error saving registration price");
+    } finally {
+      setSavingAgentFee(false);
     }
   };
 
@@ -309,6 +353,47 @@ export default function AdminStoresPage() {
           <p className="text-2xl font-black text-emerald-600 mt-2">{formatCurrency(totalProfitSum)}</p>
         </Card>
       </div>
+
+      {/* Agent Registration / Upgrade Price Settings Card */}
+      <Card className="p-5 bg-white border-zinc-200 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h3 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+              <ShieldCheck size={18} className="text-amber-500" />
+              Agent Registration Price
+            </h3>
+            <p className="text-xs text-zinc-500 mt-0.5">
+              Set the fee charged when users upgrade to Agent status
+            </p>
+          </div>
+
+          <form onSubmit={handleSaveAgentFee} className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="relative flex-1 sm:w-44">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-black text-zinc-400">
+                GH₵
+              </span>
+              <input
+                type="number"
+                min="0"
+                step="0.5"
+                required
+                value={agentUpgradeFee}
+                onChange={(e) => setAgentUpgradeFee(e.target.value)}
+                placeholder="50.00"
+                className="w-full bg-zinc-50 border border-zinc-200 rounded-xl pl-12 pr-4 py-2.5 text-sm font-bold text-zinc-900 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={savingAgentFee}
+              className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-sm active:scale-[0.98] flex items-center gap-1.5 cursor-pointer shrink-0"
+            >
+              {savingAgentFee ? "Saving..." : "Save Price"}
+            </button>
+          </form>
+        </div>
+      </Card>
 
       {/* Table Container */}
       <Card className="border-zinc-200 bg-white overflow-hidden shadow-sm">

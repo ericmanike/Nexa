@@ -87,7 +87,8 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       transactions: "Transactions",
       store: "My Store",
       withdraw: "Withdraw Rewards",
-      profile: "Profile"
+      profile: "Profile",
+      "role-upgrade": "Role Upgrade"
     };
     return labels[subRoute] || subRoute;
   };
